@@ -41,6 +41,7 @@ mongoose.connect(process.env.MONGODB_URI)
 const userSchema = new mongoose.Schema({
     tgId: { type: Number, unique: true },
     username: String,
+    balance: { type: Number, default: 0 },
     isBanned: { type: Boolean, default: false },
     state: { type: String, default: 'none' },
     lastActive: { type: Date, default: Date.now }
@@ -77,16 +78,17 @@ app.post('/api/get-user', async (req, res) => {
         if (user) {
             return res.json({
                 username: user.username,
+                balance: user.balance,
                 isBanned: user.isBanned
             });
         }
         // User မတွေ့ → အသစ် create
         const newUser = await User.findOneAndUpdate(
             { tgId: Number(userId) },
-            { $setOnInsert: { username: 'User' } },
-            { upsert: true, new: true, setDefaultsOnInsert: true }
+            { $setOnInsert: { username: 'User', balance: 0 } },
+            { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
         );
-        return res.json({ username: newUser.username });
+        return res.json({ username: newUser.username, balance: newUser.balance });
     } catch (error) {
         console.error("❌ /api/get-user error:", error);
         res.status(500).json({ error: 'Internal Error' });
@@ -128,19 +130,30 @@ app.get('/api/task-config', async (req, res) => {
 app.post('/api/spin', async (req, res) => {
     try {
         const { userId } = req.body;
-        if (!userId) return res.status(400).json({ error: 'User ID required' });
-        const user = await User.findOne({ tgId: Number(userId) });
-        if (!user) return res.status(404).json({ error: 'User not found' });
+        if (!userId) return res.status(400).json({ success: false, error: 'User ID required' });
+
         const prizes = [100, 50, 200, 300, 500, 50, 100, 200];
         const idx = Math.floor(Math.random() * prizes.length);
-        const amount = prizes[idx];
+        const prize = prizes[idx];
+
+        // DB ထဲ balance တိုးပြီး updatedUser ယူသည်
+        const updatedUser = await User.findOneAndUpdate(
+            { tgId: Number(userId) },
+            { $inc: { balance: prize }, $set: { lastActive: new Date() } },
+            { new: true, upsert: false, returnDocument: 'after' }
+        );
+
+        if (!updatedUser) return res.status(404).json({ success: false, error: 'User not found' });
+
         try {
-            await bot.telegram.sendMessage(userId, `🎰 Lucky Spin မှ ${amount} ကျပ် ရရှိပါတယ်!`);
+            await bot.telegram.sendMessage(userId, `🎰 Lucky Spin မှ ${prize} ကျပ် ရရှိပါတယ်!\n💰 လက်ကျန်: ${updatedUser.balance.toLocaleString()} ကျပ်`);
         } catch (e) {}
-        return res.json({ success: true, amount, prizeIndex: idx });
+
+        // frontend က res.prize နဲ့ res.newBalance လိုချင်သည်
+        return res.json({ success: true, prize, newBalance: updatedUser.balance, prizeIndex: idx });
     } catch (error) {
         console.error("❌ /api/spin error:", error);
-        res.status(500).json({ error: 'Internal Error' });
+        res.status(500).json({ success: false, error: 'Internal Error' });
     }
 });
 

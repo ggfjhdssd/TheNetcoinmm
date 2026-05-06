@@ -853,24 +853,30 @@ async function doSpin() {
     const res = await apiFetch('/api/spin', { userId });
     setLoading(false);
 
-    if (!res.success) {
-      if (res.error === 'already_spun') {
+    if (!res || !res.success) {
+      const errMsg = res && res.error ? res.error : 'Server Error';
+      if (errMsg === 'already_spun') {
         document.getElementById('spin-status').textContent = '⏳ ဒီနေ့ Spin ပြီးပါပြီ။ မနက်ဖြန် ပြန်လာပါ!';
         showToast('ဒီနေ့ Spin ပြီးပါပြီ', 'warn');
       } else {
-        showToast(res.error || 'Error', 'error');
+        showToast(errMsg, 'error');
       }
       return;
     }
 
-    const prizeIndex = PRIZES.findIndex(p => p.amount === res.prize);
-    animateSpin(prizeIndex >= 0 ? prizeIndex : 0, res.prize);
-    currentBalance = res.newBalance;
-    document.getElementById('balance-display').textContent = currentBalance.toLocaleString();
-    document.getElementById('profile-balance').textContent = currentBalance.toLocaleString();
+    // backend က prize (number) နဲ့ newBalance ပြန်ပို့သည်
+    const prize = res.prize;
+    const prizeIndex = PRIZES.findIndex(p => p.amount === prize);
+    animateSpin(prizeIndex >= 0 ? prizeIndex : 0, prize);
+
+    if (res.newBalance !== undefined) {
+      currentBalance = res.newBalance;
+      document.getElementById('balance-display').textContent = currentBalance.toLocaleString();
+      document.getElementById('profile-balance').textContent = currentBalance.toLocaleString();
+    }
   } catch (e) {
     setLoading(false);
-    showToast('Server Error', 'error');
+    showToast('Server Error — ထပ်ကြိုးစားပါ', 'error');
   }
 }
 
