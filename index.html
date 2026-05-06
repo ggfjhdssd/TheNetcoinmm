@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Bitcoin Myanmar Mining</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+  <style>
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:      #4361EE;
+      --blue-dark: #3A0CA3;
+      --blue-mid:  #3F72AF;
+      --purple:    #7209B7;
+      --pink:      #F72585;
+      --gold:      #F8961E;
+      --green:     #43AA8B;
+      --red:       #E63946;
+      --bg:        #F4F6FC;
+      --card:      #FFFFFF;
+      --text:      #1A1A2E;
+      --muted:     #8D99AE;
+      --radius:    18px;
+      --shadow:    0 4px 20px rgba(67,97,238,.12);
+      --nav-h:     70px;
+    }
+
+    html, body {
+      height: 100%; overflow: hidden;
+      background: var(--bg);
+      font-family: 'Segoe UI', 'Pyidaungsu', Arial, sans-serif;
+      color: var(--text);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ============================================================
+       LAYOUT SHELL
+    ============================================================ */
+    #app { display: flex; flex-direction: column; height: 100vh; }
+
+    .page-content {
+      flex: 1; overflow-y: auto; padding: 0 16px 16px;
+      scroll-behavior: smooth;
+    }
+    .page-content::-webkit-scrollbar { display: none; }
+
+    /* ============================================================
+       BOTTOM NAV
+    ============================================================ */
+    .bottom-nav {
+      display: flex; height: var(--nav-h);
+      background: #fff;
+      border-top: 1px solid #E8ECFF;
+      box-shadow: 0 -4px 20px rgba(67,97,238,.08);
+      flex-shrink: 0;
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 4px;
+      cursor: pointer; transition: .2s;
+      background: none; border: none; outline: none;
+    }
+    .nav-icon {
+      width: 44px; height: 44px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; transition: .25s;
+    }
+    .nav-item.active .nav-icon {
+      background: var(--blue);
+      box-shadow: 0 4px 14px rgba(67,97,238,.4);
+    }
+    .nav-label { font-size: 11px; font-weight: 600; color: var(--muted); transition: .2s; }
+    .nav-item.active .nav-label { color: var(--blue); }
+
+    /* ============================================================
+       TABS (pages)
+    ============================================================ */
+    .tab-page { display: none; }
+    .tab-page.active { display: block; }
+
+    /* ============================================================
+       HEADER BANNER (Home & others)
+    ============================================================ */
+    .hero-banner {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+      border-radius: 0 0 28px 28px;
+      margin: 0 -16px 20px;
+      padding: 20px 24px 30px;
+      color: #fff;
+      position: relative; overflow: hidden;
+    }
+    .hero-banner::before {
+      content: '';
+      position: absolute; top: -40px; right: -30px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: rgba(255,255,255,.07);
+    }
+    .hero-banner::after {
+      content: '';
+      position: absolute; bottom: -20px; left: 60px;
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(255,255,255,.05);
+    }
+    .hero-greeting { font-size: 13px; opacity: .8; font-weight: 500; margin-bottom: 2px; }
+    .hero-name { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+    .hero-icons { position: absolute; top: 18px; right: 20px; display: flex; gap: 10px; }
+    .hero-icon-btn {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: rgba(255,255,255,.18); border: none;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; cursor: pointer; color: #fff;
+    }
+    .balance-card {
+      background: rgba(255,255,255,.15);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 16px;
+      padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .balance-label { font-size: 12px; opacity: .8; font-weight: 500; }
+    .balance-amount { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+    .balance-currency { font-size: 14px; opacity: .9; font-weight: 600; }
+    .balance-refresh {
+      width: 38px; height: 38px; border-radius: 12px;
+      background: rgba(255,255,255,.25); border: none; color: #fff;
+      font-size: 16px; cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      transition: .2s;
+    }
+    .balance-refresh:active { transform: rotate(180deg); }
+
+    /* ============================================================
+       SECTION HEADER
+    ============================================================ */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .section-title { font-size: 17px; font-weight: 700; color: var(--text); }
+    .section-link { font-size: 13px; font-weight: 600; color: var(--blue); }
+
+    /* ============================================================
+       TASK CARDS (Ad Slots)
+    ============================================================ */
+    .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+
+    .task-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px 14px;
+      box-shadow: var(--shadow);
+      cursor: pointer; transition: .2s;
+      position: relative; overflow: hidden;
+    }
+    .task-card:active { transform: scale(.97); }
+    .task-card-accent {
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .task-icon { font-size: 28px; margin-bottom: 8px; }
+    .task-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .task-reward {
+      font-size: 12px; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 20px;
+      background: #FFF3CD; color: var(--gold);
+    }
+    .task-card.disabled { opacity: .55; cursor: not-allowed; }
+    .task-timer { font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+    /* ============================================================
+       PROMO BANNER
+    ============================================================ */
+    .promo-banner {
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #F72585 0%, #7209B7 100%);
+      color: #fff; padding: 18px 20px;
+      margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 6px 20px rgba(247,37,133,.25);
+    }
+    .promo-text { font-size: 11px; opacity: .8; margin-bottom: 4px; }
+    .promo-title { font-size: 17px; font-weight: 800; }
+    .promo-subtitle { font-size: 12px; opacity: .85; margin-top: 2px; }
+    .promo-btn {
+      background: #fff; color: var(--purple);
+      border: none; border-radius: 12px;
+      padding: 10px 16px; font-size: 13px; font-weight: 700;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: .2s;
+    }
+    .promo-btn:active { transform: scale(.95); }
+    .promo-emoji { font-size: 36px; }
+
+    /* ============================================================
+       GAMES TAB – Coming Soon
+    ============================================================ */
+    .coming-soon-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 60vh; text-align: center;
+      padding: 20px;
+    }
+    .coming-soon-emoji { font-size: 72px; margin-bottom: 20px; filter: drop-shadow(0 6px 12px rgba(0,0,0,.15)); }
+    .coming-soon-title { font-size: 24px; font-weight: 800; margin-bottom: 10px; color: var(--text); }
+    .coming-soon-sub { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 260px; }
+    .coming-badge {
+      margin-top: 24px; background: linear-gradient(135deg, var(--blue), var(--purple));
+      color: #fff; padding: 10px 24px; border-radius: 30px;
+      font-size: 13px; font-weight: 700;
+      box-shadow: 0 4px 14px rgba(67,97,238,.3);
+    }
+
+    /* ============================================================
+       SPIN TAB
+    ============================================================ */
+    .spin-hero {
+      background: linear-gradient(135deg, #F8961E 0%, #F3722C 100%);
+      border-radius: 0 0 28px 28px;
+      margin: 0 -16px 24px;
+      padding: 24px 24px 32px;
+      color: #fff; text-align: center;
+    }
+    .spin-hero-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .spin-hero-sub { font-size: 13px; opacity: .85; }
+
+    .wheel-wrapper {
+      display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;
+    }
+    .wheel-pointer {
+      width: 0; height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 28px solid #1A1A2E;
+      margin-bottom: -4px; z-index: 2; position: relative;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,.3));
+    }
+    #spin-canvas {
+      border-radius: 50%;
+      box-shadow: 0 8px 30px rgba(0,0,0,.2);
+      display: block;
+    }
+
+    #spin-btn {
+      margin-top: 22px;
+      background: linear-gradient(135deg, #F72585, #7209B7);
+      color: #fff; border: none; border-radius: 20px;
+      padding: 16px 48px; font-size: 17px; font-weight: 800;
+      cursor: pointer; transition: .2s;
+      box-shadow: 0 6px 20px rgba(247,37,133,.35);
+      letter-spacing: .5px;
+    }
+    #spin-btn:active { transform: scale(.96); }
+    #spin-btn:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
+    #spin-status {
+      text-align: center; margin-top: 14px;
+      font-size: 14px; color: var(--muted); min-height: 22px;
+    }
+
+    .spin-prizes {
+      background: var(--card); border-radius: var(--radius);
+      padding: 16px; box-shadow: var(--shadow);
+    }
+    .spin-prizes-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+    .prize-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .prize-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg); border-radius: 12px; padding: 8px 12px;
+    }
+    .prize-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .prize-text { font-size: 13px; font-weight: 600; color: var(--text); }
+
+    /* ============================================================
+       PROFILE TAB
+    ============================================================ */
+    .profile-hero {
+      background: linear-gradient(135deg, var(--green) 0%, #2DC653 100%);
+      border-radius: 0 0 28px 28px;
+      margin: 0 -16px 22px;
+      padding: 28px 24px 36px;
+      text-align: center; color: #fff;
+    }
+    .profile-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      border: 3px solid rgba(255,255,255,.5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; margin: 0 auto 12px;
+    }
+    .profile-name { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+    .profile-id { font-size: 12px; opacity: .8; }
+
+    .info-card {
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow: hidden; margin-bottom: 14px;
+    }
+    .info-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; border-bottom: 1px solid #F0F0F8;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-row-left { display: flex; align-items: center; gap: 12px; }
+    .info-row-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .info-row-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+    .info-row-value { font-size: 14px; font-weight: 700; color: var(--text); text-align: right; max-width: 180px; }
+
+    .withdraw-btn {
+      width: 100%; padding: 16px; border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--green), #2DC653);
+      color: #fff; border: none; font-size: 16px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 6px 20px rgba(67,170,139,.35);
+      transition: .2s;
+    }
+    .withdraw-btn:active { transform: scale(.97); }
+
+    /* ============================================================
+       LOADER / TOAST
+    ============================================================ */
+    .toast {
+      position: fixed; bottom: calc(var(--nav-h) + 16px); left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1A1A2E; color: #fff;
+      padding: 12px 24px; border-radius: 30px;
+      font-size: 14px; font-weight: 600;
+      opacity: 0; transition: .3s; z-index: 999;
+      white-space: nowrap; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.success { background: var(--green); }
+    .toast.error { background: var(--red); }
+    .toast.warn { background: var(--gold); color: #1A1A2E; }
+
+    /* Spinner overlay */
+    .loading-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(255,255,255,.8) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 50 50'%3E%3Ccircle cx='25' cy='25' r='20' fill='none' stroke='%234361EE' stroke-width='4' stroke-dasharray='100 28' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 25 25' to='360 25 25' dur='.8s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/svg%3E") center no-repeat;
+      display: none;
+    }
+    .loading-overlay.visible { display: block; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <!-- ═══════════════ PAGE CONTENT ═══════════════ -->
+  <div class="page-content" id="page-content">
+
+    <!-- ══════════ HOME TAB ══════════ -->
+    <div class="tab-page active" id="tab-home">
+
+      <!-- Hero / Balance banner -->
+      <div class="hero-banner">
+        <div class="hero-icons">
+          <button class="hero-icon-btn" onclick="refreshBalance()" title="Refresh">🔄</button>
+          <button class="hero-icon-btn" onclick="showToast('Notifications coming soon', 'warn')" title="Notify">🔔</button>
+        </div>
+        <p class="hero-greeting">မင်္ဂလာပါ,</p>
+        <p class="hero-name" id="hero-username">Loading...</p>
+
+        <div class="balance-card">
+          <div>
+            <div class="balance-label">💰 လက်ကျန်ငွေ</div>
+            <div>
+              <span class="balance-amount" id="balance-display">0</span>
+              <span class="balance-currency"> MMK</span>
+            </div>
+          </div>
+          <button class="balance-refresh" onclick="refreshBalance()">↻</button>
+        </div>
+      </div>
+
+      <!-- Promo banner -->
+      <div class="promo-banner">
+        <div>
+          <div class="promo-text">🎉 Special Offer</div>
+          <div class="promo-title">Daily Spin Wheel</div>
+          <div class="promo-subtitle">500 MMK အထိ အခမဲ့ နေ့တိုင်း လှည့်ပါ!</div>
+        </div>
+        <div>
+          <div class="promo-emoji">🎰</div>
+          <button class="promo-btn" onclick="switchTab('tab-spin')">ကစားမည်</button>
+        </div>
+      </div>
+
+      <!-- Task blocks -->
+      <div class="section-header">
+        <span class="section-title">📋 Task များ</span>
+        <span class="section-link">ကြော်ငြာကြည့်ပြီး ငွေရပါ</span>
+      </div>
+
+      <div class="task-grid">
+        <!-- Task 1 -->
+        <div class="task-card" id="task-1" onclick="handleAdTask(1)">
+          <div class="task-card-accent" style="background:linear-gradient(90deg,#4361EE,#7209B7)"></div>
+          <div class="task-icon">📺</div>
+          <div class="task-title">Video Ad</div>
+          <div class="task-reward" id="task-reward-1">⭐ +500 MMK</div>
+          <div class="task-timer" id="task-timer-1"></div>
+        </div>
+
+        <!-- Task 2 -->
+        <div class="task-card" id="task-2" onclick="handleAdTask(2)">
+          <div class="task-card-accent" style="background:linear-gradient(90deg,#F72585,#F8961E)"></div>
+          <div class="task-icon">📺</div>
+          <div class="task-title">Video Ad</div>
+          <div class="task-reward" id="task-reward-2">⭐ +500 MMK</div>
+          <div class="task-timer" id="task-timer-2"></div>
+        </div>
+
+        <!-- Task 3 -->
+        <div class="task-card" id="task-3" onclick="handleAdTask(3)">
+          <div class="task-card-accent" style="background:linear-gradient(90deg,#43AA8B,#2DC653)"></div>
+          <div class="task-icon">📺</div>
+          <div class="task-title">Video Ad</div>
+          <div class="task-reward" id="task-reward-3">⭐ +500 MMK</div>
+          <div class="task-timer" id="task-timer-3"></div>
+        </div>
+
+        <!-- Task 4 -->
+        <div class="task-card" id="task-4" onclick="handleAdTask(4)">
+          <div class="task-card-accent" style="background:linear-gradient(90deg,#E63946,#F72585)"></div>
+          <div class="task-icon">📺</div>
+          <div class="task-title">Video Ad</div>
+          <div class="task-reward" id="task-reward-4">⭐ +500 MMK</div>
+          <div class="task-timer" id="task-timer-4"></div>
+        </div>
+      </div>
+
+      <!-- VPN Note (admin-controlled) -->
+      <div id="vpn-note" style="background:#FFF3CD;border-radius:12px;padding:12px 14px;font-size:12px;color:#856404;text-align:center;margin-bottom:16px;display:none;">
+        ⚠️ ကြော်ငြာပေါ်ရန် <strong>VPN (USA/UK)</strong> ဖွင့်ထားပေးပါ
+      </div>
+
+    </div><!-- /tab-home -->
+
+    <!-- ══════════ GAMES TAB ══════════ -->
+    <div class="tab-page" id="tab-games">
+      <div class="coming-soon-wrap">
+        <div class="coming-soon-emoji">🎮</div>
+        <div class="coming-soon-title">Games</div>
+        <div class="coming-soon-sub">ဂိမ်းများကို မကြာမီ ထည့်သွင်းပေးသွားမှာ ဖြစ်ပါတယ်။ ခေတ္တစောင့်ပေးပါ! 🚀</div>
+        <div class="coming-badge">🔜 Coming Soon</div>
+      </div>
+    </div>
+
+    <!-- ══════════ SPIN TAB ══════════ -->
+    <div class="tab-page" id="tab-spin">
+      <div class="spin-hero">
+        <div class="spin-hero-title">🎰 Lucky Spin</div>
+        <div class="spin-hero-sub">နေ့တိုင်း တစ်ကြိမ် အခမဲ့ လှည့်ခွင့်ရပါသည်</div>
+      </div>
+
+      <div class="wheel-wrapper">
+        <div class="wheel-pointer"></div>
+        <canvas id="spin-canvas" width="300" height="300"></canvas>
+        <button id="spin-btn" onclick="doSpin()">🎰 လှည့်မည်!</button>
+        <div id="spin-status"></div>
+      </div>
+
+      <div class="spin-prizes">
+        <div class="spin-prizes-title">🏆 ဆုကြေးများ</div>
+        <div class="prize-list" id="prize-list"></div>
+      </div>
+    </div>
+
+    <!-- ══════════ PROFILE TAB ══════════ -->
+    <div class="tab-page" id="tab-profile">
+      <div class="profile-hero">
+        <div class="profile-avatar" id="profile-avatar">👤</div>
+        <div class="profile-name" id="profile-name">Loading...</div>
+        <div class="profile-id" id="profile-id">ID: ---</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-row">
+          <div class="info-row-left">
+            <div class="info-row-icon" style="background:#EEF2FF;">💰</div>
+            <div>
+              <div class="info-row-label">လက်ကျန်ငွေ</div>
+            </div>
+          </div>
+          <div class="info-row-value"><span id="profile-balance">0</span> MMK</div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-left">
+            <div class="info-row-icon" style="background:#F0FFF4;">👥</div>
+            <div>
+              <div class="info-row-label">Referral ဦးရေ</div>
+            </div>
+          </div>
+          <div class="info-row-value" id="profile-referral">0 ယောက်</div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-left">
+            <div class="info-row-icon" style="background:#FFF8E7;">🎰</div>
+            <div>
+              <div class="info-row-label">Spin နောက်ဆုံး</div>
+            </div>
+          </div>
+          <div class="info-row-value" id="profile-last-spin">မလှည့်ရသေးပါ</div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-left">
+            <div class="info-row-icon" style="background:#FFE8F0;">💳</div>
+            <div>
+              <div class="info-row-label">Wallet</div>
+            </div>
+          </div>
+          <div class="info-row-value" id="profile-wallet" style="font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">မသတ်မှတ်ရသေးပါ</div>
+        </div>
+      </div>
+
+      <button class="withdraw-btn" onclick="handleWithdraw()">💸 ငွေထုတ်ယူမည်</button>
+    </div>
+
+  </div><!-- /page-content -->
+
+  <!-- ═══════════════ BOTTOM NAV ═══════════════ -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-home" onclick="switchTab('tab-home')">
+      <div class="nav-icon">🏠</div>
+      <span class="nav-label">Home</span>
+    </button>
+    <button class="nav-item" id="nav-games" onclick="switchTab('tab-games')">
+      <div class="nav-icon">🎮</div>
+      <span class="nav-label">Games</span>
+    </button>
+    <button class="nav-item" id="nav-spin" onclick="switchTab('tab-spin')">
+      <div class="nav-icon">🎰</div>
+      <span class="nav-label">Spin</span>
+    </button>
+    <button class="nav-item" id="nav-profile" onclick="switchTab('tab-profile')">
+      <div class="nav-icon">👤</div>
+      <span class="nav-label">Profile</span>
+    </button>
+  </nav>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loading-overlay"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+/* ── Telegram WebApp Init ── */
+const WebApp = window.Telegram.WebApp;
+WebApp.ready();
+WebApp.expand();
+WebApp.setHeaderColor('#4361EE');
+WebApp.setBackgroundColor('#F4F6FC');
+
+const tgUser = WebApp.initDataUnsafe?.user || {};
+const userId = tgUser.id || null;
+const username = tgUser.username ? '@' + tgUser.username : (tgUser.first_name || 'User');
+
+/* ── State ── */
+let currentBalance = 0;
+let userData = {};
+let isSpinning = false;
+
+/* ── AdController ── */
+const AdController = window.Adsgram?.init({ blockId: "int-29385" });
+
+/* ── Constants ── */
+const REWARD_AMOUNT = 500;
+const MIN_WITHDRAW = 100000;
+const COOLDOWN_S = 300; // 5 min per ad slot
+
+/* ── Spin Prizes ── */
+const PRIZES = [
+  { label: '100 MMK',  amount: 100,  color: '#4CC9F0' },
+  { label: '50 MMK',   amount: 50,   color: '#F72585' },
+  { label: '200 MMK',  amount: 200,  color: '#7209B7' },
+  { label: '300 MMK',  amount: 300,  color: '#F8961E' },
+  { label: '500 MMK',  amount: 500,  color: '#43AA8B' },
+  { label: '50 MMK',   amount: 50,   color: '#E63946' },
+  { label: '100 MMK',  amount: 100,  color: '#4361EE' },
+  { label: '200 MMK',  amount: 200,  color: '#3A0CA3' },
+];
+
+/* ════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════ */
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  const navId = 'nav-' + tabId.replace('tab-', '');
+  document.getElementById(navId).classList.add('active');
+  document.getElementById('page-content').scrollTop = 0;
+}
+
+/* ════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════ */
+let toastTimeout;
+function showToast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => { el.className = 'toast'; }, 3000);
+}
+
+/* ════════════════════════════════════════════
+   LOADING
+════════════════════════════════════════════ */
+function setLoading(v) {
+  document.getElementById('loading-overlay').classList.toggle('visible', v);
+}
+
+/* ════════════════════════════════════════════
+   API HELPERS
+════════════════════════════════════════════ */
+// 👇 Render backend URL ကို ဒီနေရာမှာ ထည့်ပါ
+const API_BASE = 'https://bitcoin-bot-agcd.onrender.com';
+
+async function apiFetch(path, body) {
+  const res = await fetch(API_BASE + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+/* ════════════════════════════════════════════
+   BALANCE
+════════════════════════════════════════════ */
+async function refreshBalance() {
+  if (!userId) return;
+  try {
+    const data = await apiFetch('/api/get-user', { userId });
+    if (data.balance !== undefined) {
+      currentBalance = data.balance;
+      userData = data;
+      updateUI();
+    }
+  } catch (e) {
+    showToast('ချိတ်ဆက်မရပါ', 'error');
+  }
+}
+
+function updateUI() {
+  // Home
+  document.getElementById('hero-username').textContent = username;
+  document.getElementById('balance-display').textContent = currentBalance.toLocaleString();
+  // Profile
+  document.getElementById('profile-name').textContent = username;
+  document.getElementById('profile-id').textContent = 'ID: ' + (userId || '---');
+  document.getElementById('profile-balance').textContent = currentBalance.toLocaleString();
+  document.getElementById('profile-referral').textContent = (userData.referralCount || 0) + ' ယောက်';
+  document.getElementById('profile-wallet').textContent = userData.wallet || 'မသတ်မှတ်ရသေးပါ';
+  if (userData.lastSpin) {
+    const d = new Date(userData.lastSpin);
+    document.getElementById('profile-last-spin').textContent = d.toLocaleDateString('my-MM');
+  }
+}
+
+/* ════════════════════════════════════════════
+   AD TASKS (4 slots)
+════════════════════════════════════════════ */
+const timerIntervals = {};
+
+function getTimerKey(slot) { return `ad_timer_${slot}_expiry`; }
+
+function initTimers() {
+  [1,2,3,4].forEach(slot => {
+    const expiry = localStorage.getItem(getTimerKey(slot));
+    if (expiry) {
+      const remaining = Math.floor((parseInt(expiry) - Date.now()) / 1000);
+      if (remaining > 0) startSlotTimer(slot, remaining);
+      else localStorage.removeItem(getTimerKey(slot));
+    }
+  });
+}
+
+function startSlotTimer(slot, duration) {
+  const card = document.getElementById('task-' + slot);
+  const timerEl = document.getElementById('task-timer-' + slot);
+  card.classList.add('disabled');
+  let t = duration;
+  if (timerIntervals[slot]) clearInterval(timerIntervals[slot]);
+  timerIntervals[slot] = setInterval(() => {
+    if (t <= 0) {
+      clearInterval(timerIntervals[slot]);
+      timerEl.textContent = '';
+      card.classList.remove('disabled');
+      localStorage.removeItem(getTimerKey(slot));
+      return;
+    }
+    const m = Math.floor(t / 60), s = t % 60;
+    timerEl.textContent = `⏳ ${m}:${String(s).padStart(2,'0')} ကြာ စောင့်ပါ`;
+    t--;
+  }, 1000);
+}
+
+/* ── Task Reward Amounts (loaded from server) ── */
+let taskRewards = [500, 500, 500, 500];
+
+async function loadTaskConfig() {
+  try {
+    const res = await fetch(API_BASE + '/api/task-config');
+    const data = await res.json();
+    if (data.rewards) {
+      taskRewards = data.rewards;
+      [1, 2, 3, 4].forEach(slot => {
+        const el = document.getElementById('task-reward-' + slot);
+        if (el) el.textContent = `⭐ +${taskRewards[slot-1].toLocaleString()} MMK`;
+      });
+    }
+    const vpnNote = document.getElementById('vpn-note');
+    if (vpnNote) vpnNote.style.display = data.vpnNoteOpen ? 'block' : 'none';
+  } catch (e) { /* use defaults */ }
+}
+
+async function handleAdTask(slot) {
+  if (!userId) { showToast('User ID မတွေ့ပါ', 'error'); return; }
+  const card = document.getElementById('task-' + slot);
+  if (card.classList.contains('disabled')) return;
+
+  const rewardAmt = taskRewards[slot - 1] || 500;
+
+  WebApp.showPopup({
+    title: 'ကြော်ငြာကြည့်မည်',
+    message: `${rewardAmt.toLocaleString()} MMK ရရှိရန် ကြော်ငြာကို အဆုံးထိ ကြည့်ပေးပါ`,
+    buttons: [
+      { id: 'cancel', type: 'cancel', text: 'မကြည့်သေးပါ' },
+      { id: 'ok', type: 'default', text: 'ကြည့်မည် ▶' }
+    ]
+  }, async (btnId) => {
+    if (btnId !== 'ok') return;
+    card.classList.add('disabled');
+    document.getElementById('task-timer-' + slot).textContent = '⏳ ရှာနေသည်...';
+
+    try {
+      const startTime = Date.now();
+      const result = await AdController.show();
+      const watchedSec = Math.floor((Date.now() - startTime) / 1000);
+
+      if (result?.done && watchedSec >= 14) {
+        const data = await apiFetch('/api/reward-user', { userId, slot });
+        if (data.success) {
+          currentBalance = data.newBalance;
+          const earned = data.rewardAmt || rewardAmt;
+          document.getElementById('balance-display').textContent = currentBalance.toLocaleString();
+          document.getElementById('profile-balance').textContent = currentBalance.toLocaleString();
+          showToast(`✅ ${earned.toLocaleString()} MMK ရရှိပါပြီ!`, 'success');
+          const expiry = Date.now() + COOLDOWN_S * 1000;
+          localStorage.setItem(getTimerKey(slot), expiry);
+          startSlotTimer(slot, COOLDOWN_S);
+        } else {
+          card.classList.remove('disabled');
+          document.getElementById('task-timer-' + slot).textContent = '';
+          showToast('Server Error', 'error');
+        }
+      } else {
+        card.classList.remove('disabled');
+        document.getElementById('task-timer-' + slot).textContent = '';
+        showToast('⚠️ ကြော်ငြာ အဆုံးထိ မကြည့်ရသေးပါ', 'warn');
+      }
+    } catch (e) {
+      card.classList.remove('disabled');
+      document.getElementById('task-timer-' + slot).textContent = '';
+      showToast('❌ VPN ဖွင့်ကြည့်ပါ', 'error');
+    }
+  });
+}
+
+/* ════════════════════════════════════════════
+   SPIN WHEEL
+════════════════════════════════════════════ */
+(function buildPrizeList() {
+  const container = document.getElementById('prize-list');
+  const unique = [...new Map(PRIZES.map(p => [p.amount, p])).values()];
+  unique.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'prize-pill';
+    div.innerHTML = `<div class="prize-dot" style="background:${p.color}"></div><div class="prize-text">${p.label}</div>`;
+    container.appendChild(div);
+  });
+})();
+
+(function drawWheel() {
+  const canvas = document.getElementById('spin-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, cx = W/2, cy = W/2, r = cx - 6;
+  const arc = (2 * Math.PI) / PRIZES.length;
+
+  ctx.clearRect(0,0,W,W);
+
+  PRIZES.forEach((p, i) => {
+    const start = arc * i - Math.PI / 2;
+    const end = start + arc;
+
+    // Slice
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end);
+    ctx.closePath();
+    ctx.fillStyle = p.color;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.3)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Label
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(start + arc / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 13px Segoe UI, Arial';
+    ctx.shadowColor = 'rgba(0,0,0,.3)';
+    ctx.shadowBlur = 4;
+    ctx.fillText(p.label, r - 10, 5);
+    ctx.restore();
+  });
+
+  // Center circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, 22, 0, 2*Math.PI);
+  ctx.fillStyle = '#fff';
+  ctx.shadowColor = 'rgba(0,0,0,.2)';
+  ctx.shadowBlur = 8;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.font = 'bold 18px Segoe UI';
+  ctx.fillStyle = '#4361EE';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🎰', cx, cy);
+})();
+
+async function doSpin() {
+  if (isSpinning) return;
+  if (!userId) { showToast('Telegram ကနေ ဖွင့်ပေးပါ', 'error'); return; }
+
+  setLoading(true);
+  try {
+    const res = await apiFetch('/api/spin', { userId });
+    setLoading(false);
+
+    if (!res.success) {
+      if (res.error === 'already_spun') {
+        document.getElementById('spin-status').textContent = '⏳ ဒီနေ့ Spin ပြီးပါပြီ။ မနက်ဖြန် ပြန်လာပါ!';
+        showToast('ဒီနေ့ Spin ပြီးပါပြီ', 'warn');
+      } else {
+        showToast(res.error || 'Error', 'error');
+      }
+      return;
+    }
+
+    const prizeIndex = PRIZES.findIndex(p => p.amount === res.prize);
+    animateSpin(prizeIndex >= 0 ? prizeIndex : 0, res.prize);
+    currentBalance = res.newBalance;
+    document.getElementById('balance-display').textContent = currentBalance.toLocaleString();
+    document.getElementById('profile-balance').textContent = currentBalance.toLocaleString();
+  } catch (e) {
+    setLoading(false);
+    showToast('Server Error', 'error');
+  }
+}
+
+function animateSpin(prizeIndex, amount) {
+  isSpinning = true;
+  document.getElementById('spin-btn').disabled = true;
+
+  const canvas = document.getElementById('spin-canvas');
+  const arc = (2 * Math.PI) / PRIZES.length;
+  const targetAngle = (2 * Math.PI * 5) + (2 * Math.PI - (arc * prizeIndex + arc / 2));
+  let current = 0;
+  const duration = 4000;
+  const start = performance.now();
+
+  function ease(t) { return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+
+  function frame(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    current = targetAngle * ease(progress);
+
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, cx = W/2, cy = W/2, r = cx - 6;
+    ctx.clearRect(0,0,W,W);
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(current);
+    ctx.translate(-cx, -cy);
+
+    PRIZES.forEach((p, i) => {
+      const sliceArc = (2*Math.PI)/PRIZES.length;
+      const s = sliceArc * i - Math.PI/2;
+      const e = s + sliceArc;
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r,s,e);
+      ctx.closePath();
+      ctx.fillStyle = p.color;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.3)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.save();
+      ctx.translate(cx,cy);
+      ctx.rotate(s+sliceArc/2);
+      ctx.textAlign='right';
+      ctx.fillStyle='#fff';
+      ctx.font='bold 13px Segoe UI, Arial';
+      ctx.shadowColor='rgba(0,0,0,.3)';
+      ctx.shadowBlur=4;
+      ctx.fillText(p.label, r-10, 5);
+      ctx.restore();
+    });
+
+    ctx.restore();
+
+    // Center
+    ctx.beginPath();
+    ctx.arc(cx,cy,22,0,2*Math.PI);
+    ctx.fillStyle='#fff';
+    ctx.fill();
+    ctx.font='bold 18px Segoe UI';
+    ctx.fillStyle='#4361EE';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText('🎰',cx,cy);
+
+    if (progress < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      isSpinning = false;
+      document.getElementById('spin-btn').disabled = false;
+      document.getElementById('spin-status').textContent = `🎉 ${amount} MMK ရရှိပါပြီ!`;
+      showToast(`🎉 ${amount} MMK ရပါပြီ!`, 'success');
+      WebApp.showAlert(`🎉 ဂုဏ်ယူပါတယ်!\n${amount} MMK ရရှိပါပြီ!`);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ════════════════════════════════════════════
+   WITHDRAW
+════════════════════════════════════════════ */
+async function handleWithdraw() {
+  if (currentBalance < MIN_WITHDRAW) {
+    WebApp.showAlert(`❌ အနည်းဆုံး ${MIN_WITHDRAW.toLocaleString()} MMK ပြည့်မှ ထုတ်လို့ရပါသည်။\n\nလက်ကျန်: ${currentBalance.toLocaleString()} MMK`);
+    return;
+  }
+  if (!userId) {
+    WebApp.showAlert('❌ Telegram User ID မတွေ့ပါ။ Bot ကနေ ဖွင့်ပေးပါ။');
+    return;
+  }
+  try {
+    // Bot deep link ကို backend ကနေ ယူပြီး bot ထဲသွားပါ
+    const res = await fetch(API_BASE + '/api/withdraw-deep-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId })
+    });
+    const data = await res.json();
+    if (data.deepLink) {
+      // Mini App ပိတ်ပြီး Bot ထဲ withdraw flow ထဲသွားသည်
+      WebApp.openTelegramLink(data.deepLink);
+    } else {
+      WebApp.showAlert('❌ ချိတ်ဆက်မရပါ။ ထပ်ကြိုးစားပါ။');
+    }
+  } catch (e) {
+    // Fallback: bot ကို တန်းသွားပါ
+    const botUsername = 'bitcoinminingmyanmar_bot';
+    WebApp.openTelegramLink(`https://t.me/${botUsername}?start=withdraw_${userId}`);
+  }
+}
+
+/* ════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════ */
+document.getElementById('hero-username').textContent = username;
+document.getElementById('profile-name').textContent = username;
+document.getElementById('profile-id').textContent = 'ID: ' + (userId || '---');
+
+initTimers();
+loadTaskConfig();
+
+if (userId) {
+  refreshBalance();
+} else {
+  showToast('Telegram ကနေ ဖွင့်ပေးပါ', 'warn');
+}
+</script>
+</body>
+</html>

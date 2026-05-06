@@ -1,0 +1,24 @@
+{
+  "name": "bitcoin-myanmar-mining",
+  "version": "2.0.0",
+  "description": "Bitcoin Myanmar Mining - Telegram Mini App & Bot",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "node bot.js",
+    "vercel-build": "echo 'No build step needed'"
+  },
+  "keywords": ["telegram", "bot", "miniapp", "myanmar"],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "mongoose": "^9.2.1",
+    "telegraf": "^4.16.3"
+  }
+}
