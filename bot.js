@@ -124,6 +124,26 @@ app.get('/api/task-config', async (req, res) => {
     });
 });
 
+// /api/spin — Lucky Spin အတွက်
+app.post('/api/spin', async (req, res) => {
+    try {
+        const { userId } = req.body;
+        if (!userId) return res.status(400).json({ error: 'User ID required' });
+        const user = await User.findOne({ tgId: Number(userId) });
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        const prizes = [100, 50, 200, 300, 500, 50, 100, 200];
+        const idx = Math.floor(Math.random() * prizes.length);
+        const amount = prizes[idx];
+        try {
+            await bot.telegram.sendMessage(userId, `🎰 Lucky Spin မှ ${amount} ကျပ် ရရှိပါတယ်!`);
+        } catch (e) {}
+        return res.json({ success: true, amount, prizeIndex: idx });
+    } catch (error) {
+        console.error("❌ /api/spin error:", error);
+        res.status(500).json({ error: 'Internal Error' });
+    }
+});
+
 app.listen(port, () => console.log(`✅ Server is listening on port ${port}`));
 
 // --- 6. Helpers ---
@@ -249,7 +269,7 @@ bot.action('check_join', async (ctx) => {
             await ctx.reply(
                 "✅ Channel Join ပြီးပါပြီ!\n\nကြော်ငြာကြည့်ပြီးပိုက်ဆံရှာရန် အောက်ပါ button ကို နှိပ်ပါ 👇",
                 Markup.inlineKeyboard([
-                    [Markup.button.url('💸 ကြော်ငြာကြည့်ပြီးပိုက်ဆံရှာရန်', 'http://t.me/thenetmyan_bot/app')]
+                    [Markup.button.webApp('💸 ကြော်ငြာကြည့်ပြီးပိုက်ဆံရှာရန်', 'https://the-netcoinmm.vercel.app/')]
                 ])
             ).catch(() => {});
         } else {
