@@ -213,7 +213,22 @@
     .info-row-value{font-size:14px;font-weight:700;text-align:right}
     .withdraw-btn{width:100%;padding:16px;border-radius:var(--radius);
       background:linear-gradient(135deg,var(--green),#2DC653);color:#fff;border:none;
-      font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(67,170,139,.35)}
+      font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(67,170,139,.35);
+      transition:.2s}
+    .withdraw-btn:active{transform:scale(.98)}
+
+    /* AD TIMER OVERLAY */
+    #ad-timer-overlay{display:none;position:fixed;inset:0;background:rgba(26,26,46,.85);
+      z-index:8000;align-items:center;justify-content:center;flex-direction:column}
+    #ad-timer-overlay.active{display:flex}
+    .ad-timer-box{background:#fff;border-radius:24px;padding:32px 28px;text-align:center;
+      margin:20px;width:100%;max-width:300px}
+    .ad-timer-emoji{font-size:48px;margin-bottom:12px}
+    .ad-timer-title{font-size:18px;font-weight:800;margin-bottom:8px;color:var(--text)}
+    .ad-timer-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+    .ad-timer-bar-bg{background:#F0F0F8;border-radius:20px;height:8px;overflow:hidden}
+    .ad-timer-bar{background:linear-gradient(90deg,var(--blue),var(--purple));height:100%;border-radius:20px;transition:width .5s linear;width:0%}
+    .ad-timer-count{font-size:24px;font-weight:900;color:var(--blue);margin-top:12px}
 
     /* TOAST & LOADER */
     .toast{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;
@@ -263,7 +278,7 @@
           </div>
         </div>
         <button class="checkin-btn" id="checkin-btn" onclick="doCheckin()">
-          +<span id="checkin-reward-lbl">10</span> Coins
+          +<span id="checkin-reward-lbl">10</span> <span class="ccy-lbl">Coins</span>
         </button>
       </div>
 
@@ -271,7 +286,7 @@
       <div class="invite-card" onclick="doInvite()">
         <div>
           <div class="invite-text">👫 Referral</div>
-          <div class="invite-title">Invite Friends and get <span id="invite-reward-lbl">50</span> Coins</div>
+          <div class="invite-title">Invite Friends and get <span id="invite-reward-lbl">50</span> <span class="ccy-lbl">Coins</span></div>
           <div class="invite-sub">ဖိတ်ခေါ်တိုင်း Coins ရယူပါ</div>
         </div>
         <button class="invite-btn">Invite 👥</button>
@@ -311,7 +326,7 @@
         <div class="game-start-title">Emoji Catcher</div>
         <div class="game-start-sub">💣 ဗုံးကို မနှိပ်မိအောင် သတိထားပါ</div>
         <button class="game-start-btn" id="game-start-btn" onclick="startGame()">
-          🎮 Start with <span id="game-fee-lbl">50</span> Coins
+          🎮 Start with <span id="game-fee-lbl">50</span> <span class="ccy-lbl">Coins</span>
         </button>
       </div>
     </div>
@@ -342,7 +357,7 @@
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-          <div class="earn-badge">+<span id="join-reward-lbl">20</span> Coins</div>
+          <div class="earn-badge">+<span id="join-reward-lbl">20</span> <span class="ccy-lbl">Coins</span></div>
           <button class="claim-btn" id="ch1-btn" onclick="claimChannel(1)">Join & Claim</button>
         </div>
       </div>
@@ -355,7 +370,7 @@
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-          <div class="earn-badge">+<span id="join-reward-lbl2">20</span> Coins</div>
+          <div class="earn-badge">+<span id="join-reward-lbl2">20</span> <span class="ccy-lbl">Coins</span></div>
           <button class="claim-btn" id="ch2-btn" onclick="claimChannel(2)">Join & Claim</button>
         </div>
       </div>
@@ -372,7 +387,7 @@
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-          <div class="earn-badge">+<span id="ad-reward-lbl-1">20</span> Coins</div>
+          <div class="earn-badge">+<span id="ad-reward-lbl-1">20</span> <span class="ccy-lbl">Coins</span></div>
           <button class="claim-btn" id="ad-btn-1" onclick="handleAdTask(1)">Watch ▶</button>
           <div class="task-timer" id="ad-timer-1" style="font-size:11px;color:var(--muted)"></div>
         </div>
@@ -387,7 +402,7 @@
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-          <div class="earn-badge">+<span id="ad-reward-lbl-2">20</span> Coins</div>
+          <div class="earn-badge">+<span id="ad-reward-lbl-2">20</span> <span class="ccy-lbl">Coins</span></div>
           <button class="claim-btn" id="ad-btn-2" onclick="handleAdTask(2)">Watch ▶</button>
           <div class="task-timer" id="ad-timer-2" style="font-size:11px;color:var(--muted)"></div>
         </div>
@@ -402,7 +417,7 @@
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-          <div class="earn-badge">+<span id="ad-reward-lbl-3">20</span> Coins</div>
+          <div class="earn-badge">+<span id="ad-reward-lbl-3">20</span> <span class="ccy-lbl">Coins</span></div>
           <button class="claim-btn" id="ad-btn-3" onclick="handleAdTask(3)">Watch ▶</button>
           <div class="task-timer" id="ad-timer-3" style="font-size:11px;color:var(--muted)"></div>
         </div>
@@ -466,7 +481,8 @@
           <div class="info-row-value" id="profile-last-spin">—</div>
         </div>
       </div>
-      <button class="withdraw-btn" onclick="handleWithdraw()">💸 Withdraw</button>
+      <!-- ★ WITHDRAW BUTTON → Deep Link to bitcoinminingmyanmar_bot -->
+      <button class="withdraw-btn" onclick="handleWithdraw()">📤 ငွေထုတ်ယူရန်</button>
     </div>
 
   </div><!-- /page-content -->
@@ -510,6 +526,17 @@
       <button class="gameover-btn btn-exit" onclick="exitGame()">🏠 Exit</button>
       <button class="gameover-btn btn-retry" onclick="retryGame()">🔄 Play Again</button>
     </div>
+  </div>
+</div>
+
+<!-- ★ AD WATCH TIMER OVERLAY (28s guard) -->
+<div id="ad-timer-overlay">
+  <div class="ad-timer-box">
+    <div class="ad-timer-emoji">📺</div>
+    <div class="ad-timer-title">ကြော်ငြာ ကြည့်နေသည်</div>
+    <div class="ad-timer-sub">ကြော်ငြာပြီးမှ Coins ရပါမည်<br>ကြားမှ မထွက်ပါနှင့်!</div>
+    <div class="ad-timer-bar-bg"><div class="ad-timer-bar" id="ad-timer-bar"></div></div>
+    <div class="ad-timer-count" id="ad-timer-count">28</div>
   </div>
 </div>
 
@@ -572,6 +599,10 @@ async function loadConfig() {
   try {
     CFG = await apiFetch('/api/config',null,'GET');
     const lbl = CFG.currency_label||'Coins';
+
+    // Update all .ccy-lbl spans (dynamic currency label)
+    document.querySelectorAll('.ccy-lbl').forEach(e => e.textContent = lbl);
+
     setBalanceUI(currentBalance);
 
     document.getElementById('invite-reward-lbl').textContent = CFG.referral_reward||50;
@@ -615,11 +646,11 @@ function checkCheckinAvailable(lastCheckin) {
   const now=new Date();
   const todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   if(new Date(lastCheckin)>=todayStart){
-    btn.disabled=true; btn.textContent='✅ Done';
+    btn.disabled=true; btn.innerHTML='✅ Done';
     sub.textContent='မနက်ဖြန် ပြန်လာပါ';
   } else {
     btn.disabled=false;
-    btn.textContent='+'+(CFG.checkin_reward||10)+' Coins';
+    btn.innerHTML=`+<span id="checkin-reward-lbl">${CFG.checkin_reward||10}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`;
     sub.textContent='တစ်ရက် တစ်ကြိမ် Coins ရယူပါ';
   }
 }
@@ -629,8 +660,7 @@ async function doCheckin() {
   const btn=document.getElementById('checkin-btn');
   btn.disabled=true;
   try {
-    // Show ad first, then give reward
-    btn.textContent='⏳ Ad Loading...';
+    btn.innerHTML='⏳ Ad Loading...';
     let adOk=false;
     try {
       const result=await AdController.show();
@@ -639,7 +669,7 @@ async function doCheckin() {
 
     if(!adOk){
       btn.disabled=false;
-      btn.textContent='+'+(CFG.checkin_reward||10)+' Coins';
+      btn.innerHTML=`+<span id="checkin-reward-lbl">${CFG.checkin_reward||10}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`;
       showToast('Ad မပြနိုင်ပါ၊ ထပ်ကြိုးစားပါ','error');
       return;
     }
@@ -647,21 +677,21 @@ async function doCheckin() {
     const res=await apiFetch('/api/checkin',{userId});
     if(res.success){
       setBalanceUI(res.newBalance);
-      showToast(`🎁 +${res.reward} Coins ရရှိပါပြီ!`,'success');
-      btn.textContent='✅ Done';
+      showToast(`🎁 +${res.reward} ${CFG.currency_label||'Coins'} ရရှိပါပြီ!`,'success');
+      btn.innerHTML='✅ Done';
       document.getElementById('checkin-sub').textContent='မနက်ဖြန် ပြန်လာပါ';
     } else if(res.error==='already_checked'){
       showToast('ဒီနေ့ Check-in ပြီးပါပြီ','warn');
-      btn.textContent='✅ Done';
+      btn.innerHTML='✅ Done';
       document.getElementById('checkin-sub').textContent='မနက်ဖြန် ပြန်လာပါ';
     } else {
       btn.disabled=false;
-      btn.textContent='+'+(CFG.checkin_reward||10)+' Coins';
+      btn.innerHTML=`+<span id="checkin-reward-lbl">${CFG.checkin_reward||10}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`;
       showToast('Error','error');
     }
   } catch(e){
     btn.disabled=false;
-    btn.textContent='+'+(CFG.checkin_reward||10)+' Coins';
+    btn.innerHTML=`+<span id="checkin-reward-lbl">${CFG.checkin_reward||10}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`;
     showToast('Server Error','error');
   }
 }
@@ -696,7 +726,7 @@ async function claimChannel(ch) {
     if(res.success){
       claimedChs.push(ch); localStorage.setItem('claimed_channels',JSON.stringify(claimedChs));
       setBalanceUI(res.newBalance); btn.textContent='✅ Claimed';
-      showToast(`✅ +${res.reward} Coins!`,'success');
+      showToast(`✅ +${res.reward} ${CFG.currency_label||'Coins'}!`,'success');
     } else if(res.error==='not_joined'){
       btn.disabled=false; btn.textContent='Join & Claim';
       const link=ch===2?(CFG.channel2_link||'https://t.me/TheNetMyan'):(CFG.channel1_link||'https://t.me/TheNetMyan');
@@ -710,6 +740,69 @@ async function claimChannel(ch) {
       showToast(res.error||'Error','error');
     }
   } catch(e){ btn.disabled=false; btn.textContent='Join & Claim'; showToast('Server Error','error'); }
+}
+
+/* ══════════════════════════════════════════════════
+   ★ LOGIC 2: VPN / Myanmar IP CHECK
+   ══════════════════════════════════════════════════ */
+async function checkNotMyanmar() {
+  try {
+    const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(5000) });
+    const data = await res.json();
+    if (data.country_code === 'MM') {
+      WebApp.showAlert(
+        '🚫 Myanmar location ဖြစ်နေပါသည်!\n\n' +
+        'Jump Jump VPN သုံးပြီးမှ ကြော်ငြာကြည့်ပေးပါ။\n\n' +
+        '(VPN ဖွင့်ပြီး App ကို Refresh လုပ်ပါ)'
+      );
+      return false;
+    }
+    return true;
+  } catch(e) {
+    // If IP check fails (timeout/network), allow to proceed
+    return true;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   ★ LOGIC 3: 28-SECOND AD TIMER OVERLAY
+   ══════════════════════════════════════════════════ */
+let adTimerOverlayInterval = null;
+const AD_MIN_SECONDS = 28;
+
+function showAdTimerOverlay(onComplete) {
+  const overlay = document.getElementById('ad-timer-overlay');
+  const bar     = document.getElementById('ad-timer-bar');
+  const count   = document.getElementById('ad-timer-count');
+  overlay.classList.add('active');
+  bar.style.width = '0%';
+  count.textContent = AD_MIN_SECONDS;
+
+  let elapsed = 0;
+  if(adTimerOverlayInterval) clearInterval(adTimerOverlayInterval);
+
+  adTimerOverlayInterval = setInterval(() => {
+    elapsed++;
+    const pct = Math.min((elapsed / AD_MIN_SECONDS) * 100, 100);
+    bar.style.width = pct + '%';
+    const remaining = Math.max(AD_MIN_SECONDS - elapsed, 0);
+    count.textContent = remaining;
+
+    if(elapsed >= AD_MIN_SECONDS) {
+      clearInterval(adTimerOverlayInterval);
+      adTimerOverlayInterval = null;
+      overlay.classList.remove('active');
+      onComplete(true);
+    }
+  }, 1000);
+}
+
+function cancelAdTimerOverlay() {
+  if(adTimerOverlayInterval) {
+    clearInterval(adTimerOverlayInterval);
+    adTimerOverlayInterval = null;
+  }
+  document.getElementById('ad-timer-overlay').classList.remove('active');
 }
 
 /* ── VIDEO TASKS (Daily Tasks) — 2hr cooldown ── */
@@ -748,42 +841,85 @@ function startVideoTimer(slot,dur){
   },1000);
 }
 
+/* ★ UPDATED: handleVideoTask with IP check + 28s guard */
 async function handleVideoTask(slot){
   if(!userId){ showToast('User ID မတွေ့ပါ','error'); return; }
   const card=document.getElementById('home-task-'+slot);
   if(card&&card.classList.contains('disabled')) return;
-  const cooldown=CFG.video_cooldown_s||7200;
   const tel=document.getElementById('home-task-timer-'+slot);
+
+  // ★ Step 1: Myanmar IP Check
+  if(tel) tel.textContent='⏳ စစ်ဆေးနေသည်...';
+  const allowed = await checkNotMyanmar();
+  if(!allowed){ if(tel) tel.textContent=''; return; }
+
   if(card) card.classList.add('disabled');
-  if(tel) tel.textContent='⏳ Loading...';
+  if(tel) tel.textContent='⏳ Loading Ad...';
+
   try {
-    const result=await AdController.show();
-    if(result?.done===true){
-      const d=await apiFetch('/api/reward-video',{userId,slot});
-      if(d.success){
-        setBalanceUI(d.newBalance);
-        showToast(`✅ +${d.rewardAmt} Coins!`,'success');
-        const exp=Date.now()+cooldown*1000;
-        localStorage.setItem(getVKey(slot),exp);
-        startVideoTimer(slot,cooldown);
-      } else {
-        if(card) card.classList.remove('disabled');
-        if(tel) tel.textContent='';
-        showToast('Server Error','error');
+    // ★ Step 2: Show ad + start 28s timer simultaneously
+    let adDone = false;
+    let timerDone = false;
+    let rewardGranted = false;
+
+    const tryGiveReward = async () => {
+      if(adDone && timerDone && !rewardGranted) {
+        rewardGranted = true;
+        const d=await apiFetch('/api/reward-video',{userId,slot});
+        if(d.success){
+          setBalanceUI(d.newBalance);
+          showToast(`✅ +${d.rewardAmt} ${CFG.currency_label||'Coins'}!`,'success');
+          const cooldown=CFG.video_cooldown_s||7200;
+          const exp=Date.now()+cooldown*1000;
+          localStorage.setItem(getVKey(slot),exp);
+          startVideoTimer(slot,cooldown);
+        } else {
+          if(card) card.classList.remove('disabled');
+          if(tel) tel.textContent='';
+          showToast('Server Error','error');
+        }
       }
+    };
+
+    // Start 28s overlay timer
+    showAdTimerOverlay((completed) => {
+      timerDone = true;
+      if(!adDone){
+        // User exited ad before it finished AND before 28s
+        // Do nothing — adDone will resolve later or not
+      } else {
+        tryGiveReward();
+      }
+    });
+
+    // Show ad
+    const result = await AdController.show();
+
+    if(result?.done===true){
+      adDone = true;
+      if(timerDone){
+        // Timer already done, reward now
+        tryGiveReward();
+      }
+      // else: wait for timer to finish
     } else {
+      // Ad not completed (dismissed early)
+      adDone = false;
+      cancelAdTimerOverlay();
       if(card) card.classList.remove('disabled');
       if(tel) tel.textContent='';
-      showToast('Ad မကြည့်ရသေးပါ','warn');
+      showToast('ကြော်ငြာကို အပြည့်ထိကြည့်မှ Coins ရပါမယ်','warn');
     }
+
   } catch(e){
+    cancelAdTimerOverlay();
     if(card) card.classList.remove('disabled');
     if(tel) tel.textContent='';
     showToast('Ad load failed. Try again.','error');
   }
 }
 
-/* ── AD TASKS (Earn) ── */
+/* ── AD TASKS (Earn Tab) ── */
 const adTimers={};
 function getAdTimerKey(s){ return `adtimer_${s}_exp`; }
 function getAdCountKey(s){ return `adcount_${s}`; }
@@ -872,6 +1008,7 @@ function startAdResetTimer(s,dur){
   },1000);
 }
 
+/* ★ UPDATED: handleAdTask with IP check + 28s guard */
 async function handleAdTask(s){
   if(!userId){ showToast('User ID မတွေ့ပါ','error'); return; }
   const daily=CFG.ad_daily_limit||4;
@@ -879,37 +1016,78 @@ async function handleAdTask(s){
   const btn=document.getElementById('ad-btn-'+s);
   if(btn&&btn.disabled) return;
   const tel=document.getElementById('ad-timer-'+s);
+
+  // ★ Step 1: Myanmar IP Check
   if(btn) btn.disabled=true;
-  if(tel) tel.textContent='⏳ Loading...';
+  if(tel) tel.textContent='⏳ စစ်ဆေးနေသည်...';
+  const allowed = await checkNotMyanmar();
+  if(!allowed){
+    if(btn){ btn.disabled=false; btn.textContent='Watch ▶'; }
+    if(tel) tel.textContent='';
+    return;
+  }
+
+  if(tel) tel.textContent='⏳ Loading Ad...';
+
   try {
-    const result=await AdController.show();
-    if(result?.done===true){
-      const d=await apiFetch('/api/reward-user',{userId,slot:s});
-      if(d.success){
-        setBalanceUI(d.newBalance);
-        const nc=incAdCount(s);
-        showToast(`✅ +${d.rewardAmt} Coins!`,'success');
-        if(nc>=daily){
-          if(btn){btn.disabled=true;btn.textContent='✅ Done Today';}
-          const reset=parseInt(localStorage.getItem(getAdResetKey(s))||'0');
-          startAdResetTimer(s,Math.floor((reset-Date.now())/1000));
+    // ★ Step 2: Show ad + 28s timer guard simultaneously
+    let adDone = false;
+    let timerDone = false;
+    let rewardGranted = false;
+
+    const tryGiveReward = async () => {
+      if(adDone && timerDone && !rewardGranted) {
+        rewardGranted = true;
+        const d=await apiFetch('/api/reward-user',{userId,slot:s});
+        if(d.success){
+          setBalanceUI(d.newBalance);
+          const nc=incAdCount(s);
+          showToast(`✅ +${d.rewardAmt} ${CFG.currency_label||'Coins'}!`,'success');
+          if(nc>=daily){
+            if(btn){btn.disabled=true;btn.textContent='✅ Done Today';}
+            const reset=parseInt(localStorage.getItem(getAdResetKey(s))||'0');
+            startAdResetTimer(s,Math.floor((reset-Date.now())/1000));
+          } else {
+            const cd=CFG.ad_cooldown_s||180;
+            const exp=Date.now()+cd*1000;
+            localStorage.setItem(getAdTimerKey(s),exp);
+            startAdCooldown(s,cd);
+          }
         } else {
-          const cd=CFG.ad_cooldown_s||180;
-          const exp=Date.now()+cd*1000;
-          localStorage.setItem(getAdTimerKey(s),exp);
-          startAdCooldown(s,cd);
+          if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
+          if(tel) tel.textContent='';
+          showToast('Server Error','error');
         }
-      } else {
-        if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
-        if(tel) tel.textContent='';
-        showToast('Server Error','error');
       }
+    };
+
+    // Start 28s overlay timer
+    showAdTimerOverlay((completed) => {
+      timerDone = true;
+      if(adDone) tryGiveReward();
+      // else: waiting for ad to finish
+    });
+
+    // Show ad
+    const result = await AdController.show();
+
+    if(result?.done===true){
+      adDone = true;
+      if(timerDone){
+        tryGiveReward();
+      }
+      // else: wait for timer to finish (timer is still running)
     } else {
+      // Ad dismissed before finishing
+      adDone = false;
+      cancelAdTimerOverlay();
       if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
       if(tel) tel.textContent='';
-      showToast('Ad မကြည့်ရသေးပါ','warn');
+      showToast('ကြော်ငြာကို အပြည့်ထိကြည့်မှ Coins ရပါမယ်','warn');
     }
+
   } catch(e){
+    cancelAdTimerOverlay();
     if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
     if(tel) tel.textContent='';
     showToast('Ad load failed. Try again.','error');
@@ -1002,7 +1180,6 @@ function drawStaticWheel(){
 async function doSpin(){
   if(isSpinning) return;
   if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
-  // No loading overlay — spin immediately
   isSpinning=true;
   document.getElementById('spin-btn').disabled=true;
   document.getElementById('spin-status').textContent='🔄 ဆုကြေး ရှာနေသည်...';
@@ -1062,9 +1239,8 @@ function animateSpin(prizeIndex,amount){
     else {
       isSpinning=false;
       document.getElementById('spin-status').textContent=`🎉 ${amount} ${CFG.currency_label||'Coins'} ရရှိပါပြီ!`;
-      showToast(`🎉 ${amount} Coins!`,'success');
+      showToast(`🎉 ${amount} ${CFG.currency_label||'Coins'}!`,'success');
       WebApp.showAlert(`🎉 Lucky Spin!\n${amount} ${CFG.currency_label||'Coins'} ရရှိပါပြီ!`);
-      // disable until tomorrow
       document.getElementById('spin-btn').disabled=true;
     }
   }
@@ -1079,46 +1255,40 @@ const EMOJIS=['😀','🌟','💎','🍎','🎁','🏆','🦋','🌈','⚡','�
 function getElapsed(){ return 40-gameTimer; }
 function getSpawnRate(e){ if(e<10)return 400;if(e<20)return 280;if(e<30)return 180;return 100; }
 function getFallDuration(e){ if(e<10)return 2800;if(e<20)return 2000;if(e<30)return 1300;return 800; }
-function getClusterSize(){ return Math.floor(Math.random()*3)+2; } // 2-4 per cluster
+function getClusterSize(){ return Math.floor(Math.random()*3)+2; }
 
 async function startGame(){
   if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
   const fee=CFG.game_entry_fee||50;
-  if(currentBalance<fee){ showToast(`${fee} Coins မလောက်ပါ`,'error'); return; }
+  if(currentBalance<fee){ showToast(`${fee} ${CFG.currency_label||'Coins'} မလောက်ပါ`,'error'); return; }
 
-  // Deduct fee first
   setLoading(true);
-  let deducted=false;
   try {
     const res=await apiFetch('/api/game-start',{userId});
     setLoading(false);
     if(!res.success){
-      if(res.error==='insufficient') showToast(`${fee} Coins မလောက်ပါ`,'error');
+      if(res.error==='insufficient') showToast(`${fee} ${CFG.currency_label||'Coins'} မလောက်ပါ`,'error');
       else showToast('Error: '+res.error,'error');
       return;
     }
     setBalanceUI(res.newBalance);
-    deducted=true;
   } catch(e){ setLoading(false); showToast('Server Error','error'); return; }
 
-  // Show ad before game
   const startBtn=document.getElementById('game-start-btn');
   if(startBtn){ startBtn.disabled=true; startBtn.textContent='⏳ Ad Loading...'; }
   try {
     const result=await AdController.show();
     if(result?.done===true){
-      if(startBtn){ startBtn.disabled=false; startBtn.textContent=`🎮 Start with ${fee} Coins`; }
+      if(startBtn){ startBtn.disabled=false; startBtn.innerHTML=`🎮 Start with <span id="game-fee-lbl">${fee}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`; }
       launchGame();
     } else {
-      // Ad not completed — refund and cancel
-      if(startBtn){ startBtn.disabled=false; startBtn.textContent=`🎮 Start with ${fee} Coins`; }
+      if(startBtn){ startBtn.disabled=false; startBtn.innerHTML=`🎮 Start with <span id="game-fee-lbl">${fee}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`; }
       await apiFetch('/api/game-refund',{userId,fee}).catch(()=>{});
       await refreshBalance();
       showToast('Ad မကြည့်ရသဖြင့် Coins ပြန်ရပါပြီ','warn');
     }
   } catch(e){
-    if(startBtn){ startBtn.disabled=false; startBtn.textContent=`🎮 Start with ${fee} Coins`; }
-    // Ad failed — still allow game (graceful fallback)
+    if(startBtn){ startBtn.disabled=false; startBtn.innerHTML=`🎮 Start with <span id="game-fee-lbl">${fee}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`; }
     launchGame();
   }
 }
@@ -1130,7 +1300,7 @@ function launchGame(){
   document.getElementById('game-score-display').textContent='🏆 0 Coins';
   document.getElementById('game-timer-display').textContent='⏱️ 40s';
 
-  let elapsed=0,lastSpawn=0;
+  let elapsed=0;
 
   gameTimerInterval=setInterval(()=>{
     if(!gameRunning) return;
@@ -1159,7 +1329,6 @@ function launchGame(){
     el2.style.left=x+'px';el2.style.top='-50px';
     el2.dataset.bomb=isBomb?'1':'0';el2.dataset.coins=coins;
 
-    // Direct listeners — both click and touchstart for mobile
     function onHit(e){
       e.preventDefault();e.stopPropagation();
       if(!gameRunning||!document.getElementById(id)) return;
@@ -1169,7 +1338,6 @@ function launchGame(){
       const maxEarn=CFG.game_max_earn||90;
       gameScore=Math.min(parseFloat((gameScore+cv).toFixed(1)),maxEarn);
       document.getElementById('game-score-display').textContent=`🏆 ${Math.floor(gameScore)} Coins`;
-      // Particle
       const px=parseFloat(el2.style.left),py=parseFloat(el2.style.top);
       const span=document.createElement('div');
       span.style.cssText=`position:absolute;left:${px}px;top:${py}px;color:#F8961E;font-weight:800;font-size:16px;pointer-events:none;z-index:20;transition:all .6s;`;
@@ -1206,8 +1374,6 @@ function launchGame(){
   requestAnimationFrame(gameLoop);
 }
 
-function handleCanvasClick(){ /* deprecated — using direct listeners on each object */ }
-
 function endGame(hitBomb){
   if(gameEnded) return;
   gameEnded=true;gameRunning=false;
@@ -1215,7 +1381,7 @@ function endGame(hitBomb){
   const earned=Math.floor(gameScore);
   document.getElementById('gameover-emoji').textContent=hitBomb?'💥':'🎉';
   document.getElementById('gameover-title').textContent=hitBomb?'ဗုံးနှိပ်မိပါပြီ!':'Time Up!';
-  document.getElementById('gameover-sub').textContent=`${earned} Coins ရရှိပါပြီ`;
+  document.getElementById('gameover-sub').textContent=`${earned} ${CFG.currency_label||'Coins'} ရရှိပါပြီ`;
   document.getElementById('gameover-modal').classList.add('active');
   if(earned>0&&userId){
     apiFetch('/api/game-end',{userId,earned}).then(r=>{if(r.success)setBalanceUI(r.newBalance);}).catch(()=>{});
@@ -1236,9 +1402,13 @@ async function retryGame(){
   startGame();
 }
 
-/* ── WITHDRAW ── */
+/* ══════════════════════════════════════════════════
+   ★ LOGIC 1: WITHDRAW → Deep Link to bitcoinminingmyanmar_bot
+   ══════════════════════════════════════════════════ */
 function handleWithdraw(){
-  WebApp.openTelegramLink('https://t.me/thenetmyan_bot');
+  // Opens the Bitcoin Mining Myanmar bot with ?start=withdraw
+  // Bot will auto-show the "📤 ငွေထုတ်ယူရန်" withdrawal menu
+  WebApp.openTelegramLink('https://t.me/bitcoinminingmyanmar_bot?start=withdraw');
 }
 
 /* ── STARTUP ── */

@@ -48,7 +48,7 @@ const User = mongoose.model('User', userSchema);
 // Earn history log
 const historySchema = new mongoose.Schema({
     tgId:      Number,
-    type:      String,   // 'ad', 'video', 'spin', 'game', 'checkin', 'join', 'referral'
+    type:      String,
     label:     String,
     amount:    Number,
     createdAt: { type: Date, default: Date.now }
@@ -80,7 +80,8 @@ const DEFAULT_CONFIG = {
     game_max_earn:    90,
     spin_prizes:      [100, 50, 200, 300, 500, 50, 100, 200],
     currency_label:   'Coins',
-    video_cooldown_s: 7200,  // 2 hours
+    video_cooldown_s: 7200,
+    min_withdraw:     1000,
 };
 
 async function setCfg(key, value) {
@@ -246,7 +247,6 @@ app.post('/api/spin', async (req, res) => {
         const user = await User.findOne({ tgId: Number(userId) });
         if (!user) return res.status(404).json({ success: false, error: 'User not found' });
 
-        // Check once-per-day
         const now = new Date();
         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         if (user.lastSpin && new Date(user.lastSpin) >= todayStart) {
@@ -271,7 +271,7 @@ app.post('/api/spin', async (req, res) => {
     }
 });
 
-// Game refund (if ad not completed)
+// Game refund
 app.post('/api/game-refund', async (req, res) => {
     try {
         const { userId, fee } = req.body;
@@ -388,7 +388,10 @@ async function isJoined(ctx, channelId) {
 const isAdmin = ctx => String(ctx.from.id) === ADMIN_ID;
 bot.catch((err, ctx) => console.error(`⚠️ Bot Error (${ctx.updateType}): ${err.message}`));
 
-// /start
+// ═══════════════════════════════════════════════
+// /start COMMAND (with withdraw deep link support)
+// ═══════════════════════════════════════════════
+
 bot.start(async (ctx) => {
     try {
         const tgId = ctx.from.id;
@@ -396,6 +399,37 @@ bot.start(async (ctx) => {
         const startPayload = ctx.startPayload;
         const cfg = await getAllCfg();
 
+        // ★ LOGIC 1: Handle /start withdraw deep link from TheNetCoinMM mini app
+        if (startPayload === 'withdraw') {
+            let user = await User.findOne({ tgId });
+            if (!user) {
+                user = await User.create({ tgId, username: uname });
+            }
+            if (user.isBanned) return ctx.reply("🚫 သင်သည် ပိတ်ပင်ခြင်း ခံထားရပါသည်။").catch(()=>{});
+
+            const minW = cfg.min_withdraw || 1000;
+            const hasEnough = user.balance >= minW;
+
+            const msg = `📤 <b>ငွေထုတ်ယူရန်</b>\n\n`
+                + `👤 ${uname}\n`
+                + `💰 Balance: <b>${user.balance.toLocaleString()} ${cfg.currency_label}</b>\n\n`
+                + `⚠️ Minimum: <b>${minW.toLocaleString()} ${cfg.currency_label}</b>\n\n`
+                + (hasEnough
+                    ? `✅ ငွေထုတ်ယူနိုင်ပါပြီ!\n📲 KPay / Wave Pay နံပါတ်ကို ပေးပို့ပါ`
+                    : `❌ Balance မလောက်သေးပါ\n${minW - user.balance} ${cfg.currency_label} ပိုရှာရပါဦးမည်`
+                );
+
+            const buttons = hasEnough
+                ? [[Markup.button.callback('📤 ငွေထုတ်ယူရန် (Request)', 'withdraw_request')]]
+                : [[Markup.button.webApp('💸 App ပြန်သွားပြီး Earn ရယူပါ', 'https://the-netcoinmm.vercel.app/')]];
+
+            return ctx.reply(msg, {
+                parse_mode: 'HTML',
+                ...Markup.inlineKeyboard(buttons)
+            }).catch(()=>{});
+        }
+
+        // Normal /start flow
         let existingUser = await User.findOne({ tgId });
         if (!existingUser) {
             let referredBy = null;
@@ -432,6 +466,40 @@ bot.start(async (ctx) => {
     } catch(e) { console.error("❌ /start:", e); }
 });
 
+// Withdraw request action
+bot.action('withdraw_request', async (ctx) => {
+    try {
+        const tgId = ctx.from.id;
+        const cfg = await getAllCfg();
+        const user = await User.findOne({ tgId });
+        if (!user) return ctx.answerCbQuery("❌ User not found", { show_alert: true }).catch(()=>{});
+
+        const minW = cfg.min_withdraw || 1000;
+        if (user.balance < minW) {
+            return ctx.answerCbQuery(`❌ Balance မလောက်ပါ (${minW} ${cfg.currency_label} လိုသည်)`, { show_alert: true }).catch(()=>{});
+        }
+
+        await ctx.answerCbQuery().catch(()=>{});
+        await User.updateOne({ tgId }, { $set: { state: 'awaiting_withdraw' } });
+        await ctx.reply(
+            `📤 <b>ငွေထုတ်ယူရန်</b>\n\n`
+            + `💰 Balance: <b>${user.balance.toLocaleString()} ${cfg.currency_label}</b>\n\n`
+            + `📲 KPay သို့မဟုတ် Wave Pay နံပါတ်ကို ရိုက်ထည့်ပေးပါ:\n\n`
+            + `<i>Example: 09xxxxxxxxx (KPay)</i>`,
+            { parse_mode: 'HTML', ...Markup.inlineKeyboard([[Markup.button.callback('❌ Cancel', 'cancel_withdraw')]]) }
+        ).catch(()=>{});
+    } catch(e) { console.error("❌ withdraw_request:", e); }
+});
+
+// Cancel withdraw
+bot.action('cancel_withdraw', async (ctx) => {
+    try {
+        await User.updateOne({ tgId: ctx.from.id }, { $set: { state: 'none' } });
+        await ctx.answerCbQuery('❌ ပယ်ဖျက်လိုက်ပါပြီ').catch(()=>{});
+        await ctx.reply('❌ ငွေထုတ်မည့် Request ကို ပယ်ဖျက်လိုက်ပါပြီ').catch(()=>{});
+    } catch(e) {}
+});
+
 bot.action('check_join', async (ctx) => {
     try {
         const cfg = await getAllCfg();
@@ -457,9 +525,81 @@ bot.action('check_join', async (ctx) => {
 });
 
 // ═══════════════════════════════════════════════
-// ADMIN COMMANDS
+// ★ ADMIN COMMANDS
 // ═══════════════════════════════════════════════
 
+// ★ /admin — Show full command list
+bot.command('admin', async ctx => {
+    if (!isAdmin(ctx)) return ctx.reply("❌ Admin Only").catch(()=>{});
+    const cfg = await getAllCfg();
+    const total = await User.countDocuments();
+    const msg = `👑 <b>Admin Commands</b>\n`
+        + `━━━━━━━━━━━━━━━━━━━\n`
+        + `📊 Users: <b>${total}</b> | 💱 Currency: <b>${cfg.currency_label}</b>\n\n`
+
+        + `<b>📺 Reward Settings</b>\n`
+        + `/setadreward [n] — Ad ဆု (လက်ရှိ: ${cfg.ad_reward})\n`
+        + `/setvideoreward [n] — Video Task ဆု (လက်ရှိ: ${cfg.ad_reward*2})\n`
+        + `/setcheckinreward [n] — Check-in ဆု (လက်ရှိ: ${cfg.checkin_reward})\n`
+        + `/setreferralreward [n] — Referral ဆု (လက်ရှိ: ${cfg.referral_reward})\n`
+        + `/setjoinreward [n] — Channel Join ဆု (လက်ရှိ: ${cfg.join_reward})\n`
+        + `/setgamefee [n] — Game Fee (လက်ရှိ: ${cfg.game_entry_fee})\n`
+        + `/setgamemax [n] — Game Max Earn (လက်ရှိ: ${cfg.game_max_earn})\n\n`
+
+        + `<b>⏱️ Cooldown Settings</b>\n`
+        + `/setadcooldown [s] — Ad Cooldown (လက်ရှိ: ${cfg.ad_cooldown_s}s)\n`
+        + `/setvideocooldown [s] — Video Cooldown (လက်ရှိ: ${cfg.video_cooldown_s}s)\n`
+        + `/setaddaily [n] — Daily Ad Limit (လက်ရှိ: ${cfg.ad_daily_limit})\n\n`
+
+        + `<b>💱 Display Settings</b>\n`
+        + `/setcurrency [label] — Currency Label ပြောင်းရန် (လက်ရှိ: ${cfg.currency_label})\n`
+        + `   └─ Example: /setcurrency MMK  ➜  frontend မှာ MMK ပြလိမ့်မည်\n`
+        + `/setminwithdraw [n] — Min Withdraw (လက်ရှိ: ${cfg.min_withdraw})\n\n`
+
+        + `<b>📢 Channel Settings</b>\n`
+        + `/setchannel1 [@id] [name] [link]\n`
+        + `/setchannel2 [@id] [name] [link]\n\n`
+
+        + `<b>👥 User Management</b>\n`
+        + `/users [page] — User list\n`
+        + `/user [id] — User detail\n`
+        + `/addbalance [id] [amount] — Balance ထည့်ပေးရန်\n`
+        + `/ban [id] — Ban user\n`
+        + `/unban [id] — Unban user\n\n`
+
+        + `<b>📨 Messaging</b>\n`
+        + `/send [id] [msg] — User တစ်ယောက်ဆီ ပို့ရန်\n`
+        + `/broadcast [msg] — User အားလုံးဆီ ပို့ရန်\n\n`
+
+        + `<b>📊 Statistics</b>\n`
+        + `/stats — အသုံးပြုသူ စာရင်း အကျဉ်းချုပ်\n`
+        + `/panel — Admin Panel (သတ်မှတ်ချက် အကုန်)\n`;
+
+    await ctx.reply(msg, { parse_mode: 'HTML' }).catch(()=>{});
+});
+
+// /stats — Quick stats
+bot.command('stats', async ctx => {
+    if (!isAdmin(ctx)) return;
+    const cfg = await getAllCfg();
+    const total = await User.countDocuments();
+    const banned = await User.countDocuments({ isBanned: true });
+    const today = new Date(); today.setHours(0,0,0,0);
+    const newToday = await User.countDocuments({ lastActive: { $gte: today } });
+    const topUsers = await User.find().sort({ balance: -1 }).limit(5);
+    let msg = `📊 <b>Statistics</b>\n━━━━━━━━━━━━━━\n`
+        + `👥 Total Users: <b>${total}</b>\n`
+        + `🚫 Banned: <b>${banned}</b>\n`
+        + `📅 Active Today: <b>${newToday}</b>\n`
+        + `💱 Currency: <b>${cfg.currency_label}</b>\n\n`
+        + `🏆 <b>Top 5 Balances</b>\n`;
+    topUsers.forEach((u,i) => {
+        msg += `${i+1}. ${u.username||'User'} — ${u.balance.toLocaleString()} ${cfg.currency_label}\n`;
+    });
+    ctx.reply(msg, { parse_mode: 'HTML' });
+});
+
+// /panel — Full config panel
 bot.command('panel', async ctx => {
     if (!isAdmin(ctx)) return;
     const total = await User.countDocuments();
@@ -481,7 +621,8 @@ bot.command('panel', async ctx => {
         + `/setvideocooldown [s] — Video (${cfg.video_cooldown_s}s)\n`
         + `/setaddaily [n] — Daily ad limit (${cfg.ad_daily_limit})\n\n`
         + `<b>── Display ──</b>\n`
-        + `/setcurrency [label] — (${cfg.currency_label})\n\n`
+        + `/setcurrency [label] — (${cfg.currency_label})\n`
+        + `/setminwithdraw [n] — Min withdraw (${cfg.min_withdraw})\n\n`
         + `<b>── Users ──</b>\n`
         + `/users [page] | /user [id] | /ban [id] | /unban [id]\n`
         + `/addbalance [id] [n] | /send [id] [msg] | /broadcast [msg]`;
@@ -512,7 +653,18 @@ bot.command('setadreward', async ctx => {
     if (!isAdmin(ctx)) return;
     const v = parseInt(ctx.message.text.split(' ')[1]);
     if (isNaN(v)) return ctx.reply("⚠️ /setadreward [n]");
-    await setCfg('ad_reward', v); ctx.reply(`✅ Ad reward → ${v} (video = ${v*2})`);
+    await setCfg('ad_reward', v);
+    const cfg = await getAllCfg();
+    ctx.reply(`✅ Ad reward → ${v} ${cfg.currency_label}\n📺 Video Task → ${v*2} ${cfg.currency_label}\n\n💡 Frontend မှာ ဤ reward တန်ဖိုး auto-update ဖြစ်ပါမည်`);
+});
+// ★ /setvideoreward is computed from ad_reward, but we allow override
+bot.command('setvideoreward', async ctx => {
+    if (!isAdmin(ctx)) return;
+    ctx.reply(
+        "ℹ️ Video reward = Ad reward × 2\n\n" +
+        "Ad reward ကို ပြောင်းရန်:\n/setadreward [n]\n\n" +
+        "Example: /setadreward 200 → Video task = 400"
+    );
 });
 bot.command('setcheckinreward', async ctx => {
     if (!isAdmin(ctx)) return;
@@ -536,7 +688,7 @@ bot.command('setgamemax', async ctx => {
     if (!isAdmin(ctx)) return;
     const v = parseInt(ctx.message.text.split(' ')[1]);
     if (isNaN(v)) return ctx.reply("⚠️ /setgamemax [n]");
-    await setCfg('game_max_earn', v); ctx.reply(`✅ Game max → ${v}`);
+    await setCfg('game_max_earn', v); ctx.reply(`✅ Game max earn → ${v}`);
 });
 bot.command('setadcooldown', async ctx => {
     if (!isAdmin(ctx)) return;
@@ -556,22 +708,46 @@ bot.command('setaddaily', async ctx => {
     if (isNaN(v)) return ctx.reply("⚠️ /setaddaily [n]");
     await setCfg('ad_daily_limit', v); ctx.reply(`✅ Daily ad limit → ${v}`);
 });
+
+// ★ /setcurrency — Changes display label across entire frontend
 bot.command('setcurrency', async ctx => {
     if (!isAdmin(ctx)) return;
     const v = ctx.message.text.split(' ').slice(1).join(' ').trim();
-    if (!v) return ctx.reply("⚠️ /setcurrency [label]");
-    await setCfg('currency_label', v); ctx.reply(`✅ Currency → ${v}`);
+    if (!v) return ctx.reply("⚠️ /setcurrency [label]\n\nExample:\n/setcurrency MMK\n/setcurrency Coins\n/setcurrency KS\n\nFrontend ကို Refresh လုပ်ရင် ချက်ချင်း ပြောင်းသည်");
+    await setCfg('currency_label', v);
+    ctx.reply(
+        `✅ Currency label → <b>${v}</b>\n\n`
+        + `Frontend ပြောင်းချက်:\n`
+        + `• Balance: 0 <b>${v}</b>\n`
+        + `• Ad Reward: +20 <b>${v}</b>\n`
+        + `• Check-in: +10 <b>${v}</b>\n`
+        + `• Invite: +50 <b>${v}</b>\n\n`
+        + `⚡ Mini App ကို Refresh လုပ်ရင် ချက်ချင်း ပြောင်းပါမည်`,
+        { parse_mode: 'HTML' }
+    );
 });
+
+// ★ /setminwithdraw
+bot.command('setminwithdraw', async ctx => {
+    if (!isAdmin(ctx)) return;
+    const v = parseInt(ctx.message.text.split(' ')[1]);
+    if (isNaN(v)) return ctx.reply("⚠️ /setminwithdraw [n]");
+    await setCfg('min_withdraw', v);
+    const cfg = await getAllCfg();
+    ctx.reply(`✅ Min withdraw → ${v} ${cfg.currency_label}`);
+});
+
 bot.command('addbalance', async ctx => {
     if (!isAdmin(ctx)) return;
     const p = ctx.message.text.split(' ');
     if (p.length < 3) return ctx.reply("⚠️ /addbalance [user_id] [amount]");
     const uid = parseInt(p[1]), amount = parseInt(p[2]);
     if (isNaN(uid)||isNaN(amount)) return ctx.reply("❌ Invalid");
+    const cfg = await getAllCfg();
     const updated = await User.findOneAndUpdate({ tgId:uid }, { $inc:{balance:amount} }, { returnDocument:'after' });
     if (!updated) return ctx.reply("❌ User not found");
-    ctx.reply(`✅ +${amount} → ${updated.balance}`);
-    try { await bot.telegram.sendMessage(uid, `💰 Admin မှ ${amount} ထည့်ပေးလိုက်ပါတယ်!\n💰 Balance: ${updated.balance.toLocaleString()}`); } catch(e){}
+    ctx.reply(`✅ +${amount} ${cfg.currency_label} → Balance: ${updated.balance.toLocaleString()} ${cfg.currency_label}`);
+    try { await bot.telegram.sendMessage(uid, `💰 Admin မှ ${amount} ${cfg.currency_label} ထည့်ပေးလိုက်ပါတယ်!\n💰 Balance: ${updated.balance.toLocaleString()} ${cfg.currency_label}`); } catch(e){}
 });
 bot.command('users', async ctx => {
     if (!isAdmin(ctx)) return;
@@ -579,8 +755,9 @@ bot.command('users', async ctx => {
     const limit=10, skip=(page-1)*limit;
     const users = await User.find().skip(skip).limit(limit).sort({tgId:1});
     const total = await User.countDocuments();
+    const cfg = await getAllCfg();
     let msg = `👥 <b>Users (${page}/${Math.ceil(total/limit)})</b>\n\n`;
-    users.forEach(u => { msg += `🆔 <code>${u.tgId}</code> | ${u.username||'NoName'} | 💰${u.balance} | ${u.isBanned?'🚫':'✅'}\n`; });
+    users.forEach(u => { msg += `🆔 <code>${u.tgId}</code> | ${u.username||'NoName'} | 💰${u.balance} ${cfg.currency_label} | ${u.isBanned?'🚫':'✅'}\n`; });
     ctx.reply(msg, { parse_mode:'HTML' });
 });
 bot.command('user', async ctx => {
@@ -590,7 +767,7 @@ bot.command('user', async ctx => {
     const u = await User.findOne({ tgId:uid });
     if (!u) return ctx.reply("❌ Not found.");
     const cfg = await getAllCfg();
-    ctx.reply(`👤 <b>User</b>\n🆔 <code>${u.tgId}</code>\n👤 ${u.username||'N/A'}\n💰 ${u.balance} ${cfg.currency_label}\n👥 Refs: ${u.referralCount}\n🚫 Banned: ${u.isBanned}`, { parse_mode:'HTML' });
+    ctx.reply(`👤 <b>User</b>\n🆔 <code>${u.tgId}</code>\n👤 ${u.username||'N/A'}\n💰 ${u.balance.toLocaleString()} ${cfg.currency_label}\n👥 Refs: ${u.referralCount}\n🚫 Banned: ${u.isBanned}`, { parse_mode:'HTML' });
 });
 bot.command('ban', async ctx => {
     if (!isAdmin(ctx)) return;
@@ -640,12 +817,51 @@ bot.command('broadcast', async ctx => {
     ctx.reply(`✅ Done ✅${ok} ❌${fail}`);
 });
 
-// Global message forward
+// Global message handler (with withdraw state support)
 bot.on('message', async ctx => {
     try {
         User.updateOne({ tgId:ctx.from.id }, { $set:{lastActive:new Date()} }).catch(()=>{});
         const user = await User.findOne({ tgId:ctx.from.id });
         if (!user || user.isBanned) return;
+
+        // ★ Handle withdraw state: user is sending their payment number
+        if (user.state === 'awaiting_withdraw') {
+            const m = ctx.message;
+            if (m.text && !m.text.startsWith('/')) {
+                const cfg = await getAllCfg();
+                const paymentInfo = m.text.trim();
+
+                // Reset state
+                await User.updateOne({ tgId: user.tgId }, { $set: { state: 'none' } });
+
+                // Notify admin
+                try {
+                    await bot.telegram.sendMessage(
+                        ADMIN_ID,
+                        `📤 <b>Withdraw Request</b>\n`
+                        + `━━━━━━━━━━━━━━\n`
+                        + `🆔 <code>${user.tgId}</code>\n`
+                        + `👤 ${user.username || 'N/A'}\n`
+                        + `💰 Balance: ${user.balance.toLocaleString()} ${cfg.currency_label}\n`
+                        + `📲 Payment: <b>${paymentInfo}</b>\n\n`
+                        + `ဆောင်ရွက်ရန်:\n`
+                        + `/addbalance ${user.tgId} [deduct_amount]`,
+                        { parse_mode: 'HTML' }
+                    );
+                } catch(e) {}
+
+                await ctx.reply(
+                    `✅ <b>Request ပေးပို့ပြီးပါပြီ!</b>\n\n`
+                    + `📲 Payment Info: <b>${paymentInfo}</b>\n`
+                    + `💰 Balance: ${user.balance.toLocaleString()} ${cfg.currency_label}\n\n`
+                    + `⏳ Admin မှ ၂၄ နာရီအတွင်း စစ်ဆေးပေးပါမည်`,
+                    { parse_mode: 'HTML' }
+                ).catch(()=>{});
+            }
+            return;
+        }
+
+        // Default: forward to admin
         if (user.state === 'none') {
             const m = ctx.message;
             try {
