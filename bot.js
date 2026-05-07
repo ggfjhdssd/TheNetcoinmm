@@ -271,6 +271,24 @@ app.post('/api/spin', async (req, res) => {
     }
 });
 
+// Game refund (if ad not completed)
+app.post('/api/game-refund', async (req, res) => {
+    try {
+        const { userId, fee } = req.body;
+        if (!userId) return res.status(400).json({ success: false });
+        const refundAmt = Number(fee) || 50;
+        const updated = await User.findOneAndUpdate(
+            { tgId: Number(userId) },
+            { $inc: { balance: refundAmt } },
+            { returnDocument: 'after' }
+        );
+        if (!updated) return res.status(404).json({ success: false });
+        return res.json({ success: true, newBalance: updated.balance });
+    } catch (e) {
+        res.status(500).json({ success: false });
+    }
+});
+
 // Game start
 app.post('/api/game-start', async (req, res) => {
     try {

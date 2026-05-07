@@ -153,11 +153,13 @@
     #game-screen{display:none;position:fixed;inset:0;background:#1A1A2E;z-index:1000;flex-direction:column}
     #game-screen.active{display:flex}
     #game-hud{display:flex;align-items:center;justify-content:space-between;
-      padding:12px 20px;background:rgba(255,255,255,.05)}
+      padding:12px 20px;background:rgba(255,255,255,.05);flex-shrink:0;z-index:10}
     #game-score-display{color:#fff;font-size:18px;font-weight:800}
     #game-timer-display{color:var(--gold);font-size:16px;font-weight:700}
-    #game-canvas{flex:1;width:100%;position:relative;overflow:hidden}
-    .falling-obj{position:absolute;font-size:36px;cursor:pointer;user-select:none;will-change:transform}
+    #game-canvas{flex:1;width:100%;position:relative;overflow:hidden;touch-action:none;pointer-events:auto}
+    .falling-obj{position:absolute;font-size:40px;cursor:pointer;user-select:none;
+      will-change:top;pointer-events:auto;z-index:5;line-height:1;
+      -webkit-tap-highlight-color:transparent}
 
     /* GAMEOVER */
     #gameover-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;
@@ -495,7 +497,7 @@
     <div id="game-score-display">🏆 0 Coins</div>
     <div id="game-timer-display">⏱️ 40s</div>
   </div>
-  <div id="game-canvas" onclick="handleCanvasClick(event)"></div>
+  <div id="game-canvas"></div>
 </div>
 
 <!-- Game Over -->
@@ -627,6 +629,21 @@ async function doCheckin() {
   const btn=document.getElementById('checkin-btn');
   btn.disabled=true;
   try {
+    // Show ad first, then give reward
+    btn.textContent='⏳ Ad Loading...';
+    let adOk=false;
+    try {
+      const result=await AdController.show();
+      adOk=result?.done===true;
+    } catch(e){ adOk=false; }
+
+    if(!adOk){
+      btn.disabled=false;
+      btn.textContent='+'+(CFG.checkin_reward||10)+' Coins';
+      showToast('Ad မပြနိုင်ပါ၊ ထပ်ကြိုးစားပါ','error');
+      return;
+    }
+
     const res=await apiFetch('/api/checkin',{userId});
     if(res.success){
       setBalanceUI(res.newBalance);
@@ -638,9 +655,15 @@ async function doCheckin() {
       btn.textContent='✅ Done';
       document.getElementById('checkin-sub').textContent='မနက်ဖြန် ပြန်လာပါ';
     } else {
-      btn.disabled=false; showToast('Error','error');
+      btn.disabled=false;
+      btn.textContent='+'+(CFG.checkin_reward||10)+' Coins';
+      showToast('Error','error');
     }
-  } catch(e){ btn.disabled=false; showToast('Server Error','error'); }
+  } catch(e){
+    btn.disabled=false;
+    btn.textContent='+'+(CFG.checkin_reward||10)+' Coins';
+    showToast('Server Error','error');
+  }
 }
 
 /* ── INVITE ── */
@@ -690,7 +713,7 @@ async function claimChannel(ch) {
 }
 
 /* ── VIDEO TASKS (Daily Tasks) — 2hr cooldown ── */
-const AdController = window.Adsgram?.init({blockId:"int-29385"});
+const AdController = window.Adsgram?.init({blockId:"int-29610"});
 const videoTimers={};
 
 function getVKey(slot){ return `vtimer_${slot}_exp`; }
@@ -730,44 +753,34 @@ async function handleVideoTask(slot){
   const card=document.getElementById('home-task-'+slot);
   if(card&&card.classList.contains('disabled')) return;
   const cooldown=CFG.video_cooldown_s||7200;
-  const vr=(CFG.ad_reward||20)*2;
-  WebApp.showPopup({
-    title:'Daily Task '+slot,
-    message:`${vr} Coins ရရှိရန် ကြော်ငြာ အဆုံးထိ ကြည့်ပေးပါ`,
-    buttons:[{id:'cancel',type:'cancel',text:'Cancel'},{id:'ok',type:'default',text:'Watch ▶'}]
-  }, async(btnId)=>{
-    if(btnId!=='ok') return;
-    if(card) card.classList.add('disabled');
-    const tel=document.getElementById('home-task-timer-'+slot);
-    if(tel) tel.textContent='⏳ Loading...';
-    try {
-      const t0=Date.now();
-      const result=await AdController.show();
-      const sec=Math.floor((Date.now()-t0)/1000);
-      if(result?.done&&sec>=14){
-        const d=await apiFetch('/api/reward-video',{userId,slot});
-        if(d.success){
-          setBalanceUI(d.newBalance);
-          showToast(`✅ +${d.rewardAmt} Coins!`,'success');
-          const exp=Date.now()+cooldown*1000;
-          localStorage.setItem(getVKey(slot),exp);
-          startVideoTimer(slot,cooldown);
-        } else {
-          if(card) card.classList.remove('disabled');
-          if(tel) tel.textContent='';
-          showToast('Server Error','error');
-        }
+  const tel=document.getElementById('home-task-timer-'+slot);
+  if(card) card.classList.add('disabled');
+  if(tel) tel.textContent='⏳ Loading...';
+  try {
+    const result=await AdController.show();
+    if(result?.done===true){
+      const d=await apiFetch('/api/reward-video',{userId,slot});
+      if(d.success){
+        setBalanceUI(d.newBalance);
+        showToast(`✅ +${d.rewardAmt} Coins!`,'success');
+        const exp=Date.now()+cooldown*1000;
+        localStorage.setItem(getVKey(slot),exp);
+        startVideoTimer(slot,cooldown);
       } else {
         if(card) card.classList.remove('disabled');
         if(tel) tel.textContent='';
-        showToast('⚠️ ကြော်ငြာ အဆုံးထိ ကြည့်ပါ','warn');
+        showToast('Server Error','error');
       }
-    } catch(e){
+    } else {
       if(card) card.classList.remove('disabled');
       if(tel) tel.textContent='';
-      showToast('Ad load failed. Try again.','error');
+      showToast('Ad မကြည့်ရသေးပါ','warn');
     }
-  });
+  } catch(e){
+    if(card) card.classList.remove('disabled');
+    if(tel) tel.textContent='';
+    showToast('Ad load failed. Try again.','error');
+  }
 }
 
 /* ── AD TASKS (Earn) ── */
@@ -865,52 +878,42 @@ async function handleAdTask(s){
   if(getAdCount(s)>=daily){ showToast('Daily limit ပြည့်ပါပြီ','warn'); return; }
   const btn=document.getElementById('ad-btn-'+s);
   if(btn&&btn.disabled) return;
-  const reward=CFG.ad_reward||20;
-  WebApp.showPopup({
-    title:'Watch Ad',
-    message:`${reward} Coins ရရှိရန် ကြော်ငြာ အဆုံးထိ ကြည့်ပေးပါ`,
-    buttons:[{id:'cancel',type:'cancel',text:'Cancel'},{id:'ok',type:'default',text:'Watch ▶'}]
-  }, async(btnId)=>{
-    if(btnId!=='ok') return;
-    if(btn) btn.disabled=true;
-    const tel=document.getElementById('ad-timer-'+s);
-    if(tel) tel.textContent='⏳ Loading...';
-    try {
-      const t0=Date.now();
-      const result=await AdController.show();
-      const sec=Math.floor((Date.now()-t0)/1000);
-      if(result?.done&&sec>=14){
-        const d=await apiFetch('/api/reward-user',{userId,slot:s});
-        if(d.success){
-          setBalanceUI(d.newBalance);
-          const nc=incAdCount(s);
-          showToast(`✅ +${d.rewardAmt} Coins!`,'success');
-          if(nc>=daily){
-            if(btn){btn.disabled=true;btn.textContent='✅ Done Today';}
-            const reset=parseInt(localStorage.getItem(getAdResetKey(s))||'0');
-            startAdResetTimer(s,Math.floor((reset-Date.now())/1000));
-          } else {
-            const cd=CFG.ad_cooldown_s||180;
-            const exp=Date.now()+cd*1000;
-            localStorage.setItem(getAdTimerKey(s),exp);
-            startAdCooldown(s,cd);
-          }
+  const tel=document.getElementById('ad-timer-'+s);
+  if(btn) btn.disabled=true;
+  if(tel) tel.textContent='⏳ Loading...';
+  try {
+    const result=await AdController.show();
+    if(result?.done===true){
+      const d=await apiFetch('/api/reward-user',{userId,slot:s});
+      if(d.success){
+        setBalanceUI(d.newBalance);
+        const nc=incAdCount(s);
+        showToast(`✅ +${d.rewardAmt} Coins!`,'success');
+        if(nc>=daily){
+          if(btn){btn.disabled=true;btn.textContent='✅ Done Today';}
+          const reset=parseInt(localStorage.getItem(getAdResetKey(s))||'0');
+          startAdResetTimer(s,Math.floor((reset-Date.now())/1000));
         } else {
-          if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
-          if(tel) tel.textContent='';
-          showToast('Server Error','error');
+          const cd=CFG.ad_cooldown_s||180;
+          const exp=Date.now()+cd*1000;
+          localStorage.setItem(getAdTimerKey(s),exp);
+          startAdCooldown(s,cd);
         }
       } else {
         if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
         if(tel) tel.textContent='';
-        showToast('⚠️ ကြော်ငြာ အဆုံးထိ ကြည့်ပါ','warn');
+        showToast('Server Error','error');
       }
-    } catch(e){
+    } else {
       if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
       if(tel) tel.textContent='';
-      showToast('Ad load failed. Try again.','error');
+      showToast('Ad မကြည့်ရသေးပါ','warn');
     }
-  });
+  } catch(e){
+    if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
+    if(tel) tel.textContent='';
+    showToast('Ad load failed. Try again.','error');
+  }
 }
 
 /* ── HISTORY ── */
@@ -1082,7 +1085,10 @@ async function startGame(){
   if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
   const fee=CFG.game_entry_fee||50;
   if(currentBalance<fee){ showToast(`${fee} Coins မလောက်ပါ`,'error'); return; }
+
+  // Deduct fee first
   setLoading(true);
+  let deducted=false;
   try {
     const res=await apiFetch('/api/game-start',{userId});
     setLoading(false);
@@ -1092,8 +1098,29 @@ async function startGame(){
       return;
     }
     setBalanceUI(res.newBalance);
+    deducted=true;
+  } catch(e){ setLoading(false); showToast('Server Error','error'); return; }
+
+  // Show ad before game
+  const startBtn=document.getElementById('game-start-btn');
+  if(startBtn){ startBtn.disabled=true; startBtn.textContent='⏳ Ad Loading...'; }
+  try {
+    const result=await AdController.show();
+    if(result?.done===true){
+      if(startBtn){ startBtn.disabled=false; startBtn.textContent=`🎮 Start with ${fee} Coins`; }
+      launchGame();
+    } else {
+      // Ad not completed — refund and cancel
+      if(startBtn){ startBtn.disabled=false; startBtn.textContent=`🎮 Start with ${fee} Coins`; }
+      await apiFetch('/api/game-refund',{userId,fee}).catch(()=>{});
+      await refreshBalance();
+      showToast('Ad မကြည့်ရသဖြင့် Coins ပြန်ရပါပြီ','warn');
+    }
+  } catch(e){
+    if(startBtn){ startBtn.disabled=false; startBtn.textContent=`🎮 Start with ${fee} Coins`; }
+    // Ad failed — still allow game (graceful fallback)
     launchGame();
-  } catch(e){ setLoading(false); showToast('Server Error','error'); }
+  }
 }
 
 function launchGame(){
@@ -1125,15 +1152,38 @@ function launchGame(){
     const coins=isBomb?0:[0.2,0.5,1,1,1,2,2,3][Math.floor(Math.random()*8)];
     const canvas=document.getElementById('game-canvas');
     const cw=canvas.offsetWidth||window.innerWidth;
-    const x=Math.random()*(cw-60)+10;
-    const id='obj_'+Date.now()+'_'+Math.random();
+    const x=Math.random()*(cw-70)+10;
+    const id='obj_'+Date.now()+'_'+Math.random().toString(36).slice(2);
     const el2=document.createElement('div');
     el2.className='falling-obj';el2.id=id;el2.textContent=emoji;
     el2.style.left=x+'px';el2.style.top='-50px';
     el2.dataset.bomb=isBomb?'1':'0';el2.dataset.coins=coins;
+
+    // Direct listeners — both click and touchstart for mobile
+    function onHit(e){
+      e.preventDefault();e.stopPropagation();
+      if(!gameRunning||!document.getElementById(id)) return;
+      el2.remove();
+      if(el2.dataset.bomb==='1'){ endGame(true); return; }
+      const cv=parseFloat(el2.dataset.coins)||1;
+      const maxEarn=CFG.game_max_earn||90;
+      gameScore=Math.min(parseFloat((gameScore+cv).toFixed(1)),maxEarn);
+      document.getElementById('game-score-display').textContent=`🏆 ${Math.floor(gameScore)} Coins`;
+      // Particle
+      const px=parseFloat(el2.style.left),py=parseFloat(el2.style.top);
+      const span=document.createElement('div');
+      span.style.cssText=`position:absolute;left:${px}px;top:${py}px;color:#F8961E;font-weight:800;font-size:16px;pointer-events:none;z-index:20;transition:all .6s;`;
+      span.textContent='+'+cv;
+      canvas.appendChild(span);
+      setTimeout(()=>{span.style.transform='translateY(-50px)';span.style.opacity='0';},50);
+      setTimeout(()=>span.remove(),700);
+    }
+    el2.addEventListener('click',onHit);
+    el2.addEventListener('touchstart',onHit,{passive:false});
+
     canvas.appendChild(el2);
     const dur=getFallDuration(el);
-    const startY=-50,endY=(canvas.offsetHeight||600)+60;
+    const startY=-50,endY=(canvas.offsetHeight||window.innerHeight)+60;
     let st=null;
     function fall(ts){
       if(!gameRunning||!document.getElementById(id)) return;
@@ -1156,26 +1206,7 @@ function launchGame(){
   requestAnimationFrame(gameLoop);
 }
 
-function handleCanvasClick(e){
-  if(!gameRunning) return;
-  const t=e.target;
-  if(!t.classList.contains('falling-obj')) return;
-  e.stopPropagation();
-  if(t.dataset.bomb==='1'){ t.remove(); endGame(true); return; }
-  const coins=parseFloat(t.dataset.coins)||1;
-  const maxEarn=CFG.game_max_earn||90;
-  gameScore=Math.min(parseFloat((gameScore+coins).toFixed(1)),maxEarn);
-  document.getElementById('game-score-display').textContent=`🏆 ${Math.floor(gameScore)} Coins`;
-  // Particle
-  const x=parseFloat(t.style.left),y=parseFloat(t.style.top);
-  const span=document.createElement('div');
-  span.style.cssText=`position:absolute;left:${x}px;top:${y}px;color:#F8961E;font-weight:800;font-size:16px;pointer-events:none;z-index:10;transition:all .6s;`;
-  span.textContent='+'+coins;
-  document.getElementById('game-canvas').appendChild(span);
-  setTimeout(()=>{span.style.transform='translateY(-50px)';span.style.opacity='0';},50);
-  setTimeout(()=>span.remove(),700);
-  t.remove();
-}
+function handleCanvasClick(){ /* deprecated — using direct listeners on each object */ }
 
 function endGame(hitBomb){
   if(gameEnded) return;
