@@ -1,224 +1,231 @@
 <!DOCTYPE html>
 <html lang="my">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
   <title>TheNetCoin</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --blue: #4361EE; --blue-dark: #3A0CA3; --purple: #7209B7;
-      --pink: #F72585; --gold: #F8961E; --green: #43AA8B; --red: #E63946;
-      --bg: #F4F6FC; --card: #FFFFFF; --text: #1A1A2E; --muted: #8D99AE;
-      --radius: 18px; --shadow: 0 4px 20px rgba(67,97,238,.12); --nav-h: 70px;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --blue:#4361EE;--blue-dark:#3A0CA3;--purple:#7209B7;
+      --pink:#F72585;--gold:#F8961E;--green:#43AA8B;--red:#E63946;
+      --bg:#F4F6FC;--card:#fff;--text:#1A1A2E;--muted:#8D99AE;
+      --radius:18px;--shadow:0 4px 20px rgba(67,97,238,.12);--nav-h:70px;
     }
-    html, body { height: 100%; overflow: hidden; background: var(--bg);
-      font-family: 'Segoe UI','Pyidaungsu',Arial,sans-serif; color: var(--text);
-      -webkit-tap-highlight-color: transparent; }
-    #app { display: flex; flex-direction: column; height: 100vh; }
-    .page-content { flex: 1; overflow-y: auto; padding: 0 16px 16px; scroll-behavior: smooth; }
-    .page-content::-webkit-scrollbar { display: none; }
+    html,body{height:100%;overflow:hidden;background:var(--bg);
+      font-family:'Segoe UI','Pyidaungsu',Arial,sans-serif;color:var(--text);
+      -webkit-tap-highlight-color:transparent}
+    #app{display:flex;flex-direction:column;height:100vh}
+    .page-content{flex:1;overflow-y:auto;padding:0 16px 16px;scroll-behavior:smooth}
+    .page-content::-webkit-scrollbar{display:none}
 
     /* NAV */
-    .bottom-nav { display: flex; height: var(--nav-h); background:#fff;
-      border-top:1px solid #E8ECFF; box-shadow:0 -4px 20px rgba(67,97,238,.08); flex-shrink:0; }
-    .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap:4px; cursor:pointer; transition:.2s; background:none; border:none; outline:none; }
-    .nav-icon { width:44px; height:44px; border-radius:14px; display:flex; align-items:center;
-      justify-content:center; font-size:20px; transition:.25s; }
-    .nav-item.active .nav-icon { background:var(--blue); box-shadow:0 4px 14px rgba(67,97,238,.4); }
-    .nav-label { font-size:11px; font-weight:600; color:var(--muted); transition:.2s; }
-    .nav-item.active .nav-label { color:var(--blue); }
+    .bottom-nav{display:flex;height:var(--nav-h);background:#fff;
+      border-top:1px solid #E8ECFF;box-shadow:0 -4px 20px rgba(67,97,238,.08);flex-shrink:0}
+    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:4px;cursor:pointer;transition:.2s;background:none;border:none;outline:none}
+    .nav-icon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;
+      justify-content:center;font-size:20px;transition:.25s}
+    .nav-item.active .nav-icon{background:var(--blue);box-shadow:0 4px 14px rgba(67,97,238,.4)}
+    .nav-label{font-size:11px;font-weight:600;color:var(--muted);transition:.2s}
+    .nav-item.active .nav-label{color:var(--blue)}
 
-    /* TABS */
-    .tab-page { display:none; } .tab-page.active { display:block; }
+    .tab-page{display:none}.tab-page.active{display:block}
 
     /* HERO */
-    .hero-banner { background:linear-gradient(135deg,var(--blue),var(--blue-dark));
-      border-radius:0 0 28px 28px; margin:0 -16px 20px; padding:20px 24px 30px;
-      color:#fff; position:relative; overflow:hidden; }
-    .hero-banner::before { content:''; position:absolute; top:-40px; right:-30px;
-      width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,.07); }
-    .hero-greeting { font-size:13px; opacity:.8; font-weight:500; margin-bottom:2px; }
-    .hero-name { font-size:20px; font-weight:700; margin-bottom:16px; }
-    .hero-icons { position:absolute; top:18px; right:20px; display:flex; gap:10px; }
-    .hero-icon-btn { width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,.18);
-      border:none; display:flex; align-items:center; justify-content:center; font-size:17px;
-      cursor:pointer; color:#fff; }
-    .balance-card { background:rgba(255,255,255,.15); backdrop-filter:blur(8px);
-      border:1px solid rgba(255,255,255,.2); border-radius:16px; padding:14px 18px;
-      display:flex; align-items:center; justify-content:space-between; }
-    .balance-label { font-size:12px; opacity:.8; font-weight:500; }
-    .balance-amount { font-size:28px; font-weight:800; letter-spacing:-1px; }
-    .balance-currency { font-size:14px; opacity:.9; font-weight:600; }
-    .balance-refresh { width:38px; height:38px; border-radius:12px; background:rgba(255,255,255,.25);
-      border:none; color:#fff; font-size:16px; cursor:pointer; display:flex; align-items:center;
-      justify-content:center; transition:.2s; }
+    .hero-banner{background:linear-gradient(135deg,var(--blue),var(--blue-dark));
+      border-radius:0 0 28px 28px;margin:0 -16px 20px;padding:20px 24px 30px;
+      color:#fff;position:relative;overflow:hidden}
+    .hero-banner::before{content:'';position:absolute;top:-40px;right:-30px;
+      width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.07)}
+    .hero-greeting{font-size:13px;opacity:.8;font-weight:500;margin-bottom:2px}
+    .hero-name{font-size:20px;font-weight:700;margin-bottom:16px}
+    .hero-icons{position:absolute;top:18px;right:20px;display:flex;gap:10px}
+    .hero-icon-btn{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.18);
+      border:none;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;color:#fff}
+    .balance-card{background:rgba(255,255,255,.15);backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:14px 18px;
+      display:flex;align-items:center;justify-content:space-between}
+    .balance-label{font-size:12px;opacity:.8;font-weight:500}
+    .balance-amount{font-size:28px;font-weight:800;letter-spacing:-1px}
+    .balance-currency{font-size:14px;opacity:.9;font-weight:600}
+    .balance-refresh{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.25);
+      border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
-    /* SECTION */
-    .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-    .section-title { font-size:17px; font-weight:700; }
-    .section-link { font-size:13px; font-weight:600; color:var(--blue); }
+    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .section-title{font-size:17px;font-weight:700}
+    .section-link{font-size:13px;font-weight:600;color:var(--blue)}
 
     /* INVITE CARD */
-    .invite-card { border-radius:var(--radius); background:linear-gradient(135deg,#F72585,#7209B7);
-      color:#fff; padding:18px 20px; margin-bottom:20px;
-      display:flex; align-items:center; justify-content:space-between;
-      box-shadow:0 6px 20px rgba(247,37,133,.25); cursor:pointer; transition:.2s; }
-    .invite-card:active { transform:scale(.98); }
-    .invite-text { font-size:11px; opacity:.8; margin-bottom:4px; }
-    .invite-title { font-size:17px; font-weight:800; }
-    .invite-sub { font-size:12px; opacity:.85; margin-top:2px; }
-    .invite-btn { background:#fff; color:var(--purple); border:none; border-radius:12px;
-      padding:10px 16px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap;
-      flex-shrink:0; transition:.2s; }
-    .invite-btn:active { transform:scale(.95); }
+    .invite-card{border-radius:var(--radius);background:linear-gradient(135deg,#F72585,#7209B7);
+      color:#fff;padding:18px 20px;margin-bottom:20px;
+      display:flex;align-items:center;justify-content:space-between;
+      box-shadow:0 6px 20px rgba(247,37,133,.25);cursor:pointer;transition:.2s}
+    .invite-card:active{transform:scale(.98)}
+    .invite-text{font-size:11px;opacity:.8;margin-bottom:4px}
+    .invite-title{font-size:16px;font-weight:800}
+    .invite-sub{font-size:12px;opacity:.85;margin-top:2px}
+    .invite-btn{background:#fff;color:var(--purple);border:none;border-radius:12px;
+      padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
 
     /* TASK CARDS */
-    .task-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
-    .task-card { background:var(--card); border-radius:var(--radius); padding:16px 14px;
-      box-shadow:var(--shadow); cursor:pointer; transition:.2s; position:relative; overflow:hidden; }
-    .task-card:active { transform:scale(.97); }
-    .task-card-accent { position:absolute; top:0; left:0; right:0; height:4px;
-      border-radius:var(--radius) var(--radius) 0 0; }
-    .task-icon { font-size:28px; margin-bottom:8px; }
-    .task-title { font-size:13px; font-weight:700; margin-bottom:4px; }
-    .task-reward { font-size:12px; font-weight:700; display:inline-flex; align-items:center;
-      gap:4px; padding:3px 10px; border-radius:20px; background:#FFF3CD; color:var(--gold); }
-    .task-card.disabled { opacity:.55; cursor:not-allowed; }
-    .task-timer { font-size:10px; color:var(--muted); margin-top:4px; }
-    .task-count { font-size:10px; color:var(--blue); margin-top:2px; font-weight:600; }
-    .task-card.done { opacity:.5; cursor:not-allowed; }
+    .task-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+    .task-card{background:var(--card);border-radius:var(--radius);padding:16px 14px;
+      box-shadow:var(--shadow);cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+    .task-card:active{transform:scale(.97)}
+    .task-card-accent{position:absolute;top:0;left:0;right:0;height:4px;border-radius:var(--radius) var(--radius) 0 0}
+    .task-icon{font-size:28px;margin-bottom:8px}
+    .task-title{font-size:13px;font-weight:700;margin-bottom:4px}
+    .task-reward{font-size:12px;font-weight:700;display:inline-flex;align-items:center;
+      gap:4px;padding:3px 10px;border-radius:20px;background:#FFF3CD;color:var(--gold)}
+    .task-card.disabled{opacity:.55;cursor:not-allowed}
+    .task-timer{font-size:10px;color:var(--muted);margin-top:4px}
 
-    /* EARNS TAB */
-    .earn-section { margin-bottom:20px; }
-    .earn-card { background:var(--card); border-radius:var(--radius); padding:16px 18px;
-      box-shadow:var(--shadow); margin-bottom:12px; display:flex; align-items:center;
-      justify-content:space-between; gap:12px; }
-    .earn-left { display:flex; align-items:center; gap:14px; }
-    .earn-icon { width:46px; height:46px; border-radius:14px; display:flex; align-items:center;
-      justify-content:center; font-size:22px; flex-shrink:0; }
-    .earn-title { font-size:14px; font-weight:700; margin-bottom:2px; }
-    .earn-sub { font-size:12px; color:var(--muted); }
-    .earn-badge { font-size:12px; font-weight:700; background:#EEF2FF; color:var(--blue);
-      padding:4px 12px; border-radius:20px; white-space:nowrap; }
-    .claim-btn { background:var(--blue); color:#fff; border:none; border-radius:12px;
-      padding:10px 18px; font-size:13px; font-weight:700; cursor:pointer; transition:.2s; }
-    .claim-btn:active { transform:scale(.95); }
-    .claim-btn:disabled { background:#ccc; cursor:not-allowed; }
-    .ad-count { font-size:11px; color:var(--muted); margin-top:3px; }
+    /* CHECKIN CARD */
+    .checkin-card{background:var(--card);border-radius:var(--radius);padding:16px 18px;
+      box-shadow:var(--shadow);margin-bottom:20px;display:flex;align-items:center;
+      justify-content:space-between;gap:12px}
+    .checkin-left{display:flex;align-items:center;gap:14px}
+    .checkin-icon{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,#F8961E,#F72585);
+      display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+    .checkin-title{font-size:14px;font-weight:700;margin-bottom:3px}
+    .checkin-sub{font-size:12px;color:var(--muted)}
+    .checkin-btn{background:linear-gradient(135deg,var(--gold),#F72585);color:#fff;border:none;
+      border-radius:12px;padding:12px 20px;font-size:14px;font-weight:700;cursor:pointer;
+      white-space:nowrap;transition:.2s;box-shadow:0 4px 12px rgba(248,150,30,.35)}
+    .checkin-btn:active{transform:scale(.95)}
+    .checkin-btn:disabled{background:#ccc;cursor:not-allowed;box-shadow:none}
 
-    /* GAMES TAB */
-    .game-lobby { padding:20px 0; }
-    .game-header { background:linear-gradient(135deg,#7209B7,#3A0CA3);
-      border-radius:0 0 28px 28px; margin:0 -16px 24px; padding:24px 24px 32px;
-      color:#fff; text-align:center; }
-    .game-header-title { font-size:22px; font-weight:800; margin-bottom:4px; }
-    .game-header-sub { font-size:13px; opacity:.85; }
-    .game-start-card { background:var(--card); border-radius:var(--radius); padding:20px;
-      box-shadow:var(--shadow); text-align:center; margin-bottom:20px; }
-    .game-start-emoji { font-size:56px; margin-bottom:12px; }
-    .game-start-title { font-size:18px; font-weight:800; margin-bottom:6px; }
-    .game-start-sub { font-size:13px; color:var(--muted); margin-bottom:16px; }
-    .game-start-btn { background:linear-gradient(135deg,var(--purple),var(--blue));
-      color:#fff; border:none; border-radius:16px; padding:14px 40px; font-size:16px;
-      font-weight:700; cursor:pointer; box-shadow:0 6px 20px rgba(114,9,183,.3); transition:.2s; }
-    .game-start-btn:active { transform:scale(.97); }
-    .game-rules { background:var(--card); border-radius:var(--radius); padding:16px 18px;
-      box-shadow:var(--shadow); }
-    .game-rules-title { font-size:14px; font-weight:700; margin-bottom:10px; }
-    .game-rule { font-size:13px; color:var(--muted); margin-bottom:6px; line-height:1.5; }
+    /* EARN TAB */
+    .earn-card{background:var(--card);border-radius:var(--radius);padding:16px 18px;
+      box-shadow:var(--shadow);margin-bottom:12px;display:flex;align-items:center;
+      justify-content:space-between;gap:12px}
+    .earn-left{display:flex;align-items:center;gap:14px}
+    .earn-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;
+      justify-content:center;font-size:22px;flex-shrink:0}
+    .earn-title{font-size:14px;font-weight:700;margin-bottom:2px}
+    .earn-sub{font-size:12px;color:var(--muted)}
+    .earn-badge{font-size:12px;font-weight:700;background:#EEF2FF;color:var(--blue);
+      padding:4px 12px;border-radius:20px;white-space:nowrap}
+    .claim-btn{background:var(--blue);color:#fff;border:none;border-radius:12px;
+      padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+    .claim-btn:active{transform:scale(.95)}
+    .claim-btn:disabled{background:#ccc;cursor:not-allowed}
+    .ad-count{font-size:11px;color:var(--muted);margin-top:3px}
+
+    /* HISTORY */
+    .history-section{margin-top:20px}
+    .history-toggle{display:flex;align-items:center;justify-content:space-between;
+      background:var(--card);border-radius:var(--radius);padding:14px 18px;
+      box-shadow:var(--shadow);cursor:pointer;margin-bottom:8px}
+    .history-title{font-size:15px;font-weight:700}
+    .history-arrow{font-size:16px;transition:.3s}
+    .history-arrow.open{transform:rotate(180deg)}
+    .history-list{display:none;background:var(--card);border-radius:var(--radius);
+      box-shadow:var(--shadow);overflow:hidden}
+    .history-list.open{display:block}
+    .history-item{display:flex;align-items:center;justify-content:space-between;
+      padding:12px 18px;border-bottom:1px solid #F0F0F8}
+    .history-item:last-child{border-bottom:none}
+    .history-item-label{font-size:13px;font-weight:600}
+    .history-item-time{font-size:11px;color:var(--muted);margin-top:2px}
+    .history-item-amount{font-size:14px;font-weight:800;color:var(--green)}
+    .history-empty{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* GAMES */
+    .game-header{background:linear-gradient(135deg,#7209B7,#3A0CA3);
+      border-radius:0 0 28px 28px;margin:0 -16px 24px;padding:24px 24px 32px;color:#fff;text-align:center}
+    .game-header-title{font-size:22px;font-weight:800;margin-bottom:4px}
+    .game-header-sub{font-size:13px;opacity:.85}
+    .game-start-card{background:var(--card);border-radius:var(--radius);padding:20px;
+      box-shadow:var(--shadow);text-align:center;margin-bottom:16px}
+    .game-start-emoji{font-size:56px;margin-bottom:12px}
+    .game-start-title{font-size:18px;font-weight:800;margin-bottom:6px}
+    .game-start-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+    .game-start-btn{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;
+      border:none;border-radius:16px;padding:14px 40px;font-size:16px;font-weight:700;
+      cursor:pointer;box-shadow:0 6px 20px rgba(114,9,183,.3);transition:.2s}
+    .game-start-btn:active{transform:scale(.97)}
 
     /* GAME SCREEN */
-    #game-screen { display:none; position:fixed; inset:0; background:#1A1A2E; z-index:1000;
-      flex-direction:column; }
-    #game-screen.active { display:flex; }
-    #game-hud { display:flex; align-items:center; justify-content:space-between;
-      padding:12px 20px; background:rgba(255,255,255,.05); }
-    #game-score-display { color:#fff; font-size:18px; font-weight:800; }
-    #game-timer-display { color:var(--gold); font-size:16px; font-weight:700; }
-    #game-canvas { flex:1; width:100%; position:relative; overflow:hidden; cursor:pointer; }
-    .falling-obj { position:absolute; font-size:36px; cursor:pointer; user-select:none;
-      transition:none; will-change:transform; }
+    #game-screen{display:none;position:fixed;inset:0;background:#1A1A2E;z-index:1000;flex-direction:column}
+    #game-screen.active{display:flex}
+    #game-hud{display:flex;align-items:center;justify-content:space-between;
+      padding:12px 20px;background:rgba(255,255,255,.05)}
+    #game-score-display{color:#fff;font-size:18px;font-weight:800}
+    #game-timer-display{color:var(--gold);font-size:16px;font-weight:700}
+    #game-canvas{flex:1;width:100%;position:relative;overflow:hidden}
+    .falling-obj{position:absolute;font-size:36px;cursor:pointer;user-select:none;will-change:transform}
 
-    /* GAME OVER MODAL */
-    #gameover-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7);
-      z-index:2000; align-items:center; justify-content:center; }
-    #gameover-modal.active { display:flex; }
-    .gameover-box { background:#fff; border-radius:24px; padding:32px 28px; text-align:center;
-      margin:20px; width:100%; max-width:320px; }
-    .gameover-emoji { font-size:56px; margin-bottom:12px; }
-    .gameover-title { font-size:22px; font-weight:800; margin-bottom:6px; }
-    .gameover-sub { font-size:14px; color:var(--muted); margin-bottom:20px; }
-    .gameover-btns { display:flex; gap:12px; }
-    .gameover-btn { flex:1; padding:14px; border-radius:14px; border:none; font-size:15px;
-      font-weight:700; cursor:pointer; transition:.2s; }
-    .gameover-btn:active { transform:scale(.96); }
-    .btn-exit { background:#F4F6FC; color:var(--text); }
-    .btn-retry { background:linear-gradient(135deg,var(--purple),var(--blue)); color:#fff; }
+    /* GAMEOVER */
+    #gameover-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;
+      align-items:center;justify-content:center}
+    #gameover-modal.active{display:flex}
+    .gameover-box{background:#fff;border-radius:24px;padding:32px 28px;text-align:center;margin:20px;width:100%;max-width:320px}
+    .gameover-emoji{font-size:56px;margin-bottom:12px}
+    .gameover-title{font-size:22px;font-weight:800;margin-bottom:6px}
+    .gameover-sub{font-size:14px;color:var(--muted);margin-bottom:20px}
+    .gameover-btns{display:flex;gap:12px}
+    .gameover-btn{flex:1;padding:14px;border-radius:14px;border:none;font-size:15px;font-weight:700;cursor:pointer}
+    .btn-exit{background:#F4F6FC;color:var(--text)}
+    .btn-retry{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff}
 
-    /* SPIN TAB */
-    .spin-hero { background:linear-gradient(135deg,#F8961E,#F3722C);
-      border-radius:0 0 28px 28px; margin:0 -16px 24px; padding:24px 24px 32px;
-      color:#fff; text-align:center; }
-    .spin-hero-title { font-size:22px; font-weight:800; margin-bottom:4px; }
-    .spin-hero-sub { font-size:13px; opacity:.85; }
-    .wheel-wrapper { display:flex; flex-direction:column; align-items:center; margin-bottom:20px; }
-    .wheel-pointer { width:0; height:0; border-left:14px solid transparent;
-      border-right:14px solid transparent; border-top:28px solid #1A1A2E;
-      margin-bottom:-4px; z-index:2; position:relative;
-      filter:drop-shadow(0 3px 6px rgba(0,0,0,.3)); }
-    #spin-canvas { border-radius:50%; box-shadow:0 8px 30px rgba(0,0,0,.2); display:block; }
-    #spin-btn { margin-top:22px; background:linear-gradient(135deg,#F72585,#7209B7);
-      color:#fff; border:none; border-radius:20px; padding:16px 48px; font-size:17px;
-      font-weight:800; cursor:pointer; transition:.2s; box-shadow:0 6px 20px rgba(247,37,133,.35); }
-    #spin-btn:disabled { background:#ccc; cursor:not-allowed; box-shadow:none; }
-    #spin-status { text-align:center; margin-top:14px; font-size:14px; color:var(--muted); min-height:22px; }
-    .spin-prizes { background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); }
-    .spin-prizes-title { font-size:14px; font-weight:700; margin-bottom:12px; }
-    .prize-list { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    .prize-pill { display:flex; align-items:center; gap:8px; background:var(--bg); border-radius:12px; padding:8px 12px; }
-    .prize-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
-    .prize-text { font-size:13px; font-weight:600; }
+    /* SPIN */
+    .spin-hero{background:linear-gradient(135deg,#F8961E,#F3722C);border-radius:0 0 28px 28px;
+      margin:0 -16px 24px;padding:24px 24px 32px;color:#fff;text-align:center}
+    .spin-hero-title{font-size:22px;font-weight:800;margin-bottom:4px}
+    .spin-hero-sub{font-size:13px;opacity:.85}
+    .wheel-wrapper{display:flex;flex-direction:column;align-items:center;margin-bottom:20px}
+    .wheel-pointer{width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;
+      border-top:28px solid #1A1A2E;margin-bottom:-4px;z-index:2;position:relative;
+      filter:drop-shadow(0 3px 6px rgba(0,0,0,.3))}
+    #spin-canvas{border-radius:50%;box-shadow:0 8px 30px rgba(0,0,0,.2);display:block}
+    #spin-btn{margin-top:22px;background:linear-gradient(135deg,#F72585,#7209B7);color:#fff;
+      border:none;border-radius:20px;padding:16px 48px;font-size:17px;font-weight:800;
+      cursor:pointer;transition:.2s;box-shadow:0 6px 20px rgba(247,37,133,.35)}
+    #spin-btn:disabled{background:#ccc;cursor:not-allowed;box-shadow:none}
+    #spin-status{text-align:center;margin-top:14px;font-size:14px;color:var(--muted);min-height:22px}
+    .spin-prizes{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+    .spin-prizes-title{font-size:14px;font-weight:700;margin-bottom:12px}
+    .prize-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .prize-pill{display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:12px;padding:8px 12px}
+    .prize-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+    .prize-text{font-size:13px;font-weight:600}
 
     /* PROFILE */
-    .profile-hero { background:linear-gradient(135deg,var(--green),#2DC653);
-      border-radius:0 0 28px 28px; margin:0 -16px 22px; padding:28px 24px 36px;
-      text-align:center; color:#fff; }
-    .profile-avatar { width:72px; height:72px; border-radius:50%; background:rgba(255,255,255,.25);
-      border:3px solid rgba(255,255,255,.5); display:flex; align-items:center; justify-content:center;
-      font-size:36px; margin:0 auto 12px; }
-    .profile-name { font-size:20px; font-weight:800; margin-bottom:4px; }
-    .profile-id { font-size:12px; opacity:.8; }
-    .info-card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
-      overflow:hidden; margin-bottom:14px; }
-    .info-row { display:flex; align-items:center; justify-content:space-between;
-      padding:14px 18px; border-bottom:1px solid #F0F0F8; }
-    .info-row:last-child { border-bottom:none; }
-    .info-row-left { display:flex; align-items:center; gap:12px; }
-    .info-row-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center;
-      justify-content:center; font-size:18px; }
-    .info-row-label { font-size:13px; color:var(--muted); font-weight:500; }
-    .info-row-value { font-size:14px; font-weight:700; text-align:right; max-width:180px; }
-    .withdraw-btn { width:100%; padding:16px; border-radius:var(--radius);
-      background:linear-gradient(135deg,var(--green),#2DC653); color:#fff; border:none;
-      font-size:16px; font-weight:700; cursor:pointer; box-shadow:0 6px 20px rgba(67,170,139,.35); transition:.2s; }
+    .profile-hero{background:linear-gradient(135deg,var(--green),#2DC653);
+      border-radius:0 0 28px 28px;margin:0 -16px 22px;padding:28px 24px 36px;text-align:center;color:#fff}
+    .profile-avatar{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.25);
+      border:3px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;
+      font-size:36px;margin:0 auto 12px}
+    .profile-name{font-size:20px;font-weight:800;margin-bottom:4px}
+    .profile-id{font-size:12px;opacity:.8}
+    .info-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:14px}
+    .info-row{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #F0F0F8}
+    .info-row:last-child{border-bottom:none}
+    .info-row-left{display:flex;align-items:center;gap:12px}
+    .info-row-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+    .info-row-label{font-size:13px;color:var(--muted);font-weight:500}
+    .info-row-value{font-size:14px;font-weight:700;text-align:right}
+    .withdraw-btn{width:100%;padding:16px;border-radius:var(--radius);
+      background:linear-gradient(135deg,var(--green),#2DC653);color:#fff;border:none;
+      font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(67,170,139,.35)}
 
-    /* TOAST & LOADING */
-    .toast { position:fixed; bottom:calc(var(--nav-h)+16px); left:50%;
-      transform:translateX(-50%) translateY(20px); background:#1A1A2E; color:#fff;
-      padding:12px 24px; border-radius:30px; font-size:14px; font-weight:600;
-      opacity:0; transition:.3s; z-index:9998; white-space:nowrap; pointer-events:none; }
-    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-    .toast.success { background:var(--green); }
-    .toast.error { background:var(--red); }
-    .toast.warn { background:var(--gold); color:#1A1A2E; }
-    .loading-overlay { position:fixed; inset:0; z-index:9999;
+    /* TOAST & LOADER */
+    .toast{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;
+      transform:translateX(-50%) translateY(20px);background:#1A1A2E;color:#fff;
+      padding:12px 24px;border-radius:30px;font-size:14px;font-weight:600;
+      opacity:0;transition:.3s;z-index:9998;white-space:nowrap;pointer-events:none}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .toast.success{background:var(--green)}
+    .toast.error{background:var(--red)}
+    .toast.warn{background:var(--gold);color:#1A1A2E}
+    .loading-overlay{position:fixed;inset:0;z-index:9999;
       background:rgba(255,255,255,.8) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 50 50'%3E%3Ccircle cx='25' cy='25' r='20' fill='none' stroke='%234361EE' stroke-width='4' stroke-dasharray='100 28' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 25 25' to='360 25 25' dur='.8s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/svg%3E") center no-repeat;
-      display:none; }
-    .loading-overlay.visible { display:block; }
+      display:none}
+    .loading-overlay.visible{display:block}
   </style>
 </head>
 <body>
@@ -230,52 +237,66 @@
       <div class="hero-banner">
         <div class="hero-icons">
           <button class="hero-icon-btn" onclick="refreshBalance()">🔄</button>
-          <button class="hero-icon-btn" onclick="showToast('Notifications coming soon','warn')">🔔</button>
+          <button class="hero-icon-btn" onclick="showToast('Coming soon','warn')">🔔</button>
         </div>
-        <p class="hero-greeting">မင်္ဂလာပါ,</p>
+        <p class="hero-greeting">Hello,</p>
         <p class="hero-name" id="hero-username">Loading...</p>
         <div class="balance-card">
           <div>
-            <div class="balance-label">💰 လက်ကျန်ငွေ</div>
+            <div class="balance-label">Balance</div>
             <div><span class="balance-amount" id="balance-display">0</span>
-              <span class="balance-currency" id="currency-label-home"> Coins</span></div>
+              <span class="balance-currency" id="lbl-home"> Coins</span></div>
           </div>
           <button class="balance-refresh" onclick="refreshBalance()">↻</button>
         </div>
       </div>
 
+      <!-- Daily Check-in -->
+      <div class="checkin-card">
+        <div class="checkin-left">
+          <div class="checkin-icon">🎁</div>
+          <div>
+            <div class="checkin-title">Daily Check-in</div>
+            <div class="checkin-sub" id="checkin-sub">တစ်ရက် တစ်ကြိမ် Coins ရယူပါ</div>
+          </div>
+        </div>
+        <button class="checkin-btn" id="checkin-btn" onclick="doCheckin()">
+          +<span id="checkin-reward-lbl">10</span> Coins
+        </button>
+      </div>
+
       <!-- Invite Card -->
       <div class="invite-card" onclick="doInvite()">
         <div>
-          <div class="invite-text">👫 Friends Invite</div>
-          <div class="invite-title">သူငယ်ချင်း ဖိတ်ပြီး ငွေရပါ</div>
-          <div class="invite-sub" id="invite-sub">ဖိတ်တိုင်း <span id="invite-reward-label">50</span> Coins ရယူပါ</div>
+          <div class="invite-text">👫 Referral</div>
+          <div class="invite-title">Invite Friends and get <span id="invite-reward-lbl">50</span> Coins</div>
+          <div class="invite-sub">ဖိတ်ခေါ်တိုင်း Coins ရယူပါ</div>
         </div>
-        <button class="invite-btn">ဖိတ်မည် 👥</button>
+        <button class="invite-btn">Invite 👥</button>
       </div>
 
-      <!-- Home Ad tasks (2 slots only on home) -->
+      <!-- Daily Tasks -->
       <div class="section-header">
-        <span class="section-title">📺 Video Tasks</span>
-        <span class="section-link" onclick="switchTab('tab-earn')">အားလုံးကြည့်ရန်</span>
+        <span class="section-title">📋 Daily Tasks</span>
+        <span class="section-link" onclick="switchTab('tab-earn')">See all</span>
       </div>
       <div class="task-grid">
         <div class="task-card" id="home-task-1" onclick="handleVideoTask(1)">
           <div class="task-card-accent" style="background:linear-gradient(90deg,#4361EE,#7209B7)"></div>
           <div class="task-icon">🎬</div>
-          <div class="task-title">Video Task</div>
+          <div class="task-title">Daily Task 1</div>
           <div class="task-reward" id="home-task-reward-1">⭐ +40 Coins</div>
           <div class="task-timer" id="home-task-timer-1"></div>
         </div>
         <div class="task-card" id="home-task-2" onclick="handleVideoTask(2)">
           <div class="task-card-accent" style="background:linear-gradient(90deg,#F72585,#F8961E)"></div>
           <div class="task-icon">🎬</div>
-          <div class="task-title">Video Task</div>
+          <div class="task-title">Daily Task 2</div>
           <div class="task-reward" id="home-task-reward-2">⭐ +40 Coins</div>
           <div class="task-timer" id="home-task-timer-2"></div>
         </div>
       </div>
-    </div>
+    </div><!-- /home -->
 
     <!-- ══ GAMES ══ -->
     <div class="tab-page" id="tab-games">
@@ -283,136 +304,132 @@
         <div class="game-header-title">🎮 Emoji Catcher</div>
         <div class="game-header-sub">Emoji ဖမ်းပြီး Coins ရယူပါ!</div>
       </div>
-      <div class="game-lobby">
-        <div class="game-start-card">
-          <div class="game-start-emoji">🎯</div>
-          <div class="game-start-title">Emoji Catcher</div>
-          <div class="game-start-sub">💣 ဗုံးကို မနှိပ်မိအောင်သတိထားပါ<br>Emoji များနှိပ်ပြီး Coins ရယူပါ</div>
-          <button class="game-start-btn" id="game-start-btn" onclick="startGame()">
-            🎮 Start (<span id="game-fee-label">50</span> Coins)
-          </button>
-        </div>
-        <div class="game-rules">
-          <div class="game-rules-title">📋 ကစားနည်း</div>
-          <div class="game-rule">✅ Emoji နှိပ်ရင် Coins ရသည် (1–3 Coins)</div>
-          <div class="game-rule">💣 ဗုံးနှိပ်မိရင် Game Over</div>
-          <div class="game-rule">⏱️ 40 စက္ကန့်အတွင်း အများဆုံး <span id="game-max-label">90</span> Coins</div>
-          <div class="game-rule">⚡ အချိန်ကုန်လေ ပိုမြန်လာမည်</div>
-        </div>
+      <div class="game-start-card">
+        <div class="game-start-emoji">🎯</div>
+        <div class="game-start-title">Emoji Catcher</div>
+        <div class="game-start-sub">💣 ဗုံးကို မနှိပ်မိအောင် သတိထားပါ</div>
+        <button class="game-start-btn" id="game-start-btn" onclick="startGame()">
+          🎮 Start with <span id="game-fee-lbl">50</span> Coins
+        </button>
       </div>
     </div>
 
     <!-- ══ EARN ══ -->
     <div class="tab-page" id="tab-earn">
       <div class="hero-banner">
-        <p class="hero-greeting">Tasks & Rewards</p>
+        <p class="hero-greeting">Earn</p>
         <p class="hero-name">💰 Coins ရယူပါ</p>
         <div class="balance-card">
           <div>
-            <div class="balance-label">လက်ကျန်ငွေ</div>
+            <div class="balance-label">Balance</div>
             <div><span class="balance-amount" id="earn-balance-display">0</span>
-              <span class="balance-currency" id="currency-label-earn"> Coins</span></div>
+              <span class="balance-currency" id="lbl-earn"> Coins</span></div>
           </div>
           <button class="balance-refresh" onclick="refreshBalance()">↻</button>
         </div>
       </div>
 
-      <!-- Channel Tasks -->
-      <div class="earn-section">
-        <div class="section-header"><span class="section-title">📢 Channel Tasks</span></div>
-        <div class="earn-card" id="earn-ch1">
-          <div class="earn-left">
-            <div class="earn-icon" style="background:#EEF2FF;">📣</div>
-            <div>
-              <div class="earn-title" id="ch1-name">Channel 1 Join</div>
-              <div class="earn-sub">Join ပြီး Coins ရယူပါ</div>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-            <div class="earn-badge">+<span id="join-reward-label">20</span> Coins</div>
-            <button class="claim-btn" id="ch1-btn" onclick="claimChannel(1)">Join & Claim</button>
+      <!-- Join Our Channels -->
+      <div class="section-header"><span class="section-title">📢 Join Our Channels</span></div>
+      <div class="earn-card" id="earn-ch1">
+        <div class="earn-left">
+          <div class="earn-icon" style="background:#EEF2FF;">📣</div>
+          <div>
+            <div class="earn-title" id="ch1-name">Channel 1</div>
+            <div class="earn-sub">Join ပြီး Coins ရပါ</div>
           </div>
         </div>
-        <div class="earn-card" id="earn-ch2">
-          <div class="earn-left">
-            <div class="earn-icon" style="background:#F0FFF4;">📣</div>
-            <div>
-              <div class="earn-title" id="ch2-name">Channel 2 Join</div>
-              <div class="earn-sub">Join ပြီး Coins ရယူပါ</div>
-            </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <div class="earn-badge">+<span id="join-reward-lbl">20</span> Coins</div>
+          <button class="claim-btn" id="ch1-btn" onclick="claimChannel(1)">Join & Claim</button>
+        </div>
+      </div>
+      <div class="earn-card" id="earn-ch2">
+        <div class="earn-left">
+          <div class="earn-icon" style="background:#F0FFF4;">📣</div>
+          <div>
+            <div class="earn-title" id="ch2-name">Channel 2</div>
+            <div class="earn-sub">Join ပြီး Coins ရပါ</div>
           </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-            <div class="earn-badge">+<span id="join-reward-label2">20</span> Coins</div>
-            <button class="claim-btn" id="ch2-btn" onclick="claimChannel(2)">Join & Claim</button>
-          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <div class="earn-badge">+<span id="join-reward-lbl2">20</span> Coins</div>
+          <button class="claim-btn" id="ch2-btn" onclick="claimChannel(2)">Join & Claim</button>
         </div>
       </div>
 
-      <!-- Ad Tasks -->
-      <div class="earn-section">
-        <div class="section-header"><span class="section-title">📺 Watch Ads</span></div>
-        <div class="earn-card" id="ad-card-1">
-          <div class="earn-left">
-            <div class="earn-icon" style="background:#EEF2FF;">📺</div>
-            <div>
-              <div class="earn-title">Watch Ad 1</div>
-              <div class="earn-sub">ကြော်ငြာတစ်ပုဒ် ကြည့်ပါ</div>
-              <div class="ad-count" id="ad-count-1">0/4</div>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-            <div class="earn-badge">+<span id="ad-reward-label-1">20</span> Coins</div>
-            <button class="claim-btn" id="ad-btn-1" onclick="handleAdTask(1)">ကြည့်မည် ▶</button>
-            <div class="task-timer" id="ad-timer-1" style="font-size:11px;color:var(--muted);"></div>
+      <!-- Tasks (Ads) -->
+      <div class="section-header" style="margin-top:16px"><span class="section-title">📺 Tasks</span></div>
+      <div class="earn-card">
+        <div class="earn-left">
+          <div class="earn-icon" style="background:#EEF2FF;">📺</div>
+          <div>
+            <div class="earn-title">Watch Ad 1</div>
+            <div class="earn-sub">ကြော်ငြာ ကြည့်ပြီး Coins ရပါ</div>
+            <div class="ad-count" id="ad-count-1">0/4</div>
           </div>
         </div>
-        <div class="earn-card" id="ad-card-2">
-          <div class="earn-left">
-            <div class="earn-icon" style="background:#FFF8E7;">📺</div>
-            <div>
-              <div class="earn-title">Watch Ad 2</div>
-              <div class="earn-sub">ကြော်ငြာတစ်ပုဒ် ကြည့်ပါ</div>
-              <div class="ad-count" id="ad-count-2">0/4</div>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-            <div class="earn-badge">+<span id="ad-reward-label-2">20</span> Coins</div>
-            <button class="claim-btn" id="ad-btn-2" onclick="handleAdTask(2)">ကြည့်မည် ▶</button>
-            <div class="task-timer" id="ad-timer-2" style="font-size:11px;color:var(--muted);"></div>
-          </div>
-        </div>
-        <div class="earn-card" id="ad-card-3">
-          <div class="earn-left">
-            <div class="earn-icon" style="background:#F0FFF4;">📺</div>
-            <div>
-              <div class="earn-title">Watch Ad 3</div>
-              <div class="earn-sub">ကြော်ငြာတစ်ပုဒ် ကြည့်ပါ</div>
-              <div class="ad-count" id="ad-count-3">0/4</div>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-            <div class="earn-badge">+<span id="ad-reward-label-3">20</span> Coins</div>
-            <button class="claim-btn" id="ad-btn-3" onclick="handleAdTask(3)">ကြည့်မည် ▶</button>
-            <div class="task-timer" id="ad-timer-3" style="font-size:11px;color:var(--muted);"></div>
-          </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <div class="earn-badge">+<span id="ad-reward-lbl-1">20</span> Coins</div>
+          <button class="claim-btn" id="ad-btn-1" onclick="handleAdTask(1)">Watch ▶</button>
+          <div class="task-timer" id="ad-timer-1" style="font-size:11px;color:var(--muted)"></div>
         </div>
       </div>
-    </div>
+      <div class="earn-card">
+        <div class="earn-left">
+          <div class="earn-icon" style="background:#FFF8E7;">📺</div>
+          <div>
+            <div class="earn-title">Watch Ad 2</div>
+            <div class="earn-sub">ကြော်ငြာ ကြည့်ပြီး Coins ရပါ</div>
+            <div class="ad-count" id="ad-count-2">0/4</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <div class="earn-badge">+<span id="ad-reward-lbl-2">20</span> Coins</div>
+          <button class="claim-btn" id="ad-btn-2" onclick="handleAdTask(2)">Watch ▶</button>
+          <div class="task-timer" id="ad-timer-2" style="font-size:11px;color:var(--muted)"></div>
+        </div>
+      </div>
+      <div class="earn-card">
+        <div class="earn-left">
+          <div class="earn-icon" style="background:#F0FFF4;">📺</div>
+          <div>
+            <div class="earn-title">Watch Ad 3</div>
+            <div class="earn-sub">ကြော်ငြာ ကြည့်ပြီး Coins ရပါ</div>
+            <div class="ad-count" id="ad-count-3">0/4</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <div class="earn-badge">+<span id="ad-reward-lbl-3">20</span> Coins</div>
+          <button class="claim-btn" id="ad-btn-3" onclick="handleAdTask(3)">Watch ▶</button>
+          <div class="task-timer" id="ad-timer-3" style="font-size:11px;color:var(--muted)"></div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="history-section">
+        <div class="history-toggle" onclick="toggleHistory()">
+          <span class="history-title">📜 Coin History</span>
+          <span class="history-arrow" id="history-arrow">▼</span>
+        </div>
+        <div class="history-list" id="history-list"></div>
+      </div>
+    </div><!-- /earn -->
 
     <!-- ══ SPIN ══ -->
     <div class="tab-page" id="tab-spin">
       <div class="spin-hero">
         <div class="spin-hero-title">🎰 Lucky Spin</div>
-        <div class="spin-hero-sub">နေ့တိုင်း တစ်ကြိမ် အခမဲ့ လှည့်ခွင့်ရပါသည်</div>
+        <div class="spin-hero-sub">တစ်ရက် တစ်ကြိမ် အခမဲ့ လှည့်ပါ</div>
       </div>
       <div class="wheel-wrapper">
         <div class="wheel-pointer"></div>
         <canvas id="spin-canvas" width="300" height="300"></canvas>
-        <button id="spin-btn" onclick="doSpin()">🎰 လှည့်မည်!</button>
+        <button id="spin-btn" onclick="doSpin()">🎰 Spin!</button>
         <div id="spin-status"></div>
       </div>
       <div class="spin-prizes">
-        <div class="spin-prizes-title">🏆 ဆုကြေးများ</div>
+        <div class="spin-prizes-title">🏆 Prizes</div>
         <div class="prize-list" id="prize-list"></div>
       </div>
     </div>
@@ -427,32 +444,32 @@
       <div class="info-card">
         <div class="info-row">
           <div class="info-row-left">
-            <div class="info-row-icon" style="background:#EEF2FF;">💰</div>
-            <div><div class="info-row-label">လက်ကျန်ငွေ</div></div>
+            <div class="info-row-icon" style="background:#EEF2FF">💰</div>
+            <div><div class="info-row-label">Balance</div></div>
           </div>
-          <div class="info-row-value"><span id="profile-balance">0</span> <span id="currency-label-profile">Coins</span></div>
+          <div class="info-row-value"><span id="profile-balance">0</span> <span id="lbl-profile">Coins</span></div>
         </div>
         <div class="info-row">
           <div class="info-row-left">
-            <div class="info-row-icon" style="background:#F0FFF4;">👥</div>
-            <div><div class="info-row-label">Referral ဦးရေ</div></div>
+            <div class="info-row-icon" style="background:#F0FFF4">👥</div>
+            <div><div class="info-row-label">Referrals</div></div>
           </div>
           <div class="info-row-value" id="profile-referral">0 ယောက်</div>
         </div>
         <div class="info-row">
           <div class="info-row-left">
-            <div class="info-row-icon" style="background:#FFF8E7;">🎰</div>
-            <div><div class="info-row-label">Spin နောက်ဆုံး</div></div>
+            <div class="info-row-icon" style="background:#FFF8E7">🎰</div>
+            <div><div class="info-row-label">Last Spin</div></div>
           </div>
-          <div class="info-row-value" id="profile-last-spin">မလှည့်ရသေးပါ</div>
+          <div class="info-row-value" id="profile-last-spin">—</div>
         </div>
       </div>
-      <button class="withdraw-btn" onclick="handleWithdraw()">💸 ငွေထုတ်ယူမည်</button>
+      <button class="withdraw-btn" onclick="handleWithdraw()">💸 Withdraw</button>
     </div>
 
   </div><!-- /page-content -->
 
-  <!-- BOTTOM NAV -->
+  <!-- NAV -->
   <nav class="bottom-nav">
     <button class="nav-item active" id="nav-home" onclick="switchTab('tab-home')">
       <div class="nav-icon">🏠</div><span class="nav-label">Home</span>
@@ -481,12 +498,12 @@
   <div id="game-canvas" onclick="handleCanvasClick(event)"></div>
 </div>
 
-<!-- Game Over Modal -->
+<!-- Game Over -->
 <div id="gameover-modal">
   <div class="gameover-box">
     <div class="gameover-emoji" id="gameover-emoji">💥</div>
     <div class="gameover-title" id="gameover-title">Game Over!</div>
-    <div class="gameover-sub" id="gameover-sub">0 Coins ရရှိပါပြီ</div>
+    <div class="gameover-sub" id="gameover-sub">0 Coins</div>
     <div class="gameover-btns">
       <button class="gameover-btn btn-exit" onclick="exitGame()">🏠 Exit</button>
       <button class="gameover-btn btn-retry" onclick="retryGame()">🔄 Play Again</button>
@@ -498,13 +515,10 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ══════════════════════════════════════
-   INIT
-══════════════════════════════════════ */
+/* ── INIT ── */
 const WebApp = window.Telegram.WebApp;
 WebApp.ready(); WebApp.expand();
-WebApp.setHeaderColor('#4361EE');
-WebApp.setBackgroundColor('#F4F6FC');
+WebApp.setHeaderColor('#4361EE'); WebApp.setBackgroundColor('#F4F6FC');
 
 const tgUser = WebApp.initDataUnsafe?.user || {};
 const userId = tgUser.id || null;
@@ -513,27 +527,23 @@ const username = tgUser.username ? '@'+tgUser.username : (tgUser.first_name||'Us
 let currentBalance = 0;
 let userData = {};
 let isSpinning = false;
-let CFG = {};  // loaded from /api/config
+let CFG = {};
 
 const API_BASE = 'https://thenetcoinmm.onrender.com';
 
-/* ══════════════════════════════════════
-   HELPERS
-══════════════════════════════════════ */
-let toastTimeout;
+/* ── HELPERS ── */
+let toastT;
 function showToast(msg, type='') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show'+(type?' '+type:'');
-  clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(()=>{ el.className='toast'; }, 3000);
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast show'+(type?' '+type:'');
+  clearTimeout(toastT); toastT=setTimeout(()=>{el.className='toast'},3000);
 }
 function setLoading(v) { document.getElementById('loading-overlay').classList.toggle('visible',v); }
 
 async function apiFetch(path, body, method='POST') {
-  const opts = { method, headers:{'Content-Type':'application/json'} };
-  if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(API_BASE+path, opts);
+  const opts={method,headers:{'Content-Type':'application/json'}};
+  if(body) opts.body=JSON.stringify(body);
+  const res=await fetch(API_BASE+path,opts);
   return res.json();
 }
 
@@ -541,426 +551,537 @@ function switchTab(tabId) {
   document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
-  const navId = 'nav-'+tabId.replace('tab-','');
-  const navEl = document.getElementById(navId);
-  if (navEl) navEl.classList.add('active');
+  const nid='nav-'+tabId.replace('tab-','');
+  const nel=document.getElementById(nid); if(nel) nel.classList.add('active');
   document.getElementById('page-content').scrollTop=0;
 }
 
-function updateBalanceUI(bal) {
-  currentBalance = bal;
-  const label = CFG.currency_label || 'Coins';
-  document.getElementById('balance-display').textContent = bal.toLocaleString();
-  document.getElementById('earn-balance-display').textContent = bal.toLocaleString();
-  document.getElementById('profile-balance').textContent = bal.toLocaleString();
-  ['currency-label-home','currency-label-earn','currency-label-profile'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.textContent=' '+label;
-  });
+function setBalanceUI(bal) {
+  currentBalance=bal;
+  const lbl=' '+(CFG.currency_label||'Coins');
+  document.getElementById('balance-display').textContent=bal.toLocaleString();
+  document.getElementById('earn-balance-display').textContent=bal.toLocaleString();
+  document.getElementById('profile-balance').textContent=bal.toLocaleString();
+  ['lbl-home','lbl-earn','lbl-profile'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=lbl;});
 }
 
-/* ══════════════════════════════════════
-   CONFIG LOAD
-══════════════════════════════════════ */
+/* ── CONFIG ── */
 async function loadConfig() {
   try {
-    CFG = await apiFetch('/api/config', null, 'GET');
+    CFG = await apiFetch('/api/config',null,'GET');
+    const lbl = CFG.currency_label||'Coins';
+    setBalanceUI(currentBalance);
 
-    // Currency labels
-    const label = CFG.currency_label || 'Coins';
-    updateBalanceUI(currentBalance);
+    document.getElementById('invite-reward-lbl').textContent = CFG.referral_reward||50;
+    document.getElementById('checkin-reward-lbl').textContent = CFG.checkin_reward||10;
+    document.getElementById('ch1-name').textContent = (CFG.channel1_name||'Channel 1');
+    document.getElementById('ch2-name').textContent = (CFG.channel2_name||'Channel 2');
+    ['join-reward-lbl','join-reward-lbl2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=CFG.join_reward||20;});
+    [1,2,3].forEach(i=>{const e=document.getElementById('ad-reward-lbl-'+i);if(e)e.textContent=CFG.ad_reward||20;});
+    document.getElementById('game-fee-lbl').textContent = CFG.game_entry_fee||50;
 
-    // Invite card
-    document.getElementById('invite-reward-label').textContent = CFG.referral_reward || 50;
+    const vr=(CFG.ad_reward||20)*2;
+    [1,2].forEach(i=>{const e=document.getElementById('home-task-reward-'+i);if(e)e.textContent=`⭐ +${vr} ${lbl}`;});
 
-    // Channel names
-    document.getElementById('ch1-name').textContent = (CFG.channel1_name||'Channel 1')+' Join';
-    document.getElementById('ch2-name').textContent = (CFG.channel2_name||'Channel 2')+' Join';
-
-    // Join reward
-    ['join-reward-label','join-reward-label2'].forEach(id=>{
-      document.getElementById(id).textContent = CFG.join_reward||20;
-    });
-
-    // Ad reward labels
-    [1,2,3].forEach(i=>{
-      const el=document.getElementById('ad-reward-label-'+i);
-      if(el) el.textContent = CFG.ad_reward||20;
-    });
-
-    // Game labels
-    document.getElementById('game-fee-label').textContent = CFG.game_entry_fee||50;
-    document.getElementById('game-max-label').textContent = CFG.game_max_earn||90;
-
-    // Home video task reward = 2x ad_reward
-    const vReward = (CFG.ad_reward||20)*2;
-    [1,2].forEach(i=>{
-      const el=document.getElementById('home-task-reward-'+i);
-      if(el) el.textContent=`⭐ +${vReward} Coins`;
-    });
-
-    // Spin prizes
-    if (CFG.spin_prizes) buildWheel(CFG.spin_prizes);
-
-    // Ad daily limit display
-    [1,2,3].forEach(i=>{
-      const el=document.getElementById('ad-count-'+i);
-      if(el){
-        const count=getAdCount(i);
-        el.textContent=`${count}/${CFG.ad_daily_limit||4}`;
-      }
-    });
-
-  } catch(e) { console.warn('Config load failed, using defaults'); }
+    if(CFG.spin_prizes) buildWheel(CFG.spin_prizes);
+    initAdTimers();
+  } catch(e){ console.warn('Config failed'); }
 }
 
-/* ══════════════════════════════════════
-   BALANCE
-══════════════════════════════════════ */
+/* ── BALANCE ── */
 async function refreshBalance() {
-  if (!userId) return;
+  if(!userId) return;
   try {
-    const data = await apiFetch('/api/get-user', { userId, username });
-    if (data.balance !== undefined) {
-      userData = data;
-      updateBalanceUI(data.balance);
-      document.getElementById('profile-referral').textContent = (data.referralCount||0)+' ယောက်';
+    const d=await apiFetch('/api/get-user',{userId,username});
+    if(d.balance!==undefined){
+      userData=d; setBalanceUI(d.balance);
+      document.getElementById('profile-referral').textContent=(d.referralCount||0)+' ယောက်';
+      if(d.lastSpin){
+        document.getElementById('profile-last-spin').textContent=new Date(d.lastSpin).toLocaleDateString();
+      }
+      checkSpinAvailable(d.lastSpin);
+      checkCheckinAvailable(d.lastCheckin);
     }
-  } catch(e) { showToast('ချိတ်ဆက်မရပါ','error'); }
+  } catch(e){ showToast('Connection error','error'); }
 }
 
-/* ══════════════════════════════════════
-   INVITE / REFERRAL
-══════════════════════════════════════ */
+/* ── CHECK-IN ── */
+function checkCheckinAvailable(lastCheckin) {
+  const btn=document.getElementById('checkin-btn');
+  const sub=document.getElementById('checkin-sub');
+  if(!lastCheckin){ btn.disabled=false; return; }
+  const now=new Date();
+  const todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  if(new Date(lastCheckin)>=todayStart){
+    btn.disabled=true; btn.textContent='✅ Done';
+    sub.textContent='မနက်ဖြန် ပြန်လာပါ';
+  } else {
+    btn.disabled=false;
+    btn.textContent='+'+(CFG.checkin_reward||10)+' Coins';
+    sub.textContent='တစ်ရက် တစ်ကြိမ် Coins ရယူပါ';
+  }
+}
+
+async function doCheckin() {
+  if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
+  const btn=document.getElementById('checkin-btn');
+  btn.disabled=true;
+  try {
+    const res=await apiFetch('/api/checkin',{userId});
+    if(res.success){
+      setBalanceUI(res.newBalance);
+      showToast(`🎁 +${res.reward} Coins ရရှိပါပြီ!`,'success');
+      btn.textContent='✅ Done';
+      document.getElementById('checkin-sub').textContent='မနက်ဖြန် ပြန်လာပါ';
+    } else if(res.error==='already_checked'){
+      showToast('ဒီနေ့ Check-in ပြီးပါပြီ','warn');
+      btn.textContent='✅ Done';
+      document.getElementById('checkin-sub').textContent='မနက်ဖြန် ပြန်လာပါ';
+    } else {
+      btn.disabled=false; showToast('Error','error');
+    }
+  } catch(e){ btn.disabled=false; showToast('Server Error','error'); }
+}
+
+/* ── INVITE ── */
 function doInvite() {
-  if (!userId) { showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
-  const botUsername = 'thenetmyan_bot';
-  const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
-  const text = encodeURIComponent(`🎉 TheNetCoin Mini App မှာ Coins ရှာပါ!\n${refLink}`);
+  if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
+  const refLink=`https://t.me/thenetmyan_bot?start=ref_${userId}`;
+  const text=encodeURIComponent(`🎉 TheNetCoin — Coins ရှာပါ!\n${refLink}`);
   WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`);
 }
 
-/* ══════════════════════════════════════
-   CHANNEL CLAIM
-══════════════════════════════════════ */
-const claimedChannels = JSON.parse(localStorage.getItem('claimed_channels')||'[]');
-
-async function claimChannel(ch) {
-  if (!userId) { showToast('User ID မတွေ့ပါ','error'); return; }
-  if (claimedChannels.includes(ch)) {
-    showToast('ဆုကြေး ယူပြီးပါပြီ','warn'); return;
-  }
-  const btn = document.getElementById(`ch${ch}-btn`);
-  btn.disabled = true; btn.textContent = 'စစ်ဆေးနေသည်...';
-  try {
-    const res = await apiFetch('/api/claim-join', { userId, channel: ch });
-    if (res.success) {
-      claimedChannels.push(ch);
-      localStorage.setItem('claimed_channels', JSON.stringify(claimedChannels));
-      updateBalanceUI(res.newBalance);
-      btn.textContent = '✅ Claimed';
-      showToast(`✅ +${res.reward} Coins ရရှိပါပြီ!`,'success');
-    } else if (res.error === 'not_joined') {
-      btn.disabled = false; btn.textContent = 'Join & Claim';
-      const link = ch===2 ? (CFG.channel2_link||'https://t.me/TheNetMyan') : (CFG.channel1_link||'https://t.me/TheNetMyan');
-      WebApp.openTelegramLink(link);
-      showToast('Channel ကို အရင် Join ပါ','warn');
-    } else if (res.error === 'already_claimed') {
-      claimedChannels.push(ch);
-      localStorage.setItem('claimed_channels', JSON.stringify(claimedChannels));
-      btn.textContent = '✅ Claimed';
-      showToast('ဆုကြေး ယူပြီးပါပြီ','warn');
-    } else {
-      btn.disabled = false; btn.textContent = 'Join & Claim';
-      showToast('Error: '+res.error,'error');
-    }
-  } catch(e) {
-    btn.disabled = false; btn.textContent = 'Join & Claim';
-    showToast('Server Error','error');
-  }
-}
+/* ── CHANNEL CLAIM ── */
+const claimedChs = JSON.parse(localStorage.getItem('claimed_channels')||'[]');
 
 function initClaimedChannels() {
   [1,2].forEach(ch=>{
-    if (claimedChannels.includes(ch)) {
-      const btn = document.getElementById(`ch${ch}-btn`);
-      if(btn){ btn.disabled=true; btn.textContent='✅ Claimed'; }
+    if(claimedChs.includes(ch)){
+      const btn=document.getElementById(`ch${ch}-btn`);
+      if(btn){btn.disabled=true;btn.textContent='✅ Claimed';}
     }
   });
 }
 
-/* ══════════════════════════════════════
-   VIDEO TASKS (Home — 6 min cooldown)
-══════════════════════════════════════ */
-const videoTimers = {};
-const AdController = window.Adsgram?.init({ blockId: "int-29385" });
+async function claimChannel(ch) {
+  if(!userId){ showToast('User ID မတွေ့ပါ','error'); return; }
+  if(claimedChs.includes(ch)){ showToast('ဆုကြေး ယူပြီးပါပြီ','warn'); return; }
+  const btn=document.getElementById(`ch${ch}-btn`);
+  btn.disabled=true; btn.textContent='စစ်ဆေးနေသည်...';
+  try {
+    const res=await apiFetch('/api/claim-join',{userId,channel:ch});
+    if(res.success){
+      claimedChs.push(ch); localStorage.setItem('claimed_channels',JSON.stringify(claimedChs));
+      setBalanceUI(res.newBalance); btn.textContent='✅ Claimed';
+      showToast(`✅ +${res.reward} Coins!`,'success');
+    } else if(res.error==='not_joined'){
+      btn.disabled=false; btn.textContent='Join & Claim';
+      const link=ch===2?(CFG.channel2_link||'https://t.me/TheNetMyan'):(CFG.channel1_link||'https://t.me/TheNetMyan');
+      WebApp.openTelegramLink(link);
+      showToast('Channel ကို အရင် Join ပါ','warn');
+    } else if(res.error==='already_claimed'){
+      claimedChs.push(ch); localStorage.setItem('claimed_channels',JSON.stringify(claimedChs));
+      btn.textContent='✅ Claimed'; showToast('ဆုကြေး ယူပြီးပါပြီ','warn');
+    } else {
+      btn.disabled=false; btn.textContent='Join & Claim';
+      showToast(res.error||'Error','error');
+    }
+  } catch(e){ btn.disabled=false; btn.textContent='Join & Claim'; showToast('Server Error','error'); }
+}
 
-function getVideoTimerKey(slot) { return `video_timer_${slot}_expiry`; }
+/* ── VIDEO TASKS (Daily Tasks) — 2hr cooldown ── */
+const AdController = window.Adsgram?.init({blockId:"int-29385"});
+const videoTimers={};
 
-function initVideoTimers() {
+function getVKey(slot){ return `vtimer_${slot}_exp`; }
+
+function initVideoTimers(){
   [1,2].forEach(slot=>{
-    const exp = localStorage.getItem(getVideoTimerKey(slot));
-    if (exp) {
-      const rem = Math.floor((parseInt(exp)-Date.now())/1000);
-      if (rem>0) startVideoTimer(slot, rem);
-      else localStorage.removeItem(getVideoTimerKey(slot));
+    const exp=localStorage.getItem(getVKey(slot));
+    if(exp){
+      const rem=Math.floor((parseInt(exp)-Date.now())/1000);
+      if(rem>0) startVideoTimer(slot,rem);
+      else localStorage.removeItem(getVKey(slot));
     }
   });
 }
 
-function startVideoTimer(slot, dur) {
-  const card = document.getElementById('home-task-'+slot);
-  const timerEl = document.getElementById('home-task-timer-'+slot);
+function startVideoTimer(slot,dur){
+  const card=document.getElementById('home-task-'+slot);
+  const tel=document.getElementById('home-task-timer-'+slot);
   if(card) card.classList.add('disabled');
-  let t = dur;
-  if (videoTimers[slot]) clearInterval(videoTimers[slot]);
-  videoTimers[slot] = setInterval(()=>{
-    if (t<=0) {
+  let t=dur;
+  if(videoTimers[slot]) clearInterval(videoTimers[slot]);
+  videoTimers[slot]=setInterval(()=>{
+    if(t<=0){
       clearInterval(videoTimers[slot]);
-      if(timerEl) timerEl.textContent='';
+      if(tel) tel.textContent='';
       if(card) card.classList.remove('disabled');
-      localStorage.removeItem(getVideoTimerKey(slot));
-      return;
+      localStorage.removeItem(getVKey(slot)); return;
     }
-    const m=Math.floor(t/60), s=t%60;
-    if(timerEl) timerEl.textContent=`⏳ ${m}:${String(s).padStart(2,'0')}`;
+    const h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;
+    if(tel) tel.textContent=h>0?`⏳ ${h}h ${m}m`:`⏳ ${m}:${String(s).padStart(2,'0')}`;
     t--;
   },1000);
 }
 
-async function handleVideoTask(slot) {
-  if (!userId) { showToast('User ID မတွေ့ပါ','error'); return; }
-  const card = document.getElementById('home-task-'+slot);
-  if (card && card.classList.contains('disabled')) return;
-
-  const cooldown = CFG.video_cooldown_s || 360;
-  const vReward = (CFG.ad_reward||20)*2;
-
+async function handleVideoTask(slot){
+  if(!userId){ showToast('User ID မတွေ့ပါ','error'); return; }
+  const card=document.getElementById('home-task-'+slot);
+  if(card&&card.classList.contains('disabled')) return;
+  const cooldown=CFG.video_cooldown_s||7200;
+  const vr=(CFG.ad_reward||20)*2;
   WebApp.showPopup({
-    title:'Video Task',
-    message:`${vReward} Coins ရရှိရန် ကြော်ငြာကို အဆုံးထိ ကြည့်ပေးပါ`,
-    buttons:[{id:'cancel',type:'cancel',text:'မကြည့်သေးပါ'},{id:'ok',type:'default',text:'ကြည့်မည် ▶'}]
-  }, async (btnId)=>{
+    title:'Daily Task '+slot,
+    message:`${vr} Coins ရရှိရန် ကြော်ငြာ အဆုံးထိ ကြည့်ပေးပါ`,
+    buttons:[{id:'cancel',type:'cancel',text:'Cancel'},{id:'ok',type:'default',text:'Watch ▶'}]
+  }, async(btnId)=>{
     if(btnId!=='ok') return;
     if(card) card.classList.add('disabled');
-    const timerEl=document.getElementById('home-task-timer-'+slot);
-    if(timerEl) timerEl.textContent='⏳ ရှာနေသည်...';
+    const tel=document.getElementById('home-task-timer-'+slot);
+    if(tel) tel.textContent='⏳ Loading...';
     try {
-      const startTime=Date.now();
+      const t0=Date.now();
       const result=await AdController.show();
-      const watchedSec=Math.floor((Date.now()-startTime)/1000);
-      if(result?.done && watchedSec>=14) {
-        const data=await apiFetch('/api/reward-video',{userId});
-        if(data.success) {
-          updateBalanceUI(data.newBalance);
-          showToast(`✅ +${data.rewardAmt} Coins ရရှိပါပြီ!`,'success');
-          const expiry=Date.now()+cooldown*1000;
-          localStorage.setItem(getVideoTimerKey(slot),expiry);
+      const sec=Math.floor((Date.now()-t0)/1000);
+      if(result?.done&&sec>=14){
+        const d=await apiFetch('/api/reward-video',{userId,slot});
+        if(d.success){
+          setBalanceUI(d.newBalance);
+          showToast(`✅ +${d.rewardAmt} Coins!`,'success');
+          const exp=Date.now()+cooldown*1000;
+          localStorage.setItem(getVKey(slot),exp);
           startVideoTimer(slot,cooldown);
         } else {
           if(card) card.classList.remove('disabled');
-          if(timerEl) timerEl.textContent='';
+          if(tel) tel.textContent='';
           showToast('Server Error','error');
         }
       } else {
         if(card) card.classList.remove('disabled');
-        if(timerEl) timerEl.textContent='';
-        showToast('⚠️ ကြော်ငြာ အဆုံးထိ မကြည့်ရသေးပါ','warn');
+        if(tel) tel.textContent='';
+        showToast('⚠️ ကြော်ငြာ အဆုံးထိ ကြည့်ပါ','warn');
       }
-    } catch(e) {
+    } catch(e){
       if(card) card.classList.remove('disabled');
-      if(timerEl) timerEl.textContent='';
-      showToast('❌ VPN ဖွင့်ကြည့်ပါ','error');
+      if(tel) tel.textContent='';
+      showToast('Ad load failed. Try again.','error');
     }
   });
 }
 
-/* ══════════════════════════════════════
-   AD TASKS (Earn Tab — 3 slots, 0/4 daily)
-══════════════════════════════════════ */
-const adTimers = {};
+/* ── AD TASKS (Earn) ── */
+const adTimers={};
+function getAdTimerKey(s){ return `adtimer_${s}_exp`; }
+function getAdCountKey(s){ return `adcount_${s}`; }
+function getAdResetKey(s){ return `adreset_${s}`; }
 
-function getAdTimerKey(slot) { return `ad_timer_${slot}_expiry`; }
-function getAdCountKey(slot) { return `ad_count_${slot}`; }
-function getAdCountResetKey(slot) { return `ad_count_reset_${slot}`; }
-
-function getAdCount(slot) {
-  const resetTime = parseInt(localStorage.getItem(getAdCountResetKey(slot))||'0');
-  if (Date.now() > resetTime) {
-    localStorage.removeItem(getAdCountKey(slot));
-    localStorage.removeItem(getAdCountResetKey(slot));
-    return 0;
-  }
-  return parseInt(localStorage.getItem(getAdCountKey(slot))||'0');
+function getAdCount(s){
+  const reset=parseInt(localStorage.getItem(getAdResetKey(s))||'0');
+  if(Date.now()>reset){ localStorage.removeItem(getAdCountKey(s)); localStorage.removeItem(getAdResetKey(s)); return 0; }
+  return parseInt(localStorage.getItem(getAdCountKey(s))||'0');
 }
 
-function incrementAdCount(slot) {
-  const daily = CFG.ad_daily_limit || 4;
-  const resetH = CFG.ad_daily_reset_h || 24;
-  let count = getAdCount(slot)+1;
-  localStorage.setItem(getAdCountKey(slot), count);
-  if (!localStorage.getItem(getAdCountResetKey(slot))) {
-    localStorage.setItem(getAdCountResetKey(slot), Date.now()+resetH*3600*1000);
-  }
-  const el=document.getElementById('ad-count-'+slot);
-  if(el) el.textContent=`${count}/${daily}`;
+function incAdCount(s){
+  const daily=CFG.ad_daily_limit||4;
+  const resetH=CFG.ad_daily_reset_h||24;
+  const count=getAdCount(s)+1;
+  localStorage.setItem(getAdCountKey(s),count);
+  if(!localStorage.getItem(getAdResetKey(s)))
+    localStorage.setItem(getAdResetKey(s),Date.now()+resetH*3600*1000);
+  const e=document.getElementById('ad-count-'+s);
+  if(e) e.textContent=`${count}/${daily}`;
   return count;
 }
 
-function initAdTimers() {
-  [1,2,3].forEach(slot=>{
+function initAdTimers(){
+  [1,2,3].forEach(s=>{
     const daily=CFG.ad_daily_limit||4;
-    const count=getAdCount(slot);
-    const countEl=document.getElementById('ad-count-'+slot);
-    if(countEl) countEl.textContent=`${count}/${daily}`;
-
-    if(count>=daily) {
-      const resetTime=parseInt(localStorage.getItem(getAdCountResetKey(slot))||'0');
-      if(Date.now()<resetTime) {
-        const btn=document.getElementById('ad-btn-'+slot);
-        if(btn){ btn.disabled=true; btn.textContent='✅ Done Today'; }
-        startAdResetTimer(slot, Math.floor((resetTime-Date.now())/1000));
-        return;
+    const count=getAdCount(s);
+    const ce=document.getElementById('ad-count-'+s);
+    if(ce) ce.textContent=`${count}/${daily}`;
+    if(count>=daily){
+      const reset=parseInt(localStorage.getItem(getAdResetKey(s))||'0');
+      if(Date.now()<reset){
+        const btn=document.getElementById('ad-btn-'+s);
+        if(btn){btn.disabled=true;btn.textContent='✅ Done Today';}
+        startAdResetTimer(s,Math.floor((reset-Date.now())/1000)); return;
       }
     }
-
-    const exp=localStorage.getItem(getAdTimerKey(slot));
+    const exp=localStorage.getItem(getAdTimerKey(s));
     if(exp){
       const rem=Math.floor((parseInt(exp)-Date.now())/1000);
-      if(rem>0) startAdTimer(slot,rem);
-      else localStorage.removeItem(getAdTimerKey(slot));
+      if(rem>0) startAdCooldown(s,rem);
+      else localStorage.removeItem(getAdTimerKey(s));
     }
   });
 }
 
-function startAdTimer(slot, dur) {
-  const btn=document.getElementById('ad-btn-'+slot);
-  const timerEl=document.getElementById('ad-timer-'+slot);
-  if(btn){ btn.disabled=true; }
+function startAdCooldown(s,dur){
+  const btn=document.getElementById('ad-btn-'+s);
+  const tel=document.getElementById('ad-timer-'+s);
+  if(btn) btn.disabled=true;
   let t=dur;
-  if(adTimers[`cd_${slot}`]) clearInterval(adTimers[`cd_${slot}`]);
-  adTimers[`cd_${slot}`]=setInterval(()=>{
+  if(adTimers['cd_'+s]) clearInterval(adTimers['cd_'+s]);
+  adTimers['cd_'+s]=setInterval(()=>{
     if(t<=0){
-      clearInterval(adTimers[`cd_${slot}`]);
-      if(timerEl) timerEl.textContent='';
-      const count=getAdCount(slot);
+      clearInterval(adTimers['cd_'+s]);
+      if(tel) tel.textContent='';
+      const count=getAdCount(s);
       const daily=CFG.ad_daily_limit||4;
-      if(btn && count<daily){ btn.disabled=false; btn.textContent='ကြည့်မည် ▶'; }
-      localStorage.removeItem(getAdTimerKey(slot));
-      return;
+      if(btn&&count<daily){btn.disabled=false;btn.textContent='Watch ▶';}
+      localStorage.removeItem(getAdTimerKey(s)); return;
     }
-    const m=Math.floor(t/60),s=t%60;
-    if(timerEl) timerEl.textContent=`⏳ ${m}:${String(s).padStart(2,'0')}`;
+    const m=Math.floor(t/60),sc=t%60;
+    if(tel) tel.textContent=`⏳ ${m}:${String(sc).padStart(2,'0')}`;
     t--;
   },1000);
 }
 
-function startAdResetTimer(slot, dur) {
-  const timerEl=document.getElementById('ad-timer-'+slot);
+function startAdResetTimer(s,dur){
+  const tel=document.getElementById('ad-timer-'+s);
   let t=dur;
-  if(adTimers[`reset_${slot}`]) clearInterval(adTimers[`reset_${slot}`]);
-  adTimers[`reset_${slot}`]=setInterval(()=>{
+  if(adTimers['rst_'+s]) clearInterval(adTimers['rst_'+s]);
+  adTimers['rst_'+s]=setInterval(()=>{
     if(t<=0){
-      clearInterval(adTimers[`reset_${slot}`]);
-      localStorage.removeItem(getAdCountKey(slot));
-      localStorage.removeItem(getAdCountResetKey(slot));
-      const btn=document.getElementById('ad-btn-'+slot);
-      if(btn){ btn.disabled=false; btn.textContent='ကြည့်မည် ▶'; }
-      if(timerEl) timerEl.textContent='';
-      const countEl=document.getElementById('ad-count-'+slot);
-      if(countEl) countEl.textContent=`0/${CFG.ad_daily_limit||4}`;
+      clearInterval(adTimers['rst_'+s]);
+      localStorage.removeItem(getAdCountKey(s)); localStorage.removeItem(getAdResetKey(s));
+      const btn=document.getElementById('ad-btn-'+s);
+      if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
+      if(tel) tel.textContent='';
+      const ce=document.getElementById('ad-count-'+s);
+      if(ce) ce.textContent=`0/${CFG.ad_daily_limit||4}`;
       return;
     }
-    const h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;
-    if(timerEl) timerEl.textContent=`🔄 ${h}h ${m}m ${String(s).padStart(2,'0')}s`;
+    const h=Math.floor(t/3600),m=Math.floor((t%3600)/60);
+    if(tel) tel.textContent=`🔄 ${h}h ${m}m`;
     t--;
   },1000);
 }
 
-async function handleAdTask(slot) {
-  if (!userId) { showToast('User ID မတွေ့ပါ','error'); return; }
+async function handleAdTask(s){
+  if(!userId){ showToast('User ID မတွေ့ပါ','error'); return; }
   const daily=CFG.ad_daily_limit||4;
-  const count=getAdCount(slot);
-  if(count>=daily){ showToast('ဒီနေ့ limit ပြည့်ပါပြီ','warn'); return; }
-  const btn=document.getElementById('ad-btn-'+slot);
-  if(btn && btn.disabled) return;
-
+  if(getAdCount(s)>=daily){ showToast('Daily limit ပြည့်ပါပြီ','warn'); return; }
+  const btn=document.getElementById('ad-btn-'+s);
+  if(btn&&btn.disabled) return;
   const reward=CFG.ad_reward||20;
-
   WebApp.showPopup({
     title:'Watch Ad',
-    message:`${reward} Coins ရရှိရန် ကြော်ငြာကို အဆုံးထိ ကြည့်ပေးပါ`,
-    buttons:[{id:'cancel',type:'cancel',text:'မကြည့်သေးပါ'},{id:'ok',type:'default',text:'ကြည့်မည် ▶'}]
+    message:`${reward} Coins ရရှိရန် ကြော်ငြာ အဆုံးထိ ကြည့်ပေးပါ`,
+    buttons:[{id:'cancel',type:'cancel',text:'Cancel'},{id:'ok',type:'default',text:'Watch ▶'}]
   }, async(btnId)=>{
     if(btnId!=='ok') return;
     if(btn) btn.disabled=true;
-    const timerEl=document.getElementById('ad-timer-'+slot);
-    if(timerEl) timerEl.textContent='⏳ ရှာနေသည်...';
+    const tel=document.getElementById('ad-timer-'+s);
+    if(tel) tel.textContent='⏳ Loading...';
     try {
-      const startTime=Date.now();
+      const t0=Date.now();
       const result=await AdController.show();
-      const watchedSec=Math.floor((Date.now()-startTime)/1000);
-      if(result?.done && watchedSec>=14){
-        const data=await apiFetch('/api/reward-user',{userId,slot});
-        if(data.success){
-          updateBalanceUI(data.newBalance);
-          const newCount=incrementAdCount(slot);
-          showToast(`✅ +${data.rewardAmt} Coins ရရှိပါပြီ!`,'success');
-          if(newCount>=daily){
-            if(btn){ btn.disabled=true; btn.textContent='✅ Done Today'; }
-            const resetTime=parseInt(localStorage.getItem(getAdCountResetKey(slot))||'0');
-            startAdResetTimer(slot,Math.floor((resetTime-Date.now())/1000));
+      const sec=Math.floor((Date.now()-t0)/1000);
+      if(result?.done&&sec>=14){
+        const d=await apiFetch('/api/reward-user',{userId,slot:s});
+        if(d.success){
+          setBalanceUI(d.newBalance);
+          const nc=incAdCount(s);
+          showToast(`✅ +${d.rewardAmt} Coins!`,'success');
+          if(nc>=daily){
+            if(btn){btn.disabled=true;btn.textContent='✅ Done Today';}
+            const reset=parseInt(localStorage.getItem(getAdResetKey(s))||'0');
+            startAdResetTimer(s,Math.floor((reset-Date.now())/1000));
           } else {
-            const cooldown=CFG.ad_cooldown_s||180;
-            const expiry=Date.now()+cooldown*1000;
-            localStorage.setItem(getAdTimerKey(slot),expiry);
-            startAdTimer(slot,cooldown);
+            const cd=CFG.ad_cooldown_s||180;
+            const exp=Date.now()+cd*1000;
+            localStorage.setItem(getAdTimerKey(s),exp);
+            startAdCooldown(s,cd);
           }
         } else {
-          if(btn){ btn.disabled=false; btn.textContent='ကြည့်မည် ▶'; }
-          if(timerEl) timerEl.textContent='';
+          if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
+          if(tel) tel.textContent='';
           showToast('Server Error','error');
         }
       } else {
-        if(btn){ btn.disabled=false; btn.textContent='ကြည့်မည် ▶'; }
-        if(timerEl) timerEl.textContent='';
-        showToast('⚠️ ကြော်ငြာ အဆုံးထိ မကြည့်ရသေးပါ','warn');
+        if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
+        if(tel) tel.textContent='';
+        showToast('⚠️ ကြော်ငြာ အဆုံးထိ ကြည့်ပါ','warn');
       }
     } catch(e){
-      if(btn){ btn.disabled=false; btn.textContent='ကြည့်မည် ▶'; }
-      if(timerEl) timerEl.textContent='';
-      showToast('❌ VPN ဖွင့်ကြည့်ပါ','error');
+      if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
+      if(tel) tel.textContent='';
+      showToast('Ad load failed. Try again.','error');
     }
   });
 }
 
-/* ══════════════════════════════════════
-   EMOJI CATCHER GAME
-══════════════════════════════════════ */
-let gameRunning=false, gameScore=0, gameTimer=0, gameInterval=null, gameTimerInterval=null;
-let fallingObjects=[], objIdCounter=0;
-let gameEnded=false;
+/* ── HISTORY ── */
+let historyLoaded=false;
 
-const EMOJIS=['😀','🌟','💎','🍎','🎁','🏆','🦋','🌈','⚡','🔥','💫','🎯'];
-const COIN_VALUES=[0.2,0.5,1,1,1,2,2,3];
-
-function getSpeedForTime(elapsed) {
-  if(elapsed<10) return 3000;
-  if(elapsed<20) return 2000;
-  if(elapsed<30) return 1200;
-  return 700;
-}
-function getSpawnRate(elapsed) {
-  if(elapsed<10) return 1600;
-  if(elapsed<20) return 1200;
-  if(elapsed<30) return 900;
-  return 600;
+function toggleHistory(){
+  const list=document.getElementById('history-list');
+  const arrow=document.getElementById('history-arrow');
+  const open=list.classList.toggle('open');
+  arrow.classList.toggle('open',open);
+  if(open&&!historyLoaded) loadHistory();
 }
 
-async function startGame() {
-  if (!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
+async function loadHistory(){
+  if(!userId) return;
+  const list=document.getElementById('history-list');
+  list.innerHTML='<div class="history-empty">Loading...</div>';
+  try {
+    const d=await apiFetch('/api/history',{userId});
+    historyLoaded=true;
+    if(!d.history||d.history.length===0){
+      list.innerHTML='<div class="history-empty">မှတ်တမ်း မရှိသေးပါ</div>'; return;
+    }
+    list.innerHTML=d.history.map(h=>{
+      const dt=new Date(h.createdAt).toLocaleString();
+      return `<div class="history-item">
+        <div><div class="history-item-label">${h.label||h.type}</div>
+          <div class="history-item-time">${dt}</div></div>
+        <div class="history-item-amount">+${h.amount} ${CFG.currency_label||'Coins'}</div>
+      </div>`;
+    }).join('');
+  } catch(e){ list.innerHTML='<div class="history-empty">Load failed</div>'; }
+}
+
+/* ── SPIN (once per day) ── */
+let PRIZES=[];
+const PRIZE_COLORS=['#4CC9F0','#F72585','#7209B7','#F8961E','#43AA8B','#E63946','#4361EE','#3A0CA3'];
+
+function checkSpinAvailable(lastSpin){
+  if(!lastSpin){ document.getElementById('spin-status').textContent=''; return; }
+  const now=new Date();
+  const todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  if(new Date(lastSpin)>=todayStart){
+    document.getElementById('spin-btn').disabled=true;
+    document.getElementById('spin-status').textContent='⏳ ဒီနေ့ Spin ပြီးပါပြီ။ မနက်ဖြန် ပြန်လာပါ!';
+  } else {
+    document.getElementById('spin-btn').disabled=false;
+    document.getElementById('spin-status').textContent='';
+  }
+}
+
+function buildWheel(prizes){
+  PRIZES=prizes.map((amt,i)=>({label:amt+' '+(CFG.currency_label||'Coins'),amount:amt,color:PRIZE_COLORS[i%PRIZE_COLORS.length]}));
+  const container=document.getElementById('prize-list');
+  container.innerHTML='';
+  [...new Map(PRIZES.map(p=>[p.amount,p])).values()].forEach(p=>{
+    const d=document.createElement('div'); d.className='prize-pill';
+    d.innerHTML=`<div class="prize-dot" style="background:${p.color}"></div><div class="prize-text">${p.label}</div>`;
+    container.appendChild(d);
+  });
+  drawStaticWheel();
+}
+
+function drawStaticWheel(){
+  if(!PRIZES.length) return;
+  const canvas=document.getElementById('spin-canvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,cx=W/2,cy=W/2,r=cx-6,arc=(2*Math.PI)/PRIZES.length;
+  ctx.clearRect(0,0,W,W);
+  PRIZES.forEach((p,i)=>{
+    const s=arc*i-Math.PI/2,e=s+arc;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,e);ctx.closePath();
+    ctx.fillStyle=p.color;ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=2;ctx.stroke();
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(s+arc/2);
+    ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='bold 12px Segoe UI,Arial';
+    ctx.shadowColor='rgba(0,0,0,.3)';ctx.shadowBlur=4;
+    ctx.fillText(p.label,r-8,5);ctx.restore();
+  });
+  ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);
+  ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,.2)';ctx.shadowBlur=8;ctx.fill();
+  ctx.shadowBlur=0;ctx.font='bold 18px Segoe UI';ctx.fillStyle='#4361EE';
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🎰',cx,cy);
+}
+
+async function doSpin(){
+  if(isSpinning) return;
+  if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
+  // No loading overlay — spin immediately
+  isSpinning=true;
+  document.getElementById('spin-btn').disabled=true;
+  document.getElementById('spin-status').textContent='🔄 ဆုကြေး ရှာနေသည်...';
+  try {
+    const res=await apiFetch('/api/spin',{userId});
+    if(!res||!res.success){
+      isSpinning=false;
+      document.getElementById('spin-btn').disabled=false;
+      if(res?.error==='already_spun'){
+        document.getElementById('spin-status').textContent='⏳ ဒီနေ့ Spin ပြီးပါပြီ။ မနက်ဖြန် ပြန်လာပါ!';
+      } else {
+        document.getElementById('spin-status').textContent='';
+        showToast(res?.error||'Error','error');
+      }
+      return;
+    }
+    if(res.newBalance!==undefined) setBalanceUI(res.newBalance);
+    const idx=PRIZES.findIndex(p=>p.amount===res.prize);
+    animateSpin(idx>=0?idx:0,res.prize);
+  } catch(e){
+    isSpinning=false;
+    document.getElementById('spin-btn').disabled=false;
+    document.getElementById('spin-status').textContent='';
+    showToast('Server Error','error');
+  }
+}
+
+function animateSpin(prizeIndex,amount){
+  if(!PRIZES.length){ isSpinning=false; document.getElementById('spin-btn').disabled=false; return; }
+  const canvas=document.getElementById('spin-canvas');
+  const arc=(2*Math.PI)/PRIZES.length;
+  const targetAngle=(2*Math.PI*5)+(2*Math.PI-(arc*prizeIndex+arc/2));
+  const duration=4000,start=performance.now();
+  function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
+  function frame(now){
+    const elapsed=now-start,progress=Math.min(elapsed/duration,1);
+    const current=targetAngle*ease(progress);
+    const ctx=canvas.getContext('2d');
+    const W=canvas.width,cx=W/2,cy=W/2,r=cx-6;
+    ctx.clearRect(0,0,W,W);
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(current);ctx.translate(-cx,-cy);
+    PRIZES.forEach((p,i)=>{
+      const a=(2*Math.PI)/PRIZES.length,s=a*i-Math.PI/2,e=s+a;
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,e);ctx.closePath();
+      ctx.fillStyle=p.color;ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=2;ctx.stroke();
+      ctx.save();ctx.translate(cx,cy);ctx.rotate(s+a/2);
+      ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='bold 12px Segoe UI,Arial';
+      ctx.shadowColor='rgba(0,0,0,.3)';ctx.shadowBlur=4;
+      ctx.fillText(p.label,r-8,5);ctx.restore();
+    });
+    ctx.restore();
+    ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);ctx.fillStyle='#fff';ctx.fill();
+    ctx.font='bold 18px Segoe UI';ctx.fillStyle='#4361EE';
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🎰',cx,cy);
+    if(progress<1){ requestAnimationFrame(frame); }
+    else {
+      isSpinning=false;
+      document.getElementById('spin-status').textContent=`🎉 ${amount} ${CFG.currency_label||'Coins'} ရရှိပါပြီ!`;
+      showToast(`🎉 ${amount} Coins!`,'success');
+      WebApp.showAlert(`🎉 Lucky Spin!\n${amount} ${CFG.currency_label||'Coins'} ရရှိပါပြီ!`);
+      // disable until tomorrow
+      document.getElementById('spin-btn').disabled=true;
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ── EMOJI CATCHER GAME ── */
+let gameRunning=false,gameScore=0,gameTimer=0,gameEnded=false;
+let gameTimerInterval=null;
+const EMOJIS=['😀','🌟','💎','🍎','🎁','🏆','🦋','🌈','⚡','🔥','💫','🎯','🍀','🎊','🪙'];
+
+function getElapsed(){ return 40-gameTimer; }
+function getSpawnRate(e){ if(e<10)return 400;if(e<20)return 280;if(e<30)return 180;return 100; }
+function getFallDuration(e){ if(e<10)return 2800;if(e<20)return 2000;if(e<30)return 1300;return 800; }
+function getClusterSize(){ return Math.floor(Math.random()*3)+2; } // 2-4 per cluster
+
+async function startGame(){
+  if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
   const fee=CFG.game_entry_fee||50;
   if(currentBalance<fee){ showToast(`${fee} Coins မလောက်ပါ`,'error'); return; }
-
   setLoading(true);
   try {
     const res=await apiFetch('/api/game-start',{userId});
@@ -970,134 +1091,113 @@ async function startGame() {
       else showToast('Error: '+res.error,'error');
       return;
     }
-    updateBalanceUI(res.newBalance);
+    setBalanceUI(res.newBalance);
     launchGame();
   } catch(e){ setLoading(false); showToast('Server Error','error'); }
 }
 
-function launchGame() {
-  gameRunning=true; gameEnded=false; gameScore=0; gameTimer=40;
-  fallingObjects=[]; objIdCounter=0;
-
-  const screen=document.getElementById('game-screen');
-  screen.classList.add('active');
+function launchGame(){
+  gameRunning=true;gameEnded=false;gameScore=0;gameTimer=40;
+  document.getElementById('game-screen').classList.add('active');
+  document.getElementById('game-canvas').innerHTML='';
   document.getElementById('game-score-display').textContent='🏆 0 Coins';
   document.getElementById('game-timer-display').textContent='⏱️ 40s';
 
-  const canvas=document.getElementById('game-canvas');
-  canvas.innerHTML='';
-
-  let elapsed=0;
-  let lastSpawn=0;
+  let elapsed=0,lastSpawn=0;
 
   gameTimerInterval=setInterval(()=>{
     if(!gameRunning) return;
-    gameTimer--; elapsed++;
+    gameTimer--;elapsed++;
     document.getElementById('game-timer-display').textContent=`⏱️ ${gameTimer}s`;
     if(gameTimer<=0) endGame(false);
   },1000);
 
-  function spawnObj(){
+  let lastSpawnTime=0;
+  function spawnCluster(){
+    const size=getClusterSize();
+    for(let i=0;i<size;i++) setTimeout(()=>spawnObj(elapsed),i*80);
+  }
+
+  function spawnObj(el){
     if(!gameRunning) return;
-    const isBomb=Math.random()<0.2;
+    const isBomb=Math.random()<0.18;
     const emoji=isBomb?'💣':EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
-    const coinVal=isBomb?0:COIN_VALUES[Math.floor(Math.random()*COIN_VALUES.length)];
-    const id='obj_'+(++objIdCounter);
+    const coins=isBomb?0:[0.2,0.5,1,1,1,2,2,3][Math.floor(Math.random()*8)];
+    const canvas=document.getElementById('game-canvas');
     const cw=canvas.offsetWidth||window.innerWidth;
     const x=Math.random()*(cw-60)+10;
-    const speed=getSpeedForTime(elapsed);
-
-    const el=document.createElement('div');
-    el.className='falling-obj';
-    el.id=id; el.textContent=emoji;
-    el.style.left=x+'px'; el.style.top='-50px';
-    el.dataset.bomb=isBomb?'1':'0';
-    el.dataset.coins=coinVal;
-    canvas.appendChild(el);
-
-    const startY=-50, endY=canvas.offsetHeight+60;
-    let startTime=null;
-
+    const id='obj_'+Date.now()+'_'+Math.random();
+    const el2=document.createElement('div');
+    el2.className='falling-obj';el2.id=id;el2.textContent=emoji;
+    el2.style.left=x+'px';el2.style.top='-50px';
+    el2.dataset.bomb=isBomb?'1':'0';el2.dataset.coins=coins;
+    canvas.appendChild(el2);
+    const dur=getFallDuration(el);
+    const startY=-50,endY=(canvas.offsetHeight||600)+60;
+    let st=null;
     function fall(ts){
       if(!gameRunning||!document.getElementById(id)) return;
-      if(!startTime) startTime=ts;
-      const prog=(ts-startTime)/speed;
-      const y=startY+(endY-startY)*prog;
-      el.style.top=y+'px';
-      if(prog>=1){ el.remove(); return; }
+      if(!st) st=ts;
+      const p=(ts-st)/dur;
+      el2.style.top=(startY+(endY-startY)*p)+'px';
+      if(p>=1){el2.remove();return;}
       requestAnimationFrame(fall);
     }
     requestAnimationFrame(fall);
-    fallingObjects.push({id,isBomb,coinVal});
   }
 
   function gameLoop(ts){
     if(!gameRunning) return;
-    if(ts-lastSpawn > getSpawnRate(elapsed)){
-      lastSpawn=ts; spawnObj();
+    if(ts-lastSpawnTime>getSpawnRate(elapsed)){
+      lastSpawnTime=ts; spawnCluster();
     }
     requestAnimationFrame(gameLoop);
   }
   requestAnimationFrame(gameLoop);
 }
 
-function handleCanvasClick(e) {
+function handleCanvasClick(e){
   if(!gameRunning) return;
-  const target=e.target;
-  if(!target.classList.contains('falling-obj')) return;
+  const t=e.target;
+  if(!t.classList.contains('falling-obj')) return;
   e.stopPropagation();
-
-  if(target.dataset.bomb==='1'){ target.remove(); endGame(true); return; }
-
-  const coins=parseFloat(target.dataset.coins)||1;
+  if(t.dataset.bomb==='1'){ t.remove(); endGame(true); return; }
+  const coins=parseFloat(t.dataset.coins)||1;
   const maxEarn=CFG.game_max_earn||90;
-  if(gameScore+coins>maxEarn){
-    showToast(`최대 ${maxEarn} Coins 도달!`,'warn'); return;
-  }
-  gameScore=Math.min(gameScore+coins,maxEarn);
+  gameScore=Math.min(parseFloat((gameScore+coins).toFixed(1)),maxEarn);
   document.getElementById('game-score-display').textContent=`🏆 ${Math.floor(gameScore)} Coins`;
-
   // Particle
-  const x=parseFloat(target.style.left), y=parseFloat(target.style.top);
+  const x=parseFloat(t.style.left),y=parseFloat(t.style.top);
   const span=document.createElement('div');
   span.style.cssText=`position:absolute;left:${x}px;top:${y}px;color:#F8961E;font-weight:800;font-size:16px;pointer-events:none;z-index:10;transition:all .6s;`;
   span.textContent='+'+coins;
   document.getElementById('game-canvas').appendChild(span);
-  setTimeout(()=>{ span.style.transform='translateY(-50px)'; span.style.opacity='0'; },50);
+  setTimeout(()=>{span.style.transform='translateY(-50px)';span.style.opacity='0';},50);
   setTimeout(()=>span.remove(),700);
-
-  target.remove();
+  t.remove();
 }
 
-function endGame(hitBomb) {
+function endGame(hitBomb){
   if(gameEnded) return;
-  gameEnded=true; gameRunning=false;
+  gameEnded=true;gameRunning=false;
   clearInterval(gameTimerInterval);
-
-  const earnedInt=Math.floor(gameScore);
+  const earned=Math.floor(gameScore);
   document.getElementById('gameover-emoji').textContent=hitBomb?'💥':'🎉';
   document.getElementById('gameover-title').textContent=hitBomb?'ဗုံးနှိပ်မိပါပြီ!':'Time Up!';
-  document.getElementById('gameover-sub').textContent=`${earnedInt} Coins ရရှိပါပြီ`;
-
-  const modal=document.getElementById('gameover-modal');
-  modal.classList.add('active');
-
-  // Save to server
-  if(earnedInt>0 && userId){
-    apiFetch('/api/game-end',{userId,earned:earnedInt}).then(res=>{
-      if(res.success) updateBalanceUI(res.newBalance);
-    }).catch(()=>{});
+  document.getElementById('gameover-sub').textContent=`${earned} Coins ရရှိပါပြီ`;
+  document.getElementById('gameover-modal').classList.add('active');
+  if(earned>0&&userId){
+    apiFetch('/api/game-end',{userId,earned}).then(r=>{if(r.success)setBalanceUI(r.newBalance);}).catch(()=>{});
   }
 }
 
-function exitGame() {
+function exitGame(){
   document.getElementById('gameover-modal').classList.remove('active');
   document.getElementById('game-screen').classList.remove('active');
   document.getElementById('game-canvas').innerHTML='';
   switchTab('tab-home');
 }
-
-async function retryGame() {
+async function retryGame(){
   document.getElementById('gameover-modal').classList.remove('active');
   document.getElementById('game-screen').classList.remove('active');
   document.getElementById('game-canvas').innerHTML='';
@@ -1105,128 +1205,12 @@ async function retryGame() {
   startGame();
 }
 
-/* ══════════════════════════════════════
-   SPIN WHEEL
-══════════════════════════════════════ */
-let PRIZES=[];
-const PRIZE_COLORS=['#4CC9F0','#F72585','#7209B7','#F8961E','#43AA8B','#E63946','#4361EE','#3A0CA3'];
-
-function buildWheel(prizes) {
-  PRIZES=prizes.map((amt,i)=>({ label:amt+' Coins', amount:amt, color:PRIZE_COLORS[i%PRIZE_COLORS.length] }));
-
-  const container=document.getElementById('prize-list');
-  container.innerHTML='';
-  const unique=[...new Map(PRIZES.map(p=>[p.amount,p])).values()];
-  unique.forEach(p=>{
-    const div=document.createElement('div');
-    div.className='prize-pill';
-    div.innerHTML=`<div class="prize-dot" style="background:${p.color}"></div><div class="prize-text">${p.label}</div>`;
-    container.appendChild(div);
-  });
-
-  drawStaticWheel();
+/* ── WITHDRAW ── */
+function handleWithdraw(){
+  WebApp.openTelegramLink('https://t.me/thenetmyan_bot');
 }
 
-function drawStaticWheel() {
-  if(!PRIZES.length) return;
-  const canvas=document.getElementById('spin-canvas');
-  const ctx=canvas.getContext('2d');
-  const W=canvas.width, cx=W/2, cy=W/2, r=cx-6;
-  const arc=(2*Math.PI)/PRIZES.length;
-  ctx.clearRect(0,0,W,W);
-  PRIZES.forEach((p,i)=>{
-    const s=arc*i-Math.PI/2, e=s+arc;
-    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,s,e); ctx.closePath();
-    ctx.fillStyle=p.color; ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.3)'; ctx.lineWidth=2; ctx.stroke();
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(s+arc/2);
-    ctx.textAlign='right'; ctx.fillStyle='#fff'; ctx.font='bold 13px Segoe UI,Arial';
-    ctx.shadowColor='rgba(0,0,0,.3)'; ctx.shadowBlur=4;
-    ctx.fillText(p.label, r-10, 5); ctx.restore();
-  });
-  ctx.beginPath(); ctx.arc(cx,cy,22,0,2*Math.PI);
-  ctx.fillStyle='#fff'; ctx.shadowColor='rgba(0,0,0,.2)'; ctx.shadowBlur=8; ctx.fill();
-  ctx.shadowBlur=0; ctx.font='bold 18px Segoe UI'; ctx.fillStyle='#4361EE';
-  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('🎰',cx,cy);
-}
-
-async function doSpin() {
-  if(isSpinning) return;
-  if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
-  setLoading(true);
-  try {
-    const res=await apiFetch('/api/spin',{userId});
-    setLoading(false);
-    if(!res||!res.success){
-      showToast(res?.error||'Server Error','error'); return;
-    }
-    const prize=res.prize;
-    const idx=PRIZES.findIndex(p=>p.amount===prize);
-    animateSpin(idx>=0?idx:0, prize);
-    if(res.newBalance!==undefined) updateBalanceUI(res.newBalance);
-  } catch(e){ setLoading(false); showToast('Server Error','error'); }
-}
-
-function animateSpin(prizeIndex, amount) {
-  isSpinning=true;
-  document.getElementById('spin-btn').disabled=true;
-  if(!PRIZES.length) return;
-  const canvas=document.getElementById('spin-canvas');
-  const arc=(2*Math.PI)/PRIZES.length;
-  const targetAngle=(2*Math.PI*5)+(2*Math.PI-(arc*prizeIndex+arc/2));
-  const duration=4000, start=performance.now();
-  function ease(t){ return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2; }
-  function frame(now){
-    const elapsed=now-start, progress=Math.min(elapsed/duration,1);
-    const current=targetAngle*ease(progress);
-    const ctx=canvas.getContext('2d');
-    const W=canvas.width, cx=W/2, cy=W/2, r=cx-6;
-    ctx.clearRect(0,0,W,W);
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(current); ctx.translate(-cx,-cy);
-    PRIZES.forEach((p,i)=>{
-      const a=(2*Math.PI)/PRIZES.length;
-      const s=a*i-Math.PI/2, e=s+a;
-      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,s,e); ctx.closePath();
-      ctx.fillStyle=p.color; ctx.fill();
-      ctx.strokeStyle='rgba(255,255,255,.3)'; ctx.lineWidth=2; ctx.stroke();
-      ctx.save(); ctx.translate(cx,cy); ctx.rotate(s+a/2);
-      ctx.textAlign='right'; ctx.fillStyle='#fff'; ctx.font='bold 13px Segoe UI,Arial';
-      ctx.shadowColor='rgba(0,0,0,.3)'; ctx.shadowBlur=4;
-      ctx.fillText(p.label,r-10,5); ctx.restore();
-    });
-    ctx.restore();
-    ctx.beginPath(); ctx.arc(cx,cy,22,0,2*Math.PI);
-    ctx.fillStyle='#fff'; ctx.fill();
-    ctx.font='bold 18px Segoe UI'; ctx.fillStyle='#4361EE';
-    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('🎰',cx,cy);
-    if(progress<1){ requestAnimationFrame(frame); }
-    else {
-      isSpinning=false;
-      document.getElementById('spin-btn').disabled=false;
-      const label=CFG.currency_label||'Coins';
-      document.getElementById('spin-status').textContent=`🎉 ${amount} ${label} ရရှိပါပြီ!`;
-      showToast(`🎉 ${amount} ${label} ရပါပြီ!`,'success');
-      WebApp.showAlert(`🎉 ဂုဏ်ယူပါတယ်!\n${amount} ${label} ရရှိပါပြီ!`);
-    }
-  }
-  requestAnimationFrame(frame);
-}
-
-/* ══════════════════════════════════════
-   WITHDRAW
-══════════════════════════════════════ */
-function handleWithdraw() {
-  const MIN=100000;
-  if(currentBalance<MIN){
-    WebApp.showAlert(`❌ အနည်းဆုံး ${MIN.toLocaleString()} ${CFG.currency_label||'Coins'} ပြည့်မှ ထုတ်နိုင်ပါသည်\n\nလက်ကျန်: ${currentBalance.toLocaleString()}`);
-    return;
-  }
-  WebApp.openTelegramLink(`https://t.me/thenetmyan_bot`);
-}
-
-/* ══════════════════════════════════════
-   STARTUP
-══════════════════════════════════════ */
+/* ── STARTUP ── */
 document.getElementById('hero-username').textContent=username;
 document.getElementById('profile-name').textContent=username;
 document.getElementById('profile-id').textContent='ID: '+(userId||'---');
@@ -1235,7 +1219,7 @@ document.getElementById('profile-id').textContent='ID: '+(userId||'---');
   await loadConfig();
   initClaimedChannels();
   initVideoTimers();
-  if(userId){ await refreshBalance(); initAdTimers(); }
+  if(userId){ await refreshBalance(); }
   else showToast('Telegram ကနေ ဖွင့်ပေးပါ','warn');
 })();
 </script>
