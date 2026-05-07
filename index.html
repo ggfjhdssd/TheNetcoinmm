@@ -217,19 +217,6 @@
       transition:.2s}
     .withdraw-btn:active{transform:scale(.98)}
 
-    /* AD TIMER OVERLAY */
-    #ad-timer-overlay{display:none;position:fixed;inset:0;background:rgba(26,26,46,.85);
-      z-index:8000;align-items:center;justify-content:center;flex-direction:column}
-    #ad-timer-overlay.active{display:flex}
-    .ad-timer-box{background:#fff;border-radius:24px;padding:32px 28px;text-align:center;
-      margin:20px;width:100%;max-width:300px}
-    .ad-timer-emoji{font-size:48px;margin-bottom:12px}
-    .ad-timer-title{font-size:18px;font-weight:800;margin-bottom:8px;color:var(--text)}
-    .ad-timer-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
-    .ad-timer-bar-bg{background:#F0F0F8;border-radius:20px;height:8px;overflow:hidden}
-    .ad-timer-bar{background:linear-gradient(90deg,var(--blue),var(--purple));height:100%;border-radius:20px;transition:width .5s linear;width:0%}
-    .ad-timer-count{font-size:24px;font-weight:900;color:var(--blue);margin-top:12px}
-
     /* TOAST & LOADER */
     .toast{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;
       transform:translateX(-50%) translateY(20px);background:#1A1A2E;color:#fff;
@@ -529,17 +516,6 @@
   </div>
 </div>
 
-<!-- ★ AD WATCH TIMER OVERLAY (28s guard) -->
-<div id="ad-timer-overlay">
-  <div class="ad-timer-box">
-    <div class="ad-timer-emoji">📺</div>
-    <div class="ad-timer-title">ကြော်ငြာ ကြည့်နေသည်</div>
-    <div class="ad-timer-sub">ကြော်ငြာပြီးမှ Coins ရပါမည်<br>ကြားမှ မထွက်ပါနှင့်!</div>
-    <div class="ad-timer-bar-bg"><div class="ad-timer-bar" id="ad-timer-bar"></div></div>
-    <div class="ad-timer-count" id="ad-timer-count">28</div>
-  </div>
-</div>
-
 <div class="loading-overlay" id="loading-overlay"></div>
 <div class="toast" id="toast"></div>
 
@@ -743,67 +719,35 @@ async function claimChannel(ch) {
 }
 
 /* ══════════════════════════════════════════════════
-   ★ LOGIC 2: VPN / Myanmar IP CHECK
+   ★ LOGIC 2: Location Check — Block MM & CN
    ══════════════════════════════════════════════════ */
-async function checkNotMyanmar() {
+const BLOCKED_COUNTRIES = ['MM', 'CN'];
+
+async function checkLocationAllowed() {
   try {
     const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(5000) });
     const data = await res.json();
-    if (data.country_code === 'MM') {
+    if (BLOCKED_COUNTRIES.includes(data.country_code)) {
       WebApp.showAlert(
-        '🚫 Myanmar location ဖြစ်နေပါသည်!\n\n' +
-        'Jump Jump VPN သုံးပြီးမှ ကြော်ငြာကြည့်ပေးပါ။\n\n' +
-        '(VPN ဖွင့်ပြီး App ကို Refresh လုပ်ပါ)'
+        '🚫 သင့်တည်နေရာတွင် ကြော်ငြာကြည့်၍ မရပါ။\n\n' +
+        'Jump Jump VPN သုံးပြီး တခြားနိုင်ငံ Location ပြောင်းပေးပါ'
       );
       return false;
     }
     return true;
   } catch(e) {
-    // If IP check fails (timeout/network), allow to proceed
+    // IP check timeout or network error → allow through
     return true;
   }
 }
 
 /* ══════════════════════════════════════════════════
-   ★ LOGIC 3: 28-SECOND AD TIMER OVERLAY
+   ★ LOGIC 3: Silent 28-second background timer
+   — No overlay shown to user. Timer runs invisibly.
+   — Pass startTime (Date.now()) before calling show().
+   — After show() resolves, compare elapsed ms.
    ══════════════════════════════════════════════════ */
-let adTimerOverlayInterval = null;
-const AD_MIN_SECONDS = 28;
-
-function showAdTimerOverlay(onComplete) {
-  const overlay = document.getElementById('ad-timer-overlay');
-  const bar     = document.getElementById('ad-timer-bar');
-  const count   = document.getElementById('ad-timer-count');
-  overlay.classList.add('active');
-  bar.style.width = '0%';
-  count.textContent = AD_MIN_SECONDS;
-
-  let elapsed = 0;
-  if(adTimerOverlayInterval) clearInterval(adTimerOverlayInterval);
-
-  adTimerOverlayInterval = setInterval(() => {
-    elapsed++;
-    const pct = Math.min((elapsed / AD_MIN_SECONDS) * 100, 100);
-    bar.style.width = pct + '%';
-    const remaining = Math.max(AD_MIN_SECONDS - elapsed, 0);
-    count.textContent = remaining;
-
-    if(elapsed >= AD_MIN_SECONDS) {
-      clearInterval(adTimerOverlayInterval);
-      adTimerOverlayInterval = null;
-      overlay.classList.remove('active');
-      onComplete(true);
-    }
-  }, 1000);
-}
-
-function cancelAdTimerOverlay() {
-  if(adTimerOverlayInterval) {
-    clearInterval(adTimerOverlayInterval);
-    adTimerOverlayInterval = null;
-  }
-  document.getElementById('ad-timer-overlay').classList.remove('active');
-}
+const AD_MIN_MS = 28000;
 
 /* ── VIDEO TASKS (Daily Tasks) — 2hr cooldown ── */
 const AdController = window.Adsgram?.init({blockId:"int-29610"});
@@ -841,30 +785,39 @@ function startVideoTimer(slot,dur){
   },1000);
 }
 
-/* ★ UPDATED: handleVideoTask with IP check + 28s guard */
+/* ★ handleVideoTask — silent 28s bg timer, loading state, MM+CN block */
 async function handleVideoTask(slot){
   if(!userId){ showToast('User ID မတွေ့ပါ','error'); return; }
   const card=document.getElementById('home-task-'+slot);
   if(card&&card.classList.contains('disabled')) return;
   const tel=document.getElementById('home-task-timer-'+slot);
 
-  // ★ Step 1: Myanmar IP Check
-  if(tel) tel.textContent='⏳ စစ်ဆေးနေသည်...';
-  const allowed = await checkNotMyanmar();
-  if(!allowed){ if(tel) tel.textContent=''; return; }
-
+  // ① Loading state — brief "searching" text while IP check + ad loads
   if(card) card.classList.add('disabled');
-  if(tel) tel.textContent='⏳ Loading Ad...';
+  if(tel) tel.textContent='ကြော်ငြာရှာဖွေနေသည်...';
+
+  // ② Location check (MM & CN blocked) — silent, no visible timer
+  const allowed = await checkLocationAllowed();
+  if(!allowed){
+    if(card) card.classList.remove('disabled');
+    if(tel) tel.textContent='';
+    return;
+  }
 
   try {
-    // ★ Step 2: Show ad + start 28s timer simultaneously
-    let adDone = false;
-    let timerDone = false;
-    let rewardGranted = false;
+    // ③ Record start time — 28s silent background timer begins here
+    const adStartTime = Date.now();
 
-    const tryGiveReward = async () => {
-      if(adDone && timerDone && !rewardGranted) {
-        rewardGranted = true;
+    // Show ad (loading text stays until show() resolves — ad appeared)
+    const result = await AdController.show();
+
+    // ④ Ad returned — hide loading text
+    if(tel) tel.textContent='';
+
+    if(result?.done===true){
+      const elapsed = Date.now() - adStartTime;
+      if(elapsed >= AD_MIN_MS){
+        // ✅ Watched enough — give reward
         const d=await apiFetch('/api/reward-video',{userId,slot});
         if(d.success){
           setBalanceUI(d.newBalance);
@@ -875,47 +828,23 @@ async function handleVideoTask(slot){
           startVideoTimer(slot,cooldown);
         } else {
           if(card) card.classList.remove('disabled');
-          if(tel) tel.textContent='';
           showToast('Server Error','error');
         }
-      }
-    };
-
-    // Start 28s overlay timer
-    showAdTimerOverlay((completed) => {
-      timerDone = true;
-      if(!adDone){
-        // User exited ad before it finished AND before 28s
-        // Do nothing — adDone will resolve later or not
       } else {
-        tryGiveReward();
+        // ❌ Closed too early (< 28s)
+        if(card) card.classList.remove('disabled');
+        WebApp.showAlert('ကြော်ငြာကို အဆုံးထိ ကြည့်ပေးမှ Coins ရရှိပါမည်');
       }
-    });
-
-    // Show ad
-    const result = await AdController.show();
-
-    if(result?.done===true){
-      adDone = true;
-      if(timerDone){
-        // Timer already done, reward now
-        tryGiveReward();
-      }
-      // else: wait for timer to finish
     } else {
-      // Ad not completed (dismissed early)
-      adDone = false;
-      cancelAdTimerOverlay();
+      // Ad dismissed / not completed
       if(card) card.classList.remove('disabled');
-      if(tel) tel.textContent='';
-      showToast('ကြော်ငြာကို အပြည့်ထိကြည့်မှ Coins ရပါမယ်','warn');
+      WebApp.showAlert('ကြော်ငြာကို အဆုံးထိ ကြည့်ပေးမှ Coins ရရှိပါမည်');
     }
 
   } catch(e){
-    cancelAdTimerOverlay();
     if(card) card.classList.remove('disabled');
     if(tel) tel.textContent='';
-    showToast('Ad load failed. Try again.','error');
+    showToast('Ad load မဖြစ်ပါ၊ ထပ်ကြိုးစားပါ','error');
   }
 }
 
@@ -1008,7 +937,7 @@ function startAdResetTimer(s,dur){
   },1000);
 }
 
-/* ★ UPDATED: handleAdTask with IP check + 28s guard */
+/* ★ handleAdTask — silent 28s bg timer, loading state, MM+CN block */
 async function handleAdTask(s){
   if(!userId){ showToast('User ID မတွေ့ပါ','error'); return; }
   const daily=CFG.ad_daily_limit||4;
@@ -1017,27 +946,30 @@ async function handleAdTask(s){
   if(btn&&btn.disabled) return;
   const tel=document.getElementById('ad-timer-'+s);
 
-  // ★ Step 1: Myanmar IP Check
-  if(btn) btn.disabled=true;
-  if(tel) tel.textContent='⏳ စစ်ဆေးနေသည်...';
-  const allowed = await checkNotMyanmar();
+  // ① Loading state — disable button, show searching text
+  if(btn){ btn.disabled=true; btn.textContent='ကြော်ငြာရှာဖွေနေသည်...'; }
+
+  // ② Location check (MM & CN blocked) — silent in background
+  const allowed = await checkLocationAllowed();
   if(!allowed){
     if(btn){ btn.disabled=false; btn.textContent='Watch ▶'; }
-    if(tel) tel.textContent='';
     return;
   }
 
-  if(tel) tel.textContent='⏳ Loading Ad...';
-
   try {
-    // ★ Step 2: Show ad + 28s timer guard simultaneously
-    let adDone = false;
-    let timerDone = false;
-    let rewardGranted = false;
+    // ③ Record start time — silent 28s background timer begins here
+    const adStartTime = Date.now();
 
-    const tryGiveReward = async () => {
-      if(adDone && timerDone && !rewardGranted) {
-        rewardGranted = true;
+    // Show ad (button stays loading until show() resolves)
+    const result = await AdController.show();
+
+    // ④ Ad returned — restore button text (timer or done will handle disable state)
+    if(btn) btn.textContent='Watch ▶';
+
+    if(result?.done===true){
+      const elapsed = Date.now() - adStartTime;
+      if(elapsed >= AD_MIN_MS){
+        // ✅ Watched ≥ 28s — give reward
         const d=await apiFetch('/api/reward-user',{userId,slot:s});
         if(d.success){
           setBalanceUI(d.newBalance);
@@ -1054,43 +986,25 @@ async function handleAdTask(s){
             startAdCooldown(s,cd);
           }
         } else {
-          if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
+          if(btn){btn.disabled=false; btn.textContent='Watch ▶';}
           if(tel) tel.textContent='';
           showToast('Server Error','error');
         }
+      } else {
+        // ❌ Ad closed before 28s elapsed
+        if(btn){btn.disabled=false; btn.textContent='Watch ▶';}
+        WebApp.showAlert('ကြော်ငြာကို အဆုံးထိ ကြည့်ပေးမှ Coins ရရှိပါမည်');
       }
-    };
-
-    // Start 28s overlay timer
-    showAdTimerOverlay((completed) => {
-      timerDone = true;
-      if(adDone) tryGiveReward();
-      // else: waiting for ad to finish
-    });
-
-    // Show ad
-    const result = await AdController.show();
-
-    if(result?.done===true){
-      adDone = true;
-      if(timerDone){
-        tryGiveReward();
-      }
-      // else: wait for timer to finish (timer is still running)
     } else {
-      // Ad dismissed before finishing
-      adDone = false;
-      cancelAdTimerOverlay();
-      if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
-      if(tel) tel.textContent='';
-      showToast('ကြော်ငြာကို အပြည့်ထိကြည့်မှ Coins ရပါမယ်','warn');
+      // Ad dismissed / not completed
+      if(btn){btn.disabled=false; btn.textContent='Watch ▶';}
+      WebApp.showAlert('ကြော်ငြာကို အဆုံးထိ ကြည့်ပေးမှ Coins ရရှိပါမည်');
     }
 
   } catch(e){
-    cancelAdTimerOverlay();
-    if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
+    if(btn){btn.disabled=false; btn.textContent='Watch ▶';}
     if(tel) tel.textContent='';
-    showToast('Ad load failed. Try again.','error');
+    showToast('Ad load မဖြစ်ပါ၊ ထပ်ကြိုးစားပါ','error');
   }
 }
 
