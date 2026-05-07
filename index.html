@@ -526,7 +526,9 @@ WebApp.ready(); WebApp.expand();
 WebApp.setHeaderColor('#4361EE'); WebApp.setBackgroundColor('#F4F6FC');
 
 const tgUser = WebApp.initDataUnsafe?.user || {};
-const userId = tgUser.id || null;
+// ★ Robust userId: try WebApp SDK first, then URL ?uid= param as fallback
+const _urlUid = parseInt(new URLSearchParams(window.location.search).get('uid'));
+const userId = tgUser.id || (_urlUid > 0 ? _urlUid : null);
 const username = tgUser.username ? '@'+tgUser.username : (tgUser.first_name||'User');
 
 let currentBalance = 0;
@@ -750,7 +752,7 @@ async function checkLocationAllowed() {
 const AD_MIN_MS = 28000;
 
 /* ── VIDEO TASKS (Daily Tasks) — 2hr cooldown ── */
-const AdController = window.Adsgram?.init({blockId:"int-29610"});
+const AdController = window.Adsgram?.init({blockId:"29692"});
 const videoTimers={};
 
 function getVKey(slot){ return `vtimer_${slot}_exp`; }
