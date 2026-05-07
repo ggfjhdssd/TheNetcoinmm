@@ -675,9 +675,9 @@ async function doCheckin() {
 /* ── INVITE ── */
 function doInvite() {
   if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
-  const refLink=`https://t.me/thenetmyan_bot?start=ref_${userId}`;
-  const text=encodeURIComponent(`🎉 TheNetCoin — Coins ရှာပါ!\n${refLink}`);
-  WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`);
+  const refLink=`https://t.me/bitcoinminingmyanmar_bot?start=${userId}`;
+  const msg=`🏠 အိမ်မှာနေရင်း ဖုန်းလေးနှိပ်ရုံနဲ့ ပိုက်ဆံရှာချင်တဲ့ သူငယ်ချင်းတို့အတွက် သတင်းကောင်းနော်\nအခုမှစထွက်ထားတဲ့ Bitcoin Bot အသစ်လေးမှာ လူခေါ်ရုံနဲ့တင် Bonus တွေအများကြီးရနေပြီနော်။ တစ်ယောက်ချင်းစီအတွက် Rewards တွေက တကယ်မိုက်တယ်!\n\n🎁 Bonus သတ်မှတ်ချက်များ 🎁\n• လူ (၁) ယောက်ဖိတ်ခေါ်တိုင်း = +၅,၀၀၀ ကျပ်\n• လူ (၁၀) ယောက်ပြည့်သွားရင် = +၅၀,၀၀၀ ကျပ် အထိ 🔥\n\nတစ်ချက်လေးနှိပ်ရုံနဲ့ စတင်လိုက်တော့!\n👇 ဒီ Link ကနေ အခုပဲဝင်လိုက်ပါ 👇\n${refLink}`;
+  WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(msg)}`);
 }
 
 /* ── CHANNEL CLAIM ── */
