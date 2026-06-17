@@ -31,7 +31,6 @@
     .nav-item.active .nav-icon{background:var(--blue);box-shadow:0 4px 14px rgba(67,97,238,.4)}
     .nav-label{font-size:11px;font-weight:600;color:var(--muted);transition:.2s}
     .nav-item.active .nav-label{color:var(--blue)}
-
     .tab-page{display:none}.tab-page.active{display:block}
 
     /* HERO */
@@ -70,8 +69,8 @@
     .invite-btn{background:#fff;color:var(--purple);border:none;border-radius:12px;
       padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
 
-    /* TASK CARDS */
-    .task-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+    /* HOME TASK CARDS */
+    .task-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
     .task-card{background:var(--card);border-radius:var(--radius);padding:16px 14px;
       box-shadow:var(--shadow);cursor:pointer;transition:.2s;position:relative;overflow:hidden}
     .task-card:active{transform:scale(.97)}
@@ -81,24 +80,68 @@
     .task-reward{font-size:12px;font-weight:700;display:inline-flex;align-items:center;
       gap:4px;padding:3px 10px;border-radius:20px;background:#FFF3CD;color:var(--gold)}
     .task-card.disabled{opacity:.55;cursor:not-allowed}
-    .task-timer{font-size:10px;color:var(--muted);margin-top:4px}
+    .task-timer{font-size:11px;color:var(--muted);margin-top:5px;font-variant-numeric:tabular-nums;
+      letter-spacing:.5px;font-weight:600}
 
     /* CHECKIN CARD */
-    .checkin-card{background:var(--card);border-radius:var(--radius);padding:16px 18px;
-      box-shadow:var(--shadow);margin-bottom:20px;display:flex;align-items:center;
-      justify-content:space-between;gap:12px}
+    .checkin-card{background:linear-gradient(135deg,var(--green),#2DC653);
+      border-radius:var(--radius);padding:16px 18px;
+      margin-bottom:20px;display:flex;align-items:center;
+      justify-content:space-between;gap:12px;
+      box-shadow:0 4px 16px rgba(67,170,139,.25);cursor:pointer;transition:.2s;color:#fff}
+    .checkin-card:active{transform:scale(.98)}
+    .checkin-card.disabled{opacity:.55;cursor:not-allowed}
     .checkin-left{display:flex;align-items:center;gap:14px}
-    .checkin-icon{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,#F8961E,#F72585);
-      display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
-    .checkin-title{font-size:14px;font-weight:700;margin-bottom:3px}
-    .checkin-sub{font-size:12px;color:var(--muted)}
-    .checkin-btn{background:linear-gradient(135deg,var(--gold),#F72585);color:#fff;border:none;
-      border-radius:12px;padding:12px 20px;font-size:14px;font-weight:700;cursor:pointer;
-      white-space:nowrap;transition:.2s;box-shadow:0 4px 12px rgba(248,150,30,.35)}
-    .checkin-btn:active{transform:scale(.95)}
-    .checkin-btn:disabled{background:#ccc;cursor:not-allowed;box-shadow:none}
+    .checkin-icon{font-size:32px;flex-shrink:0}
+    .checkin-title{font-size:15px;font-weight:700}
+    .checkin-sub{font-size:12px;opacity:.85;margin-top:2px}
+    .checkin-timer-txt{font-size:11px;opacity:.8;margin-top:3px;font-variant-numeric:tabular-nums;
+      font-weight:600;letter-spacing:.5px}
+    .checkin-badge{background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.4);
+      border-radius:12px;padding:8px 14px;font-size:14px;font-weight:800;white-space:nowrap}
 
     /* EARN TAB */
+    .earn-hero{background:linear-gradient(135deg,#7209B7,#F72585);
+      border-radius:0 0 28px 28px;margin:0 -16px 20px;padding:20px 24px 28px;color:#fff}
+    .earn-hero-title{font-size:20px;font-weight:800;margin-bottom:4px}
+    .earn-hero-sub{font-size:13px;opacity:.85}
+    .earn-prog-wrap{margin-top:12px}
+    .earn-prog-label{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:6px}
+    .earn-prog-count{font-size:18px;font-weight:800}
+    .earn-prog-bg{height:8px;background:rgba(255,255,255,.25);border-radius:10px;overflow:hidden}
+    .earn-prog-fill{height:100%;background:#fff;border-radius:10px;transition:width .4s ease}
+
+    /* 2h cooldown banner */
+    .earn-cd-banner{background:var(--card);border-radius:var(--radius);padding:14px 18px;
+      margin-bottom:14px;box-shadow:var(--shadow);
+      display:none;align-items:center;justify-content:space-between}
+    .earn-cd-banner.visible{display:flex}
+    .earn-cd-label{font-size:13px;font-weight:600;color:var(--muted)}
+    .earn-cd-time{font-size:20px;font-weight:800;color:var(--blue);
+      font-variant-numeric:tabular-nums;letter-spacing:1px}
+
+    /* Earn task items */
+    .earn-task-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+    .earn-task-item{background:var(--card);border-radius:var(--radius);padding:14px 16px;
+      box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;
+      cursor:pointer;transition:.2s}
+    .earn-task-item:active{transform:scale(.98)}
+    .earn-task-item.locked{opacity:.5;cursor:not-allowed}
+    .earn-task-left{display:flex;align-items:center;gap:12px}
+    .earn-task-num{width:38px;height:38px;border-radius:10px;background:#EEF2FF;
+      display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--blue)}
+    .earn-task-num.done{background:#E8F5E9;color:var(--green)}
+    .earn-task-name{font-size:14px;font-weight:700;color:var(--text)}
+    .earn-task-desc{font-size:12px;color:var(--muted);margin-top:2px}
+    .earn-task-btn{background:var(--blue);color:#fff;border:none;border-radius:10px;
+      padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;
+      min-width:80px;text-align:center;transition:.2s}
+    .earn-task-btn:active{transform:scale(.95)}
+    .earn-task-btn.done-btn{background:var(--green);cursor:not-allowed}
+    .earn-task-btn.wait-btn{background:var(--muted);cursor:not-allowed;font-size:11px;
+      font-variant-numeric:tabular-nums;letter-spacing:.5px}
+
+    /* CHANNEL CARDS */
     .earn-card{background:var(--card);border-radius:var(--radius);padding:16px 18px;
       box-shadow:var(--shadow);margin-bottom:12px;display:flex;align-items:center;
       justify-content:space-between;gap:12px}
@@ -113,7 +156,6 @@
       padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
     .claim-btn:active{transform:scale(.95)}
     .claim-btn:disabled{background:#ccc;cursor:not-allowed}
-    .ad-count{font-size:11px;color:var(--muted);margin-top:3px}
 
     /* HISTORY */
     .history-section{margin-top:20px}
@@ -213,8 +255,7 @@
     .info-row-value{font-size:14px;font-weight:700;text-align:right}
     .withdraw-btn{width:100%;padding:16px;border-radius:var(--radius);
       background:linear-gradient(135deg,var(--green),#2DC653);color:#fff;border:none;
-      font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(67,170,139,.35);
-      transition:.2s}
+      font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(67,170,139,.35);transition:.2s}
     .withdraw-btn:active{transform:scale(.98)}
 
     /* TOAST & LOADER */
@@ -230,6 +271,20 @@
       background:rgba(255,255,255,.8) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 50 50'%3E%3Ccircle cx='25' cy='25' r='20' fill='none' stroke='%234361EE' stroke-width='4' stroke-dasharray='100 28' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 25 25' to='360 25 25' dur='.8s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/svg%3E") center no-repeat;
       display:none}
     .loading-overlay.visible{display:block}
+
+    /* Reward popup */
+    .reward-overlay{position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,.5);
+      display:none;align-items:center;justify-content:center}
+    .reward-overlay.visible{display:flex}
+    .reward-box{background:#fff;border-radius:24px;padding:32px 28px;text-align:center;
+      max-width:280px;width:90%;animation:popIn .3s ease}
+    @keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+    .reward-emoji{font-size:54px;margin-bottom:10px}
+    .reward-title{font-size:19px;font-weight:800;margin-bottom:6px;color:var(--text)}
+    .reward-amount{font-size:30px;font-weight:900;color:var(--green);margin-bottom:6px}
+    .reward-sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+    .reward-ok{width:100%;padding:13px;border-radius:14px;background:var(--green);
+      color:#fff;border:none;font-size:15px;font-weight:700;cursor:pointer}
   </style>
 </head>
 <body>
@@ -249,32 +304,18 @@
           <div>
             <div class="balance-label">Balance</div>
             <div><span class="balance-amount" id="balance-display">0</span>
-              <span class="balance-currency" id="lbl-home"> Coins</span></div>
+              <span class="balance-currency" id="lbl-home"> MMK</span></div>
           </div>
           <button class="balance-refresh" onclick="refreshBalance()">↻</button>
         </div>
-      </div>
-
-      <!-- Daily Check-in -->
-      <div class="checkin-card">
-        <div class="checkin-left">
-          <div class="checkin-icon">🎁</div>
-          <div>
-            <div class="checkin-title">Daily Check-in</div>
-            <div class="checkin-sub" id="checkin-sub">တစ်ရက် တစ်ကြိမ် Coins ရယူပါ</div>
-          </div>
-        </div>
-        <button class="checkin-btn" id="checkin-btn" onclick="doCheckin()">
-          +<span id="checkin-reward-lbl">10</span> <span class="ccy-lbl">Coins</span>
-        </button>
       </div>
 
       <!-- Invite Card -->
       <div class="invite-card" onclick="doInvite()">
         <div>
           <div class="invite-text">👫 Referral</div>
-          <div class="invite-title">Invite Friends and get <span id="invite-reward-lbl">50</span> <span class="ccy-lbl">Coins</span></div>
-          <div class="invite-sub">ဖိတ်ခေါ်တိုင်း Coins ရယူပါ</div>
+          <div class="invite-title">သူငယ်ချင်း ဖိတ်ပြီး Bonus ရပါ</div>
+          <div class="invite-sub">ဖိတ်ခေါ်တိုင်း MMK ရယူပါ</div>
         </div>
         <button class="invite-btn">Invite 👥</button>
       </div>
@@ -285,20 +326,33 @@
         <span class="section-link" onclick="switchTab('tab-earn')">See all</span>
       </div>
       <div class="task-grid">
-        <div class="task-card" id="home-task-1" onclick="handleVideoTask(1)">
+        <div class="task-card" id="home-task-1" onclick="handleDailyTask(1)">
           <div class="task-card-accent" style="background:linear-gradient(90deg,#4361EE,#7209B7)"></div>
-          <div class="task-icon">🎬</div>
+          <div class="task-icon">🎯</div>
           <div class="task-title">Daily Task 1</div>
-          <div class="task-reward" id="home-task-reward-1">⭐ +40 Coins</div>
-          <div class="task-timer" id="home-task-timer-1"></div>
+          <div class="task-reward">⭐ +400 MMK</div>
+          <div class="task-timer" id="home-timer-1"></div>
         </div>
-        <div class="task-card" id="home-task-2" onclick="handleVideoTask(2)">
+        <div class="task-card" id="home-task-2" onclick="handleDailyTask(2)">
           <div class="task-card-accent" style="background:linear-gradient(90deg,#F72585,#F8961E)"></div>
-          <div class="task-icon">🎬</div>
+          <div class="task-icon">🎯</div>
           <div class="task-title">Daily Task 2</div>
-          <div class="task-reward" id="home-task-reward-2">⭐ +40 Coins</div>
-          <div class="task-timer" id="home-task-timer-2"></div>
+          <div class="task-reward">⭐ +400 MMK</div>
+          <div class="task-timer" id="home-timer-2"></div>
         </div>
+      </div>
+
+      <!-- Daily Check-in -->
+      <div class="checkin-card" id="checkin-card" onclick="handleCheckin()">
+        <div class="checkin-left">
+          <div class="checkin-icon">✅</div>
+          <div>
+            <div class="checkin-title">Daily Check-in</div>
+            <div class="checkin-sub">နေ့တိုင်း Check-in လုပ်ပြီး MMK ရပါ</div>
+            <div class="checkin-timer-txt" id="checkin-timer-txt"></div>
+          </div>
+        </div>
+        <div class="checkin-badge">+300 MMK</div>
       </div>
     </div><!-- /home -->
 
@@ -313,38 +367,89 @@
         <div class="game-start-title">Emoji Catcher</div>
         <div class="game-start-sub">💣 ဗုံးကို မနှိပ်မိအောင် သတိထားပါ</div>
         <button class="game-start-btn" id="game-start-btn" onclick="startGame()">
-          🎮 Start with <span id="game-fee-lbl">50</span> <span class="ccy-lbl">Coins</span>
+          🎮 Start with <span id="game-fee-lbl">50</span> Coins
         </button>
       </div>
     </div>
 
     <!-- ══ EARN ══ -->
     <div class="tab-page" id="tab-earn">
-      <div class="hero-banner">
-        <p class="hero-greeting">Earn</p>
-        <p class="hero-name">💰 Coins ရယူပါ</p>
-        <div class="balance-card">
-          <div>
-            <div class="balance-label">Balance</div>
-            <div><span class="balance-amount" id="earn-balance-display">0</span>
-              <span class="balance-currency" id="lbl-earn"> Coins</span></div>
+      <div class="earn-hero">
+        <div class="earn-hero-title">💎 Earn Center</div>
+        <div class="earn-hero-sub">Task လုပ်ပြီး MMK ရပါ</div>
+        <div class="earn-prog-wrap">
+          <div class="earn-prog-label">
+            <span>ယနေ့ Progress</span>
+            <span class="earn-prog-count"><span id="earn-count">0</span>/4</span>
           </div>
-          <button class="balance-refresh" onclick="refreshBalance()">↻</button>
+          <div class="earn-prog-bg">
+            <div class="earn-prog-fill" id="earn-prog-fill" style="width:0%"></div>
+          </div>
         </div>
       </div>
 
-      <!-- Join Our Channels -->
+      <!-- 2h cooldown banner -->
+      <div class="earn-cd-banner" id="earn-cd-banner">
+        <div class="earn-cd-label">⏳ 4/4 ပြည့်ပြီ — ထပ်ယူနိုင်မည့် အချိန်</div>
+        <div class="earn-cd-time" id="earn-cd-time">02:00:00</div>
+      </div>
+
+      <!-- Earn task list -->
+      <div class="earn-task-list" id="earn-task-list">
+        <div class="earn-task-item" id="earn-item-1" onclick="handleEarnTask(1)">
+          <div class="earn-task-left">
+            <div class="earn-task-num" id="earn-num-1">1</div>
+            <div>
+              <div class="earn-task-name">Watch & Earn #1</div>
+              <div class="earn-task-desc">+200 MMK ရရှိမည်</div>
+            </div>
+          </div>
+          <button class="earn-task-btn" id="earn-btn-1">+200 MMK</button>
+        </div>
+        <div class="earn-task-item" id="earn-item-2" onclick="handleEarnTask(2)">
+          <div class="earn-task-left">
+            <div class="earn-task-num" id="earn-num-2">2</div>
+            <div>
+              <div class="earn-task-name">Watch & Earn #2</div>
+              <div class="earn-task-desc">+200 MMK ရရှိမည်</div>
+            </div>
+          </div>
+          <button class="earn-task-btn" id="earn-btn-2">+200 MMK</button>
+        </div>
+        <div class="earn-task-item" id="earn-item-3" onclick="handleEarnTask(3)">
+          <div class="earn-task-left">
+            <div class="earn-task-num" id="earn-num-3">3</div>
+            <div>
+              <div class="earn-task-name">Watch & Earn #3</div>
+              <div class="earn-task-desc">+200 MMK ရရှိမည်</div>
+            </div>
+          </div>
+          <button class="earn-task-btn" id="earn-btn-3">+200 MMK</button>
+        </div>
+        <div class="earn-task-item" id="earn-item-4" onclick="handleEarnTask(4)">
+          <div class="earn-task-left">
+            <div class="earn-task-num" id="earn-num-4">4</div>
+            <div>
+              <div class="earn-task-name">Watch & Earn #4</div>
+              <div class="earn-task-desc">+200 MMK ရရှိမည်</div>
+            </div>
+          </div>
+          <button class="earn-task-btn" id="earn-btn-4">+200 MMK</button>
+        </div>
+      </div>
+
+      <!-- Join Channels -->
       <div class="section-header"><span class="section-title">📢 Join Our Channels</span></div>
       <div class="earn-card" id="earn-ch1">
         <div class="earn-left">
           <div class="earn-icon" style="background:#EEF2FF;">📣</div>
           <div>
             <div class="earn-title" id="ch1-name">Channel 1</div>
-            <div class="earn-sub">Join ပြီး Coins ရပါ</div>
+            <div class="earn-sub">Join ပြီး MMK ရပါ</div>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-          <div class="earn-badge">+<span id="join-reward-lbl">20</span> <span class="ccy-lbl">Coins</span></div>
+          <div class="earn-badge">+<span id="join-reward-lbl">20</span> MMK</div>
           <button class="claim-btn" id="ch1-btn" onclick="claimChannel(1)">Join & Claim</button>
         </div>
       </div>
@@ -353,67 +458,19 @@
           <div class="earn-icon" style="background:#F0FFF4;">📣</div>
           <div>
             <div class="earn-title" id="ch2-name">Channel 2</div>
-            <div class="earn-sub">Join ပြီး Coins ရပါ</div>
+            <div class="earn-sub">Join ပြီး MMK ရပါ</div>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-          <div class="earn-badge">+<span id="join-reward-lbl2">20</span> <span class="ccy-lbl">Coins</span></div>
+          <div class="earn-badge">+<span id="join-reward-lbl2">20</span> MMK</div>
           <button class="claim-btn" id="ch2-btn" onclick="claimChannel(2)">Join & Claim</button>
-        </div>
-      </div>
-
-      <!-- Tasks (Ads) -->
-      <div class="section-header" style="margin-top:16px"><span class="section-title">📺 Tasks</span></div>
-      <div class="earn-card">
-        <div class="earn-left">
-          <div class="earn-icon" style="background:#EEF2FF;">📺</div>
-          <div>
-            <div class="earn-title">Watch Ad 1</div>
-            <div class="earn-sub">ကြော်ငြာ ကြည့်ပြီး Coins ရပါ</div>
-            <div class="ad-count" id="ad-count-1">0/4</div>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-          <div class="earn-badge">+<span id="ad-reward-lbl-1">20</span> <span class="ccy-lbl">Coins</span></div>
-          <button class="claim-btn" id="ad-btn-1" onclick="handleAdTask(1)">Watch ▶</button>
-          <div class="task-timer" id="ad-timer-1" style="font-size:11px;color:var(--muted)"></div>
-        </div>
-      </div>
-      <div class="earn-card">
-        <div class="earn-left">
-          <div class="earn-icon" style="background:#FFF8E7;">📺</div>
-          <div>
-            <div class="earn-title">Watch Ad 2</div>
-            <div class="earn-sub">ကြော်ငြာ ကြည့်ပြီး Coins ရပါ</div>
-            <div class="ad-count" id="ad-count-2">0/4</div>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-          <div class="earn-badge">+<span id="ad-reward-lbl-2">20</span> <span class="ccy-lbl">Coins</span></div>
-          <button class="claim-btn" id="ad-btn-2" onclick="handleAdTask(2)">Watch ▶</button>
-          <div class="task-timer" id="ad-timer-2" style="font-size:11px;color:var(--muted)"></div>
-        </div>
-      </div>
-      <div class="earn-card">
-        <div class="earn-left">
-          <div class="earn-icon" style="background:#F0FFF4;">📺</div>
-          <div>
-            <div class="earn-title">Watch Ad 3</div>
-            <div class="earn-sub">ကြော်ငြာ ကြည့်ပြီး Coins ရပါ</div>
-            <div class="ad-count" id="ad-count-3">0/4</div>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-          <div class="earn-badge">+<span id="ad-reward-lbl-3">20</span> <span class="ccy-lbl">Coins</span></div>
-          <button class="claim-btn" id="ad-btn-3" onclick="handleAdTask(3)">Watch ▶</button>
-          <div class="task-timer" id="ad-timer-3" style="font-size:11px;color:var(--muted)"></div>
         </div>
       </div>
 
       <!-- History -->
       <div class="history-section">
         <div class="history-toggle" onclick="toggleHistory()">
-          <span class="history-title">📜 Coin History</span>
+          <span class="history-title">📜 MMK History</span>
           <span class="history-arrow" id="history-arrow">▼</span>
         </div>
         <div class="history-list" id="history-list"></div>
@@ -451,7 +508,7 @@
             <div class="info-row-icon" style="background:#EEF2FF">💰</div>
             <div><div class="info-row-label">Balance</div></div>
           </div>
-          <div class="info-row-value"><span id="profile-balance">0</span> <span id="lbl-profile">Coins</span></div>
+          <div class="info-row-value"><span id="profile-balance">0</span> MMK</div>
         </div>
         <div class="info-row">
           <div class="info-row-left">
@@ -468,7 +525,6 @@
           <div class="info-row-value" id="profile-last-spin">—</div>
         </div>
       </div>
-      <!-- ★ WITHDRAW BUTTON → Deep Link to bitcoinminingmyanmar_bot -->
       <button class="withdraw-btn" onclick="handleWithdraw()">📤 ငွေထုတ်ယူရန်</button>
     </div>
 
@@ -483,7 +539,7 @@
       <div class="nav-icon">🎮</div><span class="nav-label">Games</span>
     </button>
     <button class="nav-item" id="nav-earn" onclick="switchTab('tab-earn')">
-      <div class="nav-icon">📋</div><span class="nav-label">Earn</span>
+      <div class="nav-icon">💎</div><span class="nav-label">Earn</span>
     </button>
     <button class="nav-item" id="nav-spin" onclick="switchTab('tab-spin')">
       <div class="nav-icon">🎰</div><span class="nav-label">Spin</span>
@@ -516,6 +572,17 @@
   </div>
 </div>
 
+<!-- Reward Popup -->
+<div class="reward-overlay" id="reward-overlay" onclick="closeReward()">
+  <div class="reward-box" onclick="event.stopPropagation()">
+    <div class="reward-emoji">🎉</div>
+    <div class="reward-title">ဂုဏ်ယူပါတယ်!</div>
+    <div class="reward-amount" id="reward-amount">+200 MMK</div>
+    <div class="reward-sub" id="reward-sub">ရရှိပါပြီ</div>
+    <button class="reward-ok" onclick="closeReward()">ကောင်းပါပြီ ✓</button>
+  </div>
+</div>
+
 <div class="loading-overlay" id="loading-overlay"></div>
 <div class="toast" id="toast"></div>
 
@@ -526,7 +593,6 @@ WebApp.ready(); WebApp.expand();
 WebApp.setHeaderColor('#4361EE'); WebApp.setBackgroundColor('#F4F6FC');
 
 const tgUser = WebApp.initDataUnsafe?.user || {};
-// ★ Robust userId: try WebApp SDK first, then URL ?uid= param as fallback
 const _urlUid = parseInt(new URLSearchParams(window.location.search).get('uid'));
 const userId = tgUser.id || (_urlUid > 0 ? _urlUid : null);
 const username = tgUser.username ? '@'+tgUser.username : (tgUser.first_name||'User');
@@ -537,6 +603,15 @@ let isSpinning = false;
 let CFG = {};
 
 const API_BASE = 'https://thenetcoinmm.onrender.com';
+
+/* ── CONSTANTS ── */
+const HOME_TASK_REWARD   = 400;
+const CHECKIN_REWARD     = 300;
+const EARN_REWARD        = 200;
+const HOME_COOLDOWN_S    = 20 * 60;       // 20 minutes
+const EARN_ITEM_DELAY_S  = 10;            // 10 seconds
+const EARN_FULL_CD_S     = 2 * 60 * 60;  // 2 hours
+const EARN_TOTAL         = 4;
 
 /* ── HELPERS ── */
 let toastT;
@@ -563,43 +638,28 @@ function switchTab(tabId) {
   document.getElementById('page-content').scrollTop=0;
 }
 
-function setBalanceUI(bal) {
-  currentBalance=bal;
-  const lbl=' '+(CFG.currency_label||'Coins');
-  document.getElementById('balance-display').textContent=bal.toLocaleString();
-  document.getElementById('earn-balance-display').textContent=bal.toLocaleString();
-  document.getElementById('profile-balance').textContent=bal.toLocaleString();
-  ['lbl-home','lbl-earn','lbl-profile'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=lbl;});
+function fmtTime(secs) {
+  const h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=secs%60;
+  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 }
 
-/* ── CONFIG ── */
-async function loadConfig() {
-  try {
-    CFG = await apiFetch('/api/config',null,'GET');
-    const lbl = CFG.currency_label||'Coins';
-
-    // Update all .ccy-lbl spans (dynamic currency label)
-    document.querySelectorAll('.ccy-lbl').forEach(e => e.textContent = lbl);
-
-    setBalanceUI(currentBalance);
-
-    document.getElementById('invite-reward-lbl').textContent = CFG.referral_reward||50;
-    document.getElementById('checkin-reward-lbl').textContent = CFG.checkin_reward||10;
-    document.getElementById('ch1-name').textContent = (CFG.channel1_name||'Channel 1');
-    document.getElementById('ch2-name').textContent = (CFG.channel2_name||'Channel 2');
-    ['join-reward-lbl','join-reward-lbl2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=CFG.join_reward||20;});
-    [1,2,3].forEach(i=>{const e=document.getElementById('ad-reward-lbl-'+i);if(e)e.textContent=CFG.ad_reward||20;});
-    document.getElementById('game-fee-lbl').textContent = CFG.game_entry_fee||50;
-
-    const vr=(CFG.ad_reward||20)*2;
-    [1,2].forEach(i=>{const e=document.getElementById('home-task-reward-'+i);if(e)e.textContent=`⭐ +${vr} ${lbl}`;});
-
-    if(CFG.spin_prizes) buildWheel(CFG.spin_prizes);
-    initAdTimers();
-  } catch(e){ console.warn('Config failed'); }
+function showReward(amount, sub) {
+  document.getElementById('reward-amount').textContent='+'+amount.toLocaleString()+' MMK';
+  document.getElementById('reward-sub').textContent=sub||'ရရှိပါပြီ';
+  document.getElementById('reward-overlay').classList.add('visible');
 }
+function closeReward() { document.getElementById('reward-overlay').classList.remove('visible'); }
 
 /* ── BALANCE ── */
+function setBalanceUI(bal) {
+  currentBalance=bal;
+  document.getElementById('balance-display').textContent=bal.toLocaleString();
+  document.getElementById('profile-balance').textContent=bal.toLocaleString();
+  const earnEl=document.getElementById('earn-balance-display');
+  if(earnEl) earnEl.textContent=bal.toLocaleString();
+}
+function addBal(amt) { setBalanceUI(currentBalance+amt); }
+
 async function refreshBalance() {
   if(!userId) return;
   try {
@@ -607,70 +667,244 @@ async function refreshBalance() {
     if(d.balance!==undefined){
       userData=d; setBalanceUI(d.balance);
       document.getElementById('profile-referral').textContent=(d.referralCount||0)+' ယောက်';
-      if(d.lastSpin){
-        document.getElementById('profile-last-spin').textContent=new Date(d.lastSpin).toLocaleDateString();
-      }
+      if(d.lastSpin) document.getElementById('profile-last-spin').textContent=new Date(d.lastSpin).toLocaleDateString();
       checkSpinAvailable(d.lastSpin);
-      checkCheckinAvailable(d.lastCheckin);
     }
   } catch(e){ showToast('Connection error','error'); }
 }
 
-/* ── CHECK-IN ── */
-function checkCheckinAvailable(lastCheckin) {
-  const btn=document.getElementById('checkin-btn');
-  const sub=document.getElementById('checkin-sub');
-  if(!lastCheckin){ btn.disabled=false; return; }
-  const now=new Date();
-  const todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  if(new Date(lastCheckin)>=todayStart){
-    btn.disabled=true; btn.innerHTML='✅ Done';
-    sub.textContent='မနက်ဖြန် ပြန်လာပါ';
-  } else {
-    btn.disabled=false;
-    btn.innerHTML=`+<span id="checkin-reward-lbl">${CFG.checkin_reward||10}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`;
-    sub.textContent='တစ်ရက် တစ်ကြိမ် Coins ရယူပါ';
+/* ── CONFIG ── */
+async function loadConfig() {
+  try {
+    CFG = await apiFetch('/api/config',null,'GET');
+    if(CFG.channel1_name) document.getElementById('ch1-name').textContent=CFG.channel1_name;
+    if(CFG.channel2_name) document.getElementById('ch2-name').textContent=CFG.channel2_name;
+    if(CFG.join_reward){
+      document.getElementById('join-reward-lbl').textContent=CFG.join_reward;
+      document.getElementById('join-reward-lbl2').textContent=CFG.join_reward;
+    }
+    if(CFG.game_entry_fee) document.getElementById('game-fee-lbl').textContent=CFG.game_entry_fee;
+    if(CFG.spin_prizes) buildWheel(CFG.spin_prizes);
+  } catch(e){ console.warn('Config load failed'); }
+}
+
+/* ════════════════════════════════════
+   HOME — DAILY TASK 1 & 2
+   No ads, instant +400 MMK, 20-min CD
+════════════════════════════════════ */
+const homeTimers = {};
+
+function hTaskKey(s){ return 'htask_'+s+'_exp'; }
+function checkinKey(){ return 'checkin_exp'; }
+
+function startHomeTimer(slot, secs) {
+  const card=document.getElementById('home-task-'+slot);
+  const tel=document.getElementById('home-timer-'+slot);
+  card.classList.add('disabled');
+  let t=secs;
+  if(homeTimers['t'+slot]) clearInterval(homeTimers['t'+slot]);
+  homeTimers['t'+slot]=setInterval(()=>{
+    if(t<=0){
+      clearInterval(homeTimers['t'+slot]);
+      tel.textContent=''; card.classList.remove('disabled');
+      localStorage.removeItem(hTaskKey(slot)); return;
+    }
+    tel.textContent='⏳ '+fmtTime(t); t--;
+  },1000);
+}
+
+function startCheckinTimer(secs) {
+  const card=document.getElementById('checkin-card');
+  const tel=document.getElementById('checkin-timer-txt');
+  card.classList.add('disabled');
+  let t=secs;
+  if(homeTimers['ci']) clearInterval(homeTimers['ci']);
+  homeTimers['ci']=setInterval(()=>{
+    if(t<=0){
+      clearInterval(homeTimers['ci']);
+      tel.textContent=''; card.classList.remove('disabled');
+      localStorage.removeItem(checkinKey()); return;
+    }
+    tel.textContent='⏳ '+fmtTime(t); t--;
+  },1000);
+}
+
+function initHomeTimers() {
+  [1,2].forEach(s=>{
+    const exp=localStorage.getItem(hTaskKey(s));
+    if(exp){ const rem=Math.floor((parseInt(exp)-Date.now())/1000);
+      if(rem>0) startHomeTimer(s,rem); else localStorage.removeItem(hTaskKey(s)); }
+  });
+  const ci=localStorage.getItem(checkinKey());
+  if(ci){ const rem=Math.floor((parseInt(ci)-Date.now())/1000);
+    if(rem>0) startCheckinTimer(rem); else localStorage.removeItem(checkinKey()); }
+}
+
+async function handleDailyTask(slot) {
+  const card=document.getElementById('home-task-'+slot);
+  if(card.classList.contains('disabled')) return;
+  if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
+  card.classList.add('disabled');
+  try {
+    try {
+      const d=await apiFetch('/api/reward-video',{userId,slot:'home_'+slot,amount:HOME_TASK_REWARD});
+      if(d.newBalance!==undefined) setBalanceUI(d.newBalance); else addBal(HOME_TASK_REWARD);
+    } catch(e){ addBal(HOME_TASK_REWARD); }
+    showReward(HOME_TASK_REWARD,'Daily Task '+slot+' — ရရှိပါပြီ!');
+    const exp=Date.now()+HOME_COOLDOWN_S*1000;
+    localStorage.setItem(hTaskKey(slot),exp);
+    startHomeTimer(slot,HOME_COOLDOWN_S);
+  } catch(e){ card.classList.remove('disabled'); showToast('Error','error'); }
+}
+
+async function handleCheckin() {
+  const card=document.getElementById('checkin-card');
+  if(card.classList.contains('disabled')) return;
+  if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
+  card.classList.add('disabled');
+  try {
+    try {
+      const d=await apiFetch('/api/checkin',{userId,amount:CHECKIN_REWARD});
+      if(d.newBalance!==undefined) setBalanceUI(d.newBalance); else addBal(CHECKIN_REWARD);
+    } catch(e){ addBal(CHECKIN_REWARD); }
+    showReward(CHECKIN_REWARD,'Daily Check-in — ရရှိပါပြီ!');
+    // Reset tomorrow midnight
+    const tom=new Date(); tom.setDate(tom.getDate()+1); tom.setHours(0,0,0,0);
+    const rem=Math.floor((tom-Date.now())/1000);
+    localStorage.setItem(checkinKey(),tom.getTime());
+    startCheckinTimer(rem);
+  } catch(e){ card.classList.remove('disabled'); showToast('Error','error'); }
+}
+
+/* ════════════════════════════════════
+   EARN TAB — 4 tasks
+   No ads, +200 MMK each
+   10s between tasks, 2h after 4/4
+════════════════════════════════════ */
+const EARN_COUNT_KEY = 'earn_count';
+const EARN_NEXT_KEY  = 'earn_next_exp';
+const EARN_FULL_KEY  = 'earn_full_exp';
+
+let earnCount = 0;
+let earnNextIv = null;
+let earnFullIv = null;
+
+function loadEarnState() {
+  earnCount = parseInt(localStorage.getItem(EARN_COUNT_KEY)||'0');
+
+  const fullExp = localStorage.getItem(EARN_FULL_KEY);
+  if(fullExp){
+    const rem=Math.floor((parseInt(fullExp)-Date.now())/1000);
+    if(rem>0){ setEarnFull(rem); return; }
+    else { earnCount=0; localStorage.removeItem(EARN_FULL_KEY); localStorage.removeItem(EARN_COUNT_KEY); localStorage.removeItem(EARN_NEXT_KEY); }
+  }
+
+  const nextExp = localStorage.getItem(EARN_NEXT_KEY);
+  if(nextExp && earnCount < EARN_TOTAL){
+    const rem=Math.floor((parseInt(nextExp)-Date.now())/1000);
+    if(rem>0) startEarnNextCd(rem);
+    else localStorage.removeItem(EARN_NEXT_KEY);
+  }
+  renderEarn();
+}
+
+function renderEarn() {
+  document.getElementById('earn-count').textContent=earnCount;
+  document.getElementById('earn-prog-fill').style.width=(earnCount/EARN_TOTAL*100)+'%';
+  for(let i=1;i<=EARN_TOTAL;i++){
+    const item=document.getElementById('earn-item-'+i);
+    const btn=document.getElementById('earn-btn-'+i);
+    const num=document.getElementById('earn-num-'+i);
+    if(i<=earnCount){
+      item.classList.add('locked');
+      btn.textContent='✓ ရပြီး'; btn.className='earn-task-btn done-btn';
+      num.textContent='✓'; num.className='earn-task-num done';
+    } else {
+      item.classList.remove('locked');
+      btn.className='earn-task-btn'; num.className='earn-task-num';
+      num.textContent=i;
+      if(i===earnCount+1 && btn.className==='earn-task-btn') btn.textContent='+200 MMK';
+    }
   }
 }
 
-async function doCheckin() {
-  if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
-  const btn=document.getElementById('checkin-btn');
-  btn.disabled=true;
-  try {
-    btn.innerHTML='⏳ Ad Loading...';
-    let adOk=false;
-    try {
-      const result=await AdController.show();
-      adOk=result?.done===true;
-    } catch(e){ adOk=false; }
-
-    if(!adOk){
-      btn.disabled=false;
-      btn.innerHTML=`+<span id="checkin-reward-lbl">${CFG.checkin_reward||10}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`;
-      showToast('Ad မပြနိုင်ပါ၊ ထပ်ကြိုးစားပါ','error');
-      return;
+function startEarnNextCd(secs) {
+  const next=earnCount+1;
+  if(next>EARN_TOTAL) return;
+  const item=document.getElementById('earn-item-'+next);
+  const btn=document.getElementById('earn-btn-'+next);
+  item.classList.add('locked');
+  let t=secs;
+  if(earnNextIv) clearInterval(earnNextIv);
+  earnNextIv=setInterval(()=>{
+    if(t<=0){
+      clearInterval(earnNextIv); earnNextIv=null;
+      localStorage.removeItem(EARN_NEXT_KEY);
+      item.classList.remove('locked');
+      btn.textContent='+200 MMK'; btn.className='earn-task-btn';
+      showToast('✅ ထပ်ယူနိုင်ပါပြီ!','success'); return;
     }
+    btn.textContent=fmtTime(t); btn.className='earn-task-btn wait-btn'; t--;
+  },1000);
+}
 
-    const res=await apiFetch('/api/checkin',{userId});
-    if(res.success){
-      setBalanceUI(res.newBalance);
-      showToast(`🎁 +${res.reward} ${CFG.currency_label||'Coins'} ရရှိပါပြီ!`,'success');
-      btn.innerHTML='✅ Done';
-      document.getElementById('checkin-sub').textContent='မနက်ဖြန် ပြန်လာပါ';
-    } else if(res.error==='already_checked'){
-      showToast('ဒီနေ့ Check-in ပြီးပါပြီ','warn');
-      btn.innerHTML='✅ Done';
-      document.getElementById('checkin-sub').textContent='မနက်ဖြန် ပြန်လာပါ';
+function setEarnFull(secs) {
+  const banner=document.getElementById('earn-cd-banner');
+  const timeEl=document.getElementById('earn-cd-time');
+  banner.classList.add('visible');
+  for(let i=1;i<=EARN_TOTAL;i++){
+    document.getElementById('earn-item-'+i).classList.add('locked');
+    const btn=document.getElementById('earn-btn-'+i);
+    btn.textContent='✓ ရပြီး'; btn.className='earn-task-btn done-btn';
+    const num=document.getElementById('earn-num-'+i);
+    num.textContent='✓'; num.className='earn-task-num done';
+  }
+  document.getElementById('earn-count').textContent='4';
+  document.getElementById('earn-prog-fill').style.width='100%';
+  let t=secs;
+  if(earnFullIv) clearInterval(earnFullIv);
+  earnFullIv=setInterval(()=>{
+    if(t<=0){
+      clearInterval(earnFullIv); earnFullIv=null;
+      banner.classList.remove('visible');
+      earnCount=0;
+      localStorage.removeItem(EARN_FULL_KEY); localStorage.removeItem(EARN_COUNT_KEY); localStorage.removeItem(EARN_NEXT_KEY);
+      renderEarn(); showToast('🔄 Earn Tasks ပြန်စပြီ!','success'); return;
+    }
+    timeEl.textContent=fmtTime(t); t--;
+  },1000);
+}
+
+async function handleEarnTask(slot) {
+  if(slot !== earnCount+1) return;
+  const item=document.getElementById('earn-item-'+slot);
+  if(item.classList.contains('locked')) return;
+  if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
+
+  item.classList.add('locked');
+  try {
+    try {
+      const d=await apiFetch('/api/reward-user',{userId,slot:'earn_'+slot,amount:EARN_REWARD});
+      if(d.newBalance!==undefined) setBalanceUI(d.newBalance); else addBal(EARN_REWARD);
+    } catch(e){ addBal(EARN_REWARD); }
+
+    earnCount++;
+    localStorage.setItem(EARN_COUNT_KEY,earnCount);
+    showReward(EARN_REWARD,'+200 MMK ရရှိပါပြီ! ('+earnCount+'/'+EARN_TOTAL+')');
+    renderEarn();
+
+    if(earnCount>=EARN_TOTAL){
+      const fullExp=Date.now()+EARN_FULL_CD_S*1000;
+      localStorage.setItem(EARN_FULL_KEY,fullExp);
+      setTimeout(()=>setEarnFull(EARN_FULL_CD_S),800);
     } else {
-      btn.disabled=false;
-      btn.innerHTML=`+<span id="checkin-reward-lbl">${CFG.checkin_reward||10}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`;
-      showToast('Error','error');
+      const nextExp=Date.now()+EARN_ITEM_DELAY_S*1000;
+      localStorage.setItem(EARN_NEXT_KEY,nextExp);
+      startEarnNextCd(EARN_ITEM_DELAY_S);
     }
   } catch(e){
-    btn.disabled=false;
-    btn.innerHTML=`+<span id="checkin-reward-lbl">${CFG.checkin_reward||10}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`;
-    showToast('Server Error','error');
+    item.classList.remove('locked'); earnCount=Math.max(0,earnCount-1);
+    showToast('Error','error');
   }
 }
 
@@ -678,341 +912,40 @@ async function doCheckin() {
 function doInvite() {
   if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
   const refLink=`https://t.me/bitcoinminingmyanmar_bot?start=${userId}`;
-  const msg=`🏠 အိမ်မှာနေရင်း ဖုန်းလေးနှိပ်ရုံနဲ့ ပိုက်ဆံရှာချင်တဲ့ သူငယ်ချင်းတို့အတွက် သတင်းကောင်းနော်\nအခုမှစထွက်ထားတဲ့ Bitcoin Bot အသစ်လေးမှာ လူခေါ်ရုံနဲ့တင် Bonus တွေအများကြီးရနေပြီနော်။ တစ်ယောက်ချင်းစီအတွက် Rewards တွေက တကယ်မိုက်တယ်!\n\n🎁 Bonus သတ်မှတ်ချက်များ 🎁\n• လူ (၁) ယောက်ဖိတ်ခေါ်တိုင်း = +၅,၀၀၀ ကျပ်\n• လူ (၁၀) ယောက်ပြည့်သွားရင် = +၅၀,၀၀၀ ကျပ် အထိ 🔥\n\nတစ်ချက်လေးနှိပ်ရုံနဲ့ စတင်လိုက်တော့!\n👇 ဒီ Link ကနေ အခုပဲဝင်လိုက်ပါ 👇\n${refLink}`;
+  const msg=`🏠 အိမ်မှာနေရင်း ဖုန်းလေးနှိပ်ရုံနဲ့ ပိုက်ဆံရှာချင်တဲ့ သူငယ်ချင်းတို့အတွက် သတင်းကောင်းနော်\nTheNetCoin Bot အသစ်လေးမှာ လူခေါ်ရုံနဲ့တင် Bonus တွေအများကြီးရနေပြီနော်!\n\n🎁 တစ်ယောက်ဖိတ်ခေါ်တိုင်း Bonus ရမည်!\n👇 ဒီ Link ကနေ အခုပဲဝင်လိုက်ပါ 👇\n${refLink}`;
   WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(msg)}`);
 }
 
 /* ── CHANNEL CLAIM ── */
-const claimedChs = JSON.parse(localStorage.getItem('claimed_channels')||'[]');
-
-function initClaimedChannels() {
+const claimedChs=JSON.parse(localStorage.getItem('claimed_channels')||'[]');
+function initClaimedChannels(){
   [1,2].forEach(ch=>{
-    if(claimedChs.includes(ch)){
-      const btn=document.getElementById(`ch${ch}-btn`);
-      if(btn){btn.disabled=true;btn.textContent='✅ Claimed';}
-    }
+    if(claimedChs.includes(ch)){ const btn=document.getElementById(`ch${ch}-btn`);if(btn){btn.disabled=true;btn.textContent='✅ Claimed';} }
   });
 }
-
-async function claimChannel(ch) {
+async function claimChannel(ch){
   if(!userId){ showToast('User ID မတွေ့ပါ','error'); return; }
   if(claimedChs.includes(ch)){ showToast('ဆုကြေး ယူပြီးပါပြီ','warn'); return; }
   const btn=document.getElementById(`ch${ch}-btn`);
   btn.disabled=true; btn.textContent='စစ်ဆေးနေသည်...';
   try {
     const res=await apiFetch('/api/claim-join',{userId,channel:ch});
-    if(res.success){
-      claimedChs.push(ch); localStorage.setItem('claimed_channels',JSON.stringify(claimedChs));
+    if(res.success){ claimedChs.push(ch); localStorage.setItem('claimed_channels',JSON.stringify(claimedChs));
       setBalanceUI(res.newBalance); btn.textContent='✅ Claimed';
-      showToast(`✅ +${res.reward} ${CFG.currency_label||'Coins'}!`,'success');
+      showToast(`✅ +${res.reward} MMK!`,'success');
     } else if(res.error==='not_joined'){
       btn.disabled=false; btn.textContent='Join & Claim';
       const link=ch===2?(CFG.channel2_link||'https://t.me/TheNetMyan'):(CFG.channel1_link||'https://t.me/TheNetMyan');
-      WebApp.openTelegramLink(link);
-      showToast('Channel ကို အရင် Join ပါ','warn');
+      WebApp.openTelegramLink(link); showToast('Channel ကို အရင် Join ပါ','warn');
     } else if(res.error==='already_claimed'){
       claimedChs.push(ch); localStorage.setItem('claimed_channels',JSON.stringify(claimedChs));
       btn.textContent='✅ Claimed'; showToast('ဆုကြေး ယူပြီးပါပြီ','warn');
-    } else {
-      btn.disabled=false; btn.textContent='Join & Claim';
-      showToast(res.error||'Error','error');
-    }
+    } else { btn.disabled=false; btn.textContent='Join & Claim'; showToast(res.error||'Error','error'); }
   } catch(e){ btn.disabled=false; btn.textContent='Join & Claim'; showToast('Server Error','error'); }
-}
-
-/* ══════════════════════════════════════════════════
-   ★ LOGIC 2: Location Check — Block MM & CN
-   ══════════════════════════════════════════════════ */
-const BLOCKED_COUNTRIES = ['MM', 'CN'];
-
-async function checkLocationAllowed() {
-  try {
-    const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(5000) });
-    const data = await res.json();
-    if (BLOCKED_COUNTRIES.includes(data.country_code)) {
-      WebApp.showAlert(
-        '🚫 သင့်တည်နေရာတွင် ကြော်ငြာကြည့်၍ မရပါ။\n\n' +
-        'Jump Jump VPN သုံးပြီး တခြားနိုင်ငံ Location ပြောင်းပေးပါ'
-      );
-      return false;
-    }
-    return true;
-  } catch(e) {
-    // IP check timeout or network error → allow through
-    return true;
-  }
-}
-
-/* ══════════════════════════════════════════════════
-   ★ LOGIC 3: Silent 28-second background timer
-   — No overlay shown to user. Timer runs invisibly.
-   — Pass startTime (Date.now()) before calling show().
-   — After show() resolves, compare elapsed ms.
-   ══════════════════════════════════════════════════ */
-const AD_MIN_MS = 28000;
-
-/* ── VIDEO TASKS (Daily Tasks) — 2hr cooldown ── */
-const AdController = window.Adsgram?.init({blockId:"29692"});
-const videoTimers={};
-
-function getVKey(slot){ return `vtimer_${slot}_exp`; }
-
-function initVideoTimers(){
-  [1,2].forEach(slot=>{
-    const exp=localStorage.getItem(getVKey(slot));
-    if(exp){
-      const rem=Math.floor((parseInt(exp)-Date.now())/1000);
-      if(rem>0) startVideoTimer(slot,rem);
-      else localStorage.removeItem(getVKey(slot));
-    }
-  });
-}
-
-function startVideoTimer(slot,dur){
-  const card=document.getElementById('home-task-'+slot);
-  const tel=document.getElementById('home-task-timer-'+slot);
-  if(card) card.classList.add('disabled');
-  let t=dur;
-  if(videoTimers[slot]) clearInterval(videoTimers[slot]);
-  videoTimers[slot]=setInterval(()=>{
-    if(t<=0){
-      clearInterval(videoTimers[slot]);
-      if(tel) tel.textContent='';
-      if(card) card.classList.remove('disabled');
-      localStorage.removeItem(getVKey(slot)); return;
-    }
-    const h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;
-    if(tel) tel.textContent=h>0?`⏳ ${h}h ${m}m`:`⏳ ${m}:${String(s).padStart(2,'0')}`;
-    t--;
-  },1000);
-}
-
-/* ★ handleVideoTask — silent 28s bg timer, loading state, MM+CN block */
-async function handleVideoTask(slot){
-  if(!userId){ showToast('User ID မတွေ့ပါ','error'); return; }
-  const card=document.getElementById('home-task-'+slot);
-  if(card&&card.classList.contains('disabled')) return;
-  const tel=document.getElementById('home-task-timer-'+slot);
-
-  // ① Loading state — brief "searching" text while IP check + ad loads
-  if(card) card.classList.add('disabled');
-  if(tel) tel.textContent='ကြော်ငြာရှာဖွေနေသည်...';
-
-  // ② Location check (MM & CN blocked) — silent, no visible timer
-  const allowed = await checkLocationAllowed();
-  if(!allowed){
-    if(card) card.classList.remove('disabled');
-    if(tel) tel.textContent='';
-    return;
-  }
-
-  try {
-    // ③ Record start time — 28s silent background timer begins here
-    const adStartTime = Date.now();
-
-    // Show ad (loading text stays until show() resolves — ad appeared)
-    const result = await AdController.show();
-
-    // ④ Ad returned — hide loading text
-    if(tel) tel.textContent='';
-
-    if(result?.done===true){
-      const elapsed = Date.now() - adStartTime;
-      if(elapsed >= AD_MIN_MS){
-        // ✅ Watched enough — give reward
-        const d=await apiFetch('/api/reward-video',{userId,slot});
-        if(d.success){
-          setBalanceUI(d.newBalance);
-          showToast(`✅ +${d.rewardAmt} ${CFG.currency_label||'Coins'}!`,'success');
-          const cooldown=CFG.video_cooldown_s||7200;
-          const exp=Date.now()+cooldown*1000;
-          localStorage.setItem(getVKey(slot),exp);
-          startVideoTimer(slot,cooldown);
-        } else {
-          if(card) card.classList.remove('disabled');
-          showToast('Server Error','error');
-        }
-      } else {
-        // ❌ Closed too early (< 28s)
-        if(card) card.classList.remove('disabled');
-        WebApp.showAlert('ကြော်ငြာကို အဆုံးထိ ကြည့်ပေးမှ Coins ရရှိပါမည်');
-      }
-    } else {
-      // Ad dismissed / not completed
-      if(card) card.classList.remove('disabled');
-      WebApp.showAlert('ကြော်ငြာကို အဆုံးထိ ကြည့်ပေးမှ Coins ရရှိပါမည်');
-    }
-
-  } catch(e){
-    if(card) card.classList.remove('disabled');
-    if(tel) tel.textContent='';
-    showToast('Ad load မဖြစ်ပါ၊ ထပ်ကြိုးစားပါ','error');
-  }
-}
-
-/* ── AD TASKS (Earn Tab) ── */
-const adTimers={};
-function getAdTimerKey(s){ return `adtimer_${s}_exp`; }
-function getAdCountKey(s){ return `adcount_${s}`; }
-function getAdResetKey(s){ return `adreset_${s}`; }
-
-function getAdCount(s){
-  const reset=parseInt(localStorage.getItem(getAdResetKey(s))||'0');
-  if(Date.now()>reset){ localStorage.removeItem(getAdCountKey(s)); localStorage.removeItem(getAdResetKey(s)); return 0; }
-  return parseInt(localStorage.getItem(getAdCountKey(s))||'0');
-}
-
-function incAdCount(s){
-  const daily=CFG.ad_daily_limit||4;
-  const resetH=CFG.ad_daily_reset_h||24;
-  const count=getAdCount(s)+1;
-  localStorage.setItem(getAdCountKey(s),count);
-  if(!localStorage.getItem(getAdResetKey(s)))
-    localStorage.setItem(getAdResetKey(s),Date.now()+resetH*3600*1000);
-  const e=document.getElementById('ad-count-'+s);
-  if(e) e.textContent=`${count}/${daily}`;
-  return count;
-}
-
-function initAdTimers(){
-  [1,2,3].forEach(s=>{
-    const daily=CFG.ad_daily_limit||4;
-    const count=getAdCount(s);
-    const ce=document.getElementById('ad-count-'+s);
-    if(ce) ce.textContent=`${count}/${daily}`;
-    if(count>=daily){
-      const reset=parseInt(localStorage.getItem(getAdResetKey(s))||'0');
-      if(Date.now()<reset){
-        const btn=document.getElementById('ad-btn-'+s);
-        if(btn){btn.disabled=true;btn.textContent='✅ Done Today';}
-        startAdResetTimer(s,Math.floor((reset-Date.now())/1000)); return;
-      }
-    }
-    const exp=localStorage.getItem(getAdTimerKey(s));
-    if(exp){
-      const rem=Math.floor((parseInt(exp)-Date.now())/1000);
-      if(rem>0) startAdCooldown(s,rem);
-      else localStorage.removeItem(getAdTimerKey(s));
-    }
-  });
-}
-
-function startAdCooldown(s,dur){
-  const btn=document.getElementById('ad-btn-'+s);
-  const tel=document.getElementById('ad-timer-'+s);
-  if(btn) btn.disabled=true;
-  let t=dur;
-  if(adTimers['cd_'+s]) clearInterval(adTimers['cd_'+s]);
-  adTimers['cd_'+s]=setInterval(()=>{
-    if(t<=0){
-      clearInterval(adTimers['cd_'+s]);
-      if(tel) tel.textContent='';
-      const count=getAdCount(s);
-      const daily=CFG.ad_daily_limit||4;
-      if(btn&&count<daily){btn.disabled=false;btn.textContent='Watch ▶';}
-      localStorage.removeItem(getAdTimerKey(s)); return;
-    }
-    const m=Math.floor(t/60),sc=t%60;
-    if(tel) tel.textContent=`⏳ ${m}:${String(sc).padStart(2,'0')}`;
-    t--;
-  },1000);
-}
-
-function startAdResetTimer(s,dur){
-  const tel=document.getElementById('ad-timer-'+s);
-  let t=dur;
-  if(adTimers['rst_'+s]) clearInterval(adTimers['rst_'+s]);
-  adTimers['rst_'+s]=setInterval(()=>{
-    if(t<=0){
-      clearInterval(adTimers['rst_'+s]);
-      localStorage.removeItem(getAdCountKey(s)); localStorage.removeItem(getAdResetKey(s));
-      const btn=document.getElementById('ad-btn-'+s);
-      if(btn){btn.disabled=false;btn.textContent='Watch ▶';}
-      if(tel) tel.textContent='';
-      const ce=document.getElementById('ad-count-'+s);
-      if(ce) ce.textContent=`0/${CFG.ad_daily_limit||4}`;
-      return;
-    }
-    const h=Math.floor(t/3600),m=Math.floor((t%3600)/60);
-    if(tel) tel.textContent=`🔄 ${h}h ${m}m`;
-    t--;
-  },1000);
-}
-
-/* ★ handleAdTask — silent 28s bg timer, loading state, MM+CN block */
-async function handleAdTask(s){
-  if(!userId){ showToast('User ID မတွေ့ပါ','error'); return; }
-  const daily=CFG.ad_daily_limit||4;
-  if(getAdCount(s)>=daily){ showToast('Daily limit ပြည့်ပါပြီ','warn'); return; }
-  const btn=document.getElementById('ad-btn-'+s);
-  if(btn&&btn.disabled) return;
-  const tel=document.getElementById('ad-timer-'+s);
-
-  // ① Loading state — disable button, show searching text
-  if(btn){ btn.disabled=true; btn.textContent='ကြော်ငြာရှာဖွေနေသည်...'; }
-
-  // ② Location check (MM & CN blocked) — silent in background
-  const allowed = await checkLocationAllowed();
-  if(!allowed){
-    if(btn){ btn.disabled=false; btn.textContent='Watch ▶'; }
-    return;
-  }
-
-  try {
-    // ③ Record start time — silent 28s background timer begins here
-    const adStartTime = Date.now();
-
-    // Show ad (button stays loading until show() resolves)
-    const result = await AdController.show();
-
-    // ④ Ad returned — restore button text (timer or done will handle disable state)
-    if(btn) btn.textContent='Watch ▶';
-
-    if(result?.done===true){
-      const elapsed = Date.now() - adStartTime;
-      if(elapsed >= AD_MIN_MS){
-        // ✅ Watched ≥ 28s — give reward
-        const d=await apiFetch('/api/reward-user',{userId,slot:s});
-        if(d.success){
-          setBalanceUI(d.newBalance);
-          const nc=incAdCount(s);
-          showToast(`✅ +${d.rewardAmt} ${CFG.currency_label||'Coins'}!`,'success');
-          if(nc>=daily){
-            if(btn){btn.disabled=true;btn.textContent='✅ Done Today';}
-            const reset=parseInt(localStorage.getItem(getAdResetKey(s))||'0');
-            startAdResetTimer(s,Math.floor((reset-Date.now())/1000));
-          } else {
-            const cd=CFG.ad_cooldown_s||180;
-            const exp=Date.now()+cd*1000;
-            localStorage.setItem(getAdTimerKey(s),exp);
-            startAdCooldown(s,cd);
-          }
-        } else {
-          if(btn){btn.disabled=false; btn.textContent='Watch ▶';}
-          if(tel) tel.textContent='';
-          showToast('Server Error','error');
-        }
-      } else {
-        // ❌ Ad closed before 28s elapsed
-        if(btn){btn.disabled=false; btn.textContent='Watch ▶';}
-        WebApp.showAlert('ကြော်ငြာကို အဆုံးထိ ကြည့်ပေးမှ Coins ရရှိပါမည်');
-      }
-    } else {
-      // Ad dismissed / not completed
-      if(btn){btn.disabled=false; btn.textContent='Watch ▶';}
-      WebApp.showAlert('ကြော်ငြာကို အဆုံးထိ ကြည့်ပေးမှ Coins ရရှိပါမည်');
-    }
-
-  } catch(e){
-    if(btn){btn.disabled=false; btn.textContent='Watch ▶';}
-    if(tel) tel.textContent='';
-    showToast('Ad load မဖြစ်ပါ၊ ထပ်ကြိုးစားပါ','error');
-  }
 }
 
 /* ── HISTORY ── */
 let historyLoaded=false;
-
 function toggleHistory(){
   const list=document.getElementById('history-list');
   const arrow=document.getElementById('history-arrow');
@@ -1020,7 +953,6 @@ function toggleHistory(){
   arrow.classList.toggle('open',open);
   if(open&&!historyLoaded) loadHistory();
 }
-
 async function loadHistory(){
   if(!userId) return;
   const list=document.getElementById('history-list');
@@ -1028,28 +960,21 @@ async function loadHistory(){
   try {
     const d=await apiFetch('/api/history',{userId});
     historyLoaded=true;
-    if(!d.history||d.history.length===0){
-      list.innerHTML='<div class="history-empty">မှတ်တမ်း မရှိသေးပါ</div>'; return;
-    }
+    if(!d.history||d.history.length===0){ list.innerHTML='<div class="history-empty">မှတ်တမ်း မရှိသေးပါ</div>'; return; }
     list.innerHTML=d.history.map(h=>{
       const dt=new Date(h.createdAt).toLocaleString();
-      return `<div class="history-item">
-        <div><div class="history-item-label">${h.label||h.type}</div>
-          <div class="history-item-time">${dt}</div></div>
-        <div class="history-item-amount">+${h.amount} ${CFG.currency_label||'Coins'}</div>
-      </div>`;
+      return `<div class="history-item"><div><div class="history-item-label">${h.label||h.type}</div><div class="history-item-time">${dt}</div></div><div class="history-item-amount">+${h.amount} MMK</div></div>`;
     }).join('');
   } catch(e){ list.innerHTML='<div class="history-empty">Load failed</div>'; }
 }
 
-/* ── SPIN (once per day) ── */
+/* ── SPIN ── */
 let PRIZES=[];
 const PRIZE_COLORS=['#4CC9F0','#F72585','#7209B7','#F8961E','#43AA8B','#E63946','#4361EE','#3A0CA3'];
 
 function checkSpinAvailable(lastSpin){
   if(!lastSpin){ document.getElementById('spin-status').textContent=''; return; }
-  const now=new Date();
-  const todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const now=new Date(),todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   if(new Date(lastSpin)>=todayStart){
     document.getElementById('spin-btn').disabled=true;
     document.getElementById('spin-status').textContent='⏳ ဒီနေ့ Spin ပြီးပါပြီ။ မနက်ဖြန် ပြန်လာပါ!';
@@ -1060,7 +985,7 @@ function checkSpinAvailable(lastSpin){
 }
 
 function buildWheel(prizes){
-  PRIZES=prizes.map((amt,i)=>({label:amt+' '+(CFG.currency_label||'Coins'),amount:amt,color:PRIZE_COLORS[i%PRIZE_COLORS.length]}));
+  PRIZES=prizes.map((amt,i)=>({label:amt+' MMK',amount:amt,color:PRIZE_COLORS[i%PRIZE_COLORS.length]}));
   const container=document.getElementById('prize-list');
   container.innerHTML='';
   [...new Map(PRIZES.map(p=>[p.amount,p])).values()].forEach(p=>{
@@ -1102,25 +1027,15 @@ async function doSpin(){
   try {
     const res=await apiFetch('/api/spin',{userId});
     if(!res||!res.success){
-      isSpinning=false;
-      document.getElementById('spin-btn').disabled=false;
-      if(res?.error==='already_spun'){
-        document.getElementById('spin-status').textContent='⏳ ဒီနေ့ Spin ပြီးပါပြီ။ မနက်ဖြန် ပြန်လာပါ!';
-      } else {
-        document.getElementById('spin-status').textContent='';
-        showToast(res?.error||'Error','error');
-      }
+      isSpinning=false; document.getElementById('spin-btn').disabled=false;
+      if(res?.error==='already_spun') document.getElementById('spin-status').textContent='⏳ ဒီနေ့ Spin ပြီးပါပြီ။ မနက်ဖြန် ပြန်လာပါ!';
+      else { document.getElementById('spin-status').textContent=''; showToast(res?.error||'Error','error'); }
       return;
     }
     if(res.newBalance!==undefined) setBalanceUI(res.newBalance);
     const idx=PRIZES.findIndex(p=>p.amount===res.prize);
     animateSpin(idx>=0?idx:0,res.prize);
-  } catch(e){
-    isSpinning=false;
-    document.getElementById('spin-btn').disabled=false;
-    document.getElementById('spin-status').textContent='';
-    showToast('Server Error','error');
-  }
+  } catch(e){ isSpinning=false; document.getElementById('spin-btn').disabled=false; document.getElementById('spin-status').textContent=''; showToast('Server Error','error'); }
 }
 
 function animateSpin(prizeIndex,amount){
@@ -1140,23 +1055,19 @@ function animateSpin(prizeIndex,amount){
     PRIZES.forEach((p,i)=>{
       const a=(2*Math.PI)/PRIZES.length,s=a*i-Math.PI/2,e=s+a;
       ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,e);ctx.closePath();
-      ctx.fillStyle=p.color;ctx.fill();
-      ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=2;ctx.stroke();
+      ctx.fillStyle=p.color;ctx.fill();ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=2;ctx.stroke();
       ctx.save();ctx.translate(cx,cy);ctx.rotate(s+a/2);
       ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='bold 12px Segoe UI,Arial';
-      ctx.shadowColor='rgba(0,0,0,.3)';ctx.shadowBlur=4;
-      ctx.fillText(p.label,r-8,5);ctx.restore();
+      ctx.shadowColor='rgba(0,0,0,.3)';ctx.shadowBlur=4;ctx.fillText(p.label,r-8,5);ctx.restore();
     });
     ctx.restore();
     ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);ctx.fillStyle='#fff';ctx.fill();
-    ctx.font='bold 18px Segoe UI';ctx.fillStyle='#4361EE';
-    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🎰',cx,cy);
+    ctx.font='bold 18px Segoe UI';ctx.fillStyle='#4361EE';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🎰',cx,cy);
     if(progress<1){ requestAnimationFrame(frame); }
     else {
       isSpinning=false;
-      document.getElementById('spin-status').textContent=`🎉 ${amount} ${CFG.currency_label||'Coins'} ရရှိပါပြီ!`;
-      showToast(`🎉 ${amount} ${CFG.currency_label||'Coins'}!`,'success');
-      WebApp.showAlert(`🎉 Lucky Spin!\n${amount} ${CFG.currency_label||'Coins'} ရရှိပါပြီ!`);
+      document.getElementById('spin-status').textContent=`🎉 ${amount} MMK ရရှိပါပြီ!`;
+      showReward(amount,'Lucky Spin ဆုကြေး!');
       document.getElementById('spin-btn').disabled=true;
     }
   }
@@ -1164,47 +1075,30 @@ function animateSpin(prizeIndex,amount){
 }
 
 /* ── EMOJI CATCHER GAME ── */
-let gameRunning=false,gameScore=0,gameTimer=0,gameEnded=false;
-let gameTimerInterval=null;
+let gameRunning=false,gameScore=0,gameTimer=0,gameEnded=false,gameTimerInterval=null;
 const EMOJIS=['😀','🌟','💎','🍎','🎁','🏆','🦋','🌈','⚡','🔥','💫','🎯','🍀','🎊','🪙'];
-
-function getElapsed(){ return 40-gameTimer; }
-function getSpawnRate(e){ if(e<10)return 400;if(e<20)return 280;if(e<30)return 180;return 100; }
-function getFallDuration(e){ if(e<10)return 2800;if(e<20)return 2000;if(e<30)return 1300;return 800; }
-function getClusterSize(){ return Math.floor(Math.random()*3)+2; }
+const AdController = window.Adsgram?.init({blockId:"29692"});
 
 async function startGame(){
   if(!userId){ showToast('Telegram ကနေ ဖွင့်ပေးပါ','error'); return; }
   const fee=CFG.game_entry_fee||50;
-  if(currentBalance<fee){ showToast(`${fee} ${CFG.currency_label||'Coins'} မလောက်ပါ`,'error'); return; }
-
+  if(currentBalance<fee){ showToast(`${fee} Coins မလောက်ပါ`,'error'); return; }
   setLoading(true);
   try {
     const res=await apiFetch('/api/game-start',{userId});
     setLoading(false);
-    if(!res.success){
-      if(res.error==='insufficient') showToast(`${fee} ${CFG.currency_label||'Coins'} မလောက်ပါ`,'error');
-      else showToast('Error: '+res.error,'error');
-      return;
-    }
+    if(!res.success){ showToast('Error: '+(res.error||''),'error'); return; }
     setBalanceUI(res.newBalance);
   } catch(e){ setLoading(false); showToast('Server Error','error'); return; }
-
   const startBtn=document.getElementById('game-start-btn');
-  if(startBtn){ startBtn.disabled=true; startBtn.textContent='⏳ Ad Loading...'; }
+  if(startBtn){startBtn.disabled=true;startBtn.textContent='⏳ Loading...';}
   try {
     const result=await AdController.show();
-    if(result?.done===true){
-      if(startBtn){ startBtn.disabled=false; startBtn.innerHTML=`🎮 Start with <span id="game-fee-lbl">${fee}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`; }
-      launchGame();
-    } else {
-      if(startBtn){ startBtn.disabled=false; startBtn.innerHTML=`🎮 Start with <span id="game-fee-lbl">${fee}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`; }
-      await apiFetch('/api/game-refund',{userId,fee}).catch(()=>{});
-      await refreshBalance();
-      showToast('Ad မကြည့်ရသဖြင့် Coins ပြန်ရပါပြီ','warn');
-    }
+    if(startBtn){startBtn.disabled=false;startBtn.innerHTML=`🎮 Start with <span id="game-fee-lbl">${fee}</span> Coins`;}
+    if(result?.done===true){ launchGame(); }
+    else { await apiFetch('/api/game-refund',{userId,fee}).catch(()=>{}); await refreshBalance(); showToast('Ad မကြည့်ရသဖြင့် Coins ပြန်ရပါပြီ','warn'); }
   } catch(e){
-    if(startBtn){ startBtn.disabled=false; startBtn.innerHTML=`🎮 Start with <span id="game-fee-lbl">${fee}</span> <span class="ccy-lbl">${CFG.currency_label||'Coins'}</span>`; }
+    if(startBtn){startBtn.disabled=false;startBtn.innerHTML=`🎮 Start with <span id="game-fee-lbl">${fee}</span> Coins`;}
     launchGame();
   }
 }
@@ -1215,22 +1109,16 @@ function launchGame(){
   document.getElementById('game-canvas').innerHTML='';
   document.getElementById('game-score-display').textContent='🏆 0 Coins';
   document.getElementById('game-timer-display').textContent='⏱️ 40s';
-
   let elapsed=0;
-
   gameTimerInterval=setInterval(()=>{
     if(!gameRunning) return;
     gameTimer--;elapsed++;
     document.getElementById('game-timer-display').textContent=`⏱️ ${gameTimer}s`;
     if(gameTimer<=0) endGame(false);
   },1000);
-
   let lastSpawnTime=0;
-  function spawnCluster(){
-    const size=getClusterSize();
-    for(let i=0;i<size;i++) setTimeout(()=>spawnObj(elapsed),i*80);
-  }
-
+  function getSpawnRate(e){if(e<10)return 400;if(e<20)return 280;if(e<30)return 180;return 100;}
+  function getFallDuration(e){if(e<10)return 2800;if(e<20)return 2000;if(e<30)return 1300;return 800;}
   function spawnObj(el){
     if(!gameRunning) return;
     const isBomb=Math.random()<0.18;
@@ -1244,12 +1132,11 @@ function launchGame(){
     el2.className='falling-obj';el2.id=id;el2.textContent=emoji;
     el2.style.left=x+'px';el2.style.top='-50px';
     el2.dataset.bomb=isBomb?'1':'0';el2.dataset.coins=coins;
-
     function onHit(e){
       e.preventDefault();e.stopPropagation();
       if(!gameRunning||!document.getElementById(id)) return;
       el2.remove();
-      if(el2.dataset.bomb==='1'){ endGame(true); return; }
+      if(el2.dataset.bomb==='1'){endGame(true);return;}
       const cv=parseFloat(el2.dataset.coins)||1;
       const maxEarn=CFG.game_max_earn||90;
       gameScore=Math.min(parseFloat((gameScore+cv).toFixed(1)),maxEarn);
@@ -1257,34 +1144,26 @@ function launchGame(){
       const px=parseFloat(el2.style.left),py=parseFloat(el2.style.top);
       const span=document.createElement('div');
       span.style.cssText=`position:absolute;left:${px}px;top:${py}px;color:#F8961E;font-weight:800;font-size:16px;pointer-events:none;z-index:20;transition:all .6s;`;
-      span.textContent='+'+cv;
-      canvas.appendChild(span);
+      span.textContent='+'+cv;canvas.appendChild(span);
       setTimeout(()=>{span.style.transform='translateY(-50px)';span.style.opacity='0';},50);
       setTimeout(()=>span.remove(),700);
     }
-    el2.addEventListener('click',onHit);
-    el2.addEventListener('touchstart',onHit,{passive:false});
-
+    el2.addEventListener('click',onHit);el2.addEventListener('touchstart',onHit,{passive:false});
     canvas.appendChild(el2);
-    const dur=getFallDuration(el);
-    const startY=-50,endY=(canvas.offsetHeight||window.innerHeight)+60;
+    const dur=getFallDuration(el);const startY=-50,endY=(canvas.offsetHeight||window.innerHeight)+60;
     let st=null;
     function fall(ts){
       if(!gameRunning||!document.getElementById(id)) return;
-      if(!st) st=ts;
-      const p=(ts-st)/dur;
+      if(!st) st=ts;const p=(ts-st)/dur;
       el2.style.top=(startY+(endY-startY)*p)+'px';
       if(p>=1){el2.remove();return;}
       requestAnimationFrame(fall);
     }
     requestAnimationFrame(fall);
   }
-
   function gameLoop(ts){
     if(!gameRunning) return;
-    if(ts-lastSpawnTime>getSpawnRate(elapsed)){
-      lastSpawnTime=ts; spawnCluster();
-    }
+    if(ts-lastSpawnTime>getSpawnRate(elapsed)){lastSpawnTime=ts;const size=Math.floor(Math.random()*3)+2;for(let i=0;i<size;i++)setTimeout(()=>spawnObj(elapsed),i*80);}
     requestAnimationFrame(gameLoop);
   }
   requestAnimationFrame(gameLoop);
@@ -1292,16 +1171,13 @@ function launchGame(){
 
 function endGame(hitBomb){
   if(gameEnded) return;
-  gameEnded=true;gameRunning=false;
-  clearInterval(gameTimerInterval);
+  gameEnded=true;gameRunning=false;clearInterval(gameTimerInterval);
   const earned=Math.floor(gameScore);
   document.getElementById('gameover-emoji').textContent=hitBomb?'💥':'🎉';
   document.getElementById('gameover-title').textContent=hitBomb?'ဗုံးနှိပ်မိပါပြီ!':'Time Up!';
-  document.getElementById('gameover-sub').textContent=`${earned} ${CFG.currency_label||'Coins'} ရရှိပါပြီ`;
+  document.getElementById('gameover-sub').textContent=`${earned} Coins ရရှိပါပြီ`;
   document.getElementById('gameover-modal').classList.add('active');
-  if(earned>0&&userId){
-    apiFetch('/api/game-end',{userId,earned}).then(r=>{if(r.success)setBalanceUI(r.newBalance);}).catch(()=>{});
-  }
+  if(earned>0&&userId) apiFetch('/api/game-end',{userId,earned}).then(r=>{if(r.success)setBalanceUI(r.newBalance);}).catch(()=>{});
 }
 
 function exitGame(){
@@ -1314,16 +1190,11 @@ async function retryGame(){
   document.getElementById('gameover-modal').classList.remove('active');
   document.getElementById('game-screen').classList.remove('active');
   document.getElementById('game-canvas').innerHTML='';
-  await refreshBalance();
-  startGame();
+  await refreshBalance(); startGame();
 }
 
-/* ══════════════════════════════════════════════════
-   ★ LOGIC 1: WITHDRAW → Deep Link to bitcoinminingmyanmar_bot
-   ══════════════════════════════════════════════════ */
+/* ── WITHDRAW ── */
 function handleWithdraw(){
-  // Opens the Bitcoin Mining Myanmar bot with ?start=withdraw
-  // Bot will auto-show the "📤 ငွေထုတ်ယူရန်" withdrawal menu
   WebApp.openTelegramLink('https://t.me/bitcoinminingmyanmar_bot?start=withdraw');
 }
 
@@ -1335,7 +1206,8 @@ document.getElementById('profile-id').textContent='ID: '+(userId||'---');
 (async()=>{
   await loadConfig();
   initClaimedChannels();
-  initVideoTimers();
+  initHomeTimers();
+  loadEarnState();
   if(userId){ await refreshBalance(); }
   else showToast('Telegram ကနေ ဖွင့်ပေးပါ','warn');
 })();
