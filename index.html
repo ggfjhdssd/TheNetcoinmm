@@ -401,40 +401,40 @@
             <div class="earn-task-num" id="earn-num-1">1</div>
             <div>
               <div class="earn-task-name">Watch & Earn #1</div>
-              <div class="earn-task-desc">+200 MMK ရရှိမည်</div>
+              <div class="earn-task-desc">+500 MMK ရရှိမည်</div>
             </div>
           </div>
-          <button class="earn-task-btn" id="earn-btn-1">+200 MMK</button>
+          <button class="earn-task-btn" id="earn-btn-1">+500 MMK</button>
         </div>
         <div class="earn-task-item" id="earn-item-2" onclick="handleEarnTask(2)">
           <div class="earn-task-left">
             <div class="earn-task-num" id="earn-num-2">2</div>
             <div>
               <div class="earn-task-name">Watch & Earn #2</div>
-              <div class="earn-task-desc">+200 MMK ရရှိမည်</div>
+              <div class="earn-task-desc">+500 MMK ရရှိမည်</div>
             </div>
           </div>
-          <button class="earn-task-btn" id="earn-btn-2">+200 MMK</button>
+          <button class="earn-task-btn" id="earn-btn-2">+500 MMK</button>
         </div>
         <div class="earn-task-item" id="earn-item-3" onclick="handleEarnTask(3)">
           <div class="earn-task-left">
             <div class="earn-task-num" id="earn-num-3">3</div>
             <div>
               <div class="earn-task-name">Watch & Earn #3</div>
-              <div class="earn-task-desc">+200 MMK ရရှိမည်</div>
+              <div class="earn-task-desc">+500 MMK ရရှိမည်</div>
             </div>
           </div>
-          <button class="earn-task-btn" id="earn-btn-3">+200 MMK</button>
+          <button class="earn-task-btn" id="earn-btn-3">+500 MMK</button>
         </div>
         <div class="earn-task-item" id="earn-item-4" onclick="handleEarnTask(4)">
           <div class="earn-task-left">
             <div class="earn-task-num" id="earn-num-4">4</div>
             <div>
               <div class="earn-task-name">Watch & Earn #4</div>
-              <div class="earn-task-desc">+200 MMK ရရှိမည်</div>
+              <div class="earn-task-desc">+500 MMK ရရှိမည်</div>
             </div>
           </div>
-          <button class="earn-task-btn" id="earn-btn-4">+200 MMK</button>
+          <button class="earn-task-btn" id="earn-btn-4">+500 MMK</button>
         </div>
       </div>
 
@@ -577,7 +577,7 @@
   <div class="reward-box" onclick="event.stopPropagation()">
     <div class="reward-emoji">🎉</div>
     <div class="reward-title">ဂုဏ်ယူပါတယ်!</div>
-    <div class="reward-amount" id="reward-amount">+200 MMK</div>
+    <div class="reward-amount" id="reward-amount">+500 MMK</div>
     <div class="reward-sub" id="reward-sub">ရရှိပါပြီ</div>
     <button class="reward-ok" onclick="closeReward()">ကောင်းပါပြီ ✓</button>
   </div>
@@ -607,7 +607,7 @@ const API_BASE = 'https://thenetcoinmm.onrender.com';
 /* ── CONSTANTS ── */
 const HOME_TASK_REWARD   = 400;
 const CHECKIN_REWARD     = 300;
-const EARN_REWARD        = 200;
+const EARN_REWARD        = 500;
 const HOME_COOLDOWN_S    = 20 * 60;       // 20 minutes
 const EARN_ITEM_DELAY_S  = 10;            // 10 seconds
 const EARN_FULL_CD_S     = 2 * 60 * 60;  // 2 hours
@@ -778,7 +778,7 @@ async function handleCheckin() {
 
 /* ════════════════════════════════════
    EARN TAB — 4 tasks
-   No ads, +200 MMK each
+   No ads, +500 MMK each
    10s between tasks, 2h after 4/4
 ════════════════════════════════════ */
 const EARN_COUNT_KEY = 'earn_count';
@@ -823,7 +823,7 @@ function renderEarn() {
       item.classList.remove('locked');
       btn.className='earn-task-btn'; num.className='earn-task-num';
       num.textContent=i;
-      if(i===earnCount+1 && btn.className==='earn-task-btn') btn.textContent='+200 MMK';
+      if(i===earnCount+1 && btn.className==='earn-task-btn') btn.textContent='+500 MMK';
     }
   }
 }
@@ -841,7 +841,7 @@ function startEarnNextCd(secs) {
       clearInterval(earnNextIv); earnNextIv=null;
       localStorage.removeItem(EARN_NEXT_KEY);
       item.classList.remove('locked');
-      btn.textContent='+200 MMK'; btn.className='earn-task-btn';
+      btn.textContent='+500 MMK'; btn.className='earn-task-btn';
       showToast('✅ ထပ်ယူနိုင်ပါပြီ!','success'); return;
     }
     btn.textContent=fmtTime(t); btn.className='earn-task-btn wait-btn'; t--;
@@ -890,7 +890,7 @@ async function handleEarnTask(slot) {
 
     earnCount++;
     localStorage.setItem(EARN_COUNT_KEY,earnCount);
-    showReward(EARN_REWARD,'+200 MMK ရရှိပါပြီ! ('+earnCount+'/'+EARN_TOTAL+')');
+    showReward(EARN_REWARD,'+500 MMK ရရှိပါပြီ! ('+earnCount+'/'+EARN_TOTAL+')');
     renderEarn();
 
     if(earnCount>=EARN_TOTAL){
